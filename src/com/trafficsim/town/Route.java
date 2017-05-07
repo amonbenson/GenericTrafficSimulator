@@ -4,18 +4,23 @@ public class Route {
 	
 	private Tile origin, target;
 	private long timeOrigin, timeTarget;
+	private Person connectedPerson; //verweist auf die Person, welche die Route benutzt
 	
-	public Route(Tile origin, Tile target) {
-		if (origin == null) throw new NullPointerException("origin can't be null.");
-		if (target == null) throw new NullPointerException("target can't be null.");
-
+	public Route(Tile origin, Tile target, Person connectedPerson) {
+		if (origin == null) throw new NullPointerException("Origin can't be null.");
+		if (target == null) throw new NullPointerException("Target can't be null.");
+		if (connectedPerson == null) throw new NullPointerException("ConnectedPerson can't be null.");
+		
 		this.origin = origin;
 		this.target = target;
+		this.connectedPerson = connectedPerson;
 		
 		timeOrigin = -1;
 		timeTarget = -1;
 	}
 	
+
+
 	/**
 	 * Will be called when the route starts, e. g. when a person want's to get from Tile A to B. This sets the origin
 	 * time flag, so the total time can be read out later on.
@@ -41,6 +46,8 @@ public class Route {
 		
 		timeTarget = currentTime;
 	}
+
+	//---------------------------GETTER----------------------
 	
 	/**
 	 * Returns the total time that was taken while passing the route.
@@ -61,4 +68,15 @@ public class Route {
 	public Tile getTarget() {
 		return target;
 	}
+
+	public Person getConnectedPerson() {
+		return connectedPerson;
+	}
+
+	//---------------------------SETTER----------------------
+	
+	public void setConnectedPerson(Person connectedPerson) {
+		this.connectedPerson = connectedPerson;
+	}
+	
 }
