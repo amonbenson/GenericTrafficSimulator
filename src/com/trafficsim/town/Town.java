@@ -103,6 +103,14 @@ public class Town {
 		t.tiles = tiles;
 		System.out.println(Arrays.toString(t.getStreetTiles().toArray()));
 	}
+
+	public void setCurrentTime(int time) {
+		this.time = time;
+	}
+
+	public void addCurrentTime() {
+		time++
+	}
 	
 	
 }
