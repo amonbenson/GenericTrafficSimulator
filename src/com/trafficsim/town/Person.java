@@ -5,13 +5,23 @@ public class Person {
 	private double x, y;
 	private boolean floating; // when a person "floats" it won't be drawn to the town
 	private Route route;
+	private HouseTile house;
 	
-	public Person(double x, double y) {
+	public Person(double x, double y, HouseTile house) {
 		this.x = x;
 		this.y = y;
+		this.house = house;
 		floating = false;
 		
 		route = null;
+	}
+
+	public HouseTile getHouse() {
+		return house;
+	}
+
+	public void setHouse(HouseTile house) {
+		this.house = house;
 	}
 
 	public Route getRoute() {
