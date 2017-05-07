@@ -1,6 +1,6 @@
 package com.trafficsim.town;
 
-public class Tile {
+public abstract class Tile {
 	private int x, y; //Koordinaten
 	
 	public Tile(int x, int y) {
@@ -16,4 +16,8 @@ public class Tile {
 		return y;
 	}
 	
+	@Override
+	public String toString() {
+		return "X: "+x+" Y:"+y;
+	}
 }

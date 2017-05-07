@@ -1,12 +1,14 @@
 package com.trafficsim.town;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.logging.Logger;
 
 public class Town {
 	
 	public static Logger logger = Logger.getGlobal();
 	
-	private Tile[][] tiles;
+	private Tile[][] tiles = null;
 	private int sizeX, sizeY;
 	
 	public Town(int sizeX, int sizeY) {
@@ -16,6 +18,14 @@ public class Town {
 	
 	public Tile[][] getTiles() {
 		return tiles;
+	}
+	
+	/**
+	 * Gibt an, ob die Tiles bereits erzeugt wurden.
+	 */
+	public boolean areTilesReady() {
+		if (tiles == null) return false;
+		else return true;
 	}
 	
 	public int getSizeX() {
@@ -51,9 +61,37 @@ public class Town {
 				}
 			}
 		}
-		
 	}
 	
-
+	/**
+	 * Gibt alle StreetTiles zurück.
+	 * @return
+	 */
+	public ArrayList<StreetTile> getStreetTiles() {
+		if (!areTilesReady()) throw new NullPointerException("Bisher keine Tiles erzeugt. (Tiles sind nicht ready)");
+		
+		ArrayList<StreetTile> back = new ArrayList<StreetTile>();
+		for (int x=0;x<tiles.length;x++) {
+			for (int y=0;y<tiles[0].length;y++) {
+				if (tiles[x][y] instanceof StreetTile) {
+					back.add((StreetTile)tiles[x][y]);
+				}
+			}
+		}
+		
+		return back;
+	}
+	
+	//Test
+	public static void main(String[] args) {
+		Town t = new Town(2,2);
+		Tile[][] tiles = new Tile[2][2];
+		tiles[0][0] = new StreetTile(0,0, 5f);
+		tiles[0][1] = new StreetTile(0, 1, 2f);
+		tiles[1][0] = new HouseTile(1, 0, 5);
+		tiles[1][1] = new HouseTile(1, 1, 10);
+		t.tiles = tiles;
+		System.out.println(Arrays.toString(t.getStreetTiles().toArray()));
+	}
 	
 }
