@@ -82,6 +82,16 @@ public class Town {
 		return back;
 	}
 	
+	/**
+	 * Setzt alle Tiles einer Stadt, erstmal zum debuggen, wird eventuell hinterher wieder entfernt
+	 * 
+	 * @param tiles
+	 * 			Die neuen Tiles.
+	 */
+	public void setTiles(Tile[][] tiles) {
+		this.tiles = tiles;
+	}
+	
 	//Test
 	public static void main(String[] args) {
 		Town t = new Town(2,2);
