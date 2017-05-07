@@ -18,12 +18,22 @@ public class Person {
 		return route;
 	}
 
+	/**
+	 * Sets the current route of the person. Any existing rout will be overwritten.
+	 * 
+	 * @param route
+	 * 			The route to set the person's one to. It must not be null, otherwise a null pointer exception is thrown. To clear
+	 * 			a route use removeRoute()
+	 */
 	public void setRoute(Route route) {
-		if (route == null) throw new NullPointerException("Route shouldn't be null. Use removeRoute() to remove the current route");
+		if (route == null) throw new NullPointerException("Route shouldn't be null. Use removeRoute() to clear the current route");
 		
 		this.route = route;
 	}
 	
+	/**
+	 * Clears the current route (sets it to null).
+	 */
 	public void removeRoute() {
 		route = null;
 	}
