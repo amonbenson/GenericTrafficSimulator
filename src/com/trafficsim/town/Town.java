@@ -1,6 +1,11 @@
 package com.trafficsim.town;
 
+import java.util.logging.Logger;
+
 public class Town {
+	
+	public static Logger logger = Logger.getGlobal();
+	
 	private Tile[][] tiles;
 	private int sizeX, sizeY;
 	
@@ -32,10 +37,11 @@ public class Town {
 				} else if (list[x][y][0] == 1) { //Haus
 					tiles[x][y] = new HouseTile(x, y, (int) list[x][y][1]);
 				} else {
-					
+					logger.warning("Liste["+x+"]["+y+"][0] ist kein gültiger Typ! ("+list[x][y][0]+")");
 				}
 			}
 		}
+		
 	}
 	
 }
