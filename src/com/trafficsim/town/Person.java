@@ -4,9 +4,23 @@ public class Person {
 	
 	private double x, y;
 	private boolean floating; // when a person "floats" it won't be drawn to the town
-	private Route route;
+	private Route route; //aktuelle Route
 	private HouseTile house;
 	
+	/**
+	 * Setzt die aktuelle Position auf -1, -1
+	 * 		@param house das Haus der Person
+	 */
+	public Person(HouseTile house) {
+		this(-1d, -1d, house);
+	}
+	
+	/**
+	 * Initialisiert eine Person mit Koordinaten und Haus
+	 * 		@param x X-Koordinate
+	 * 		@param y Y-Koordinate
+	 * 		@param house das Haus der Person
+	 */
 	public Person(double x, double y, HouseTile house) {
 		this.x = x;
 		this.y = y;
