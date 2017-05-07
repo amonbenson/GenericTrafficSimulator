@@ -2,36 +2,15 @@ package com.trafficsim.town;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Queue;
 import java.util.logging.Logger;
 
 public class Town {
 	
 	public static Logger logger = Logger.getGlobal();
 	
-	
-	
 	private Tile[][] tiles = null;
-	private long currentTime;
 	private int sizeX, sizeY;
-	private Queue<RoutingEvent> routingEvents;
 	
-	
-	public long getCurrentTime() {
-		return currentTime;
-	}
-
-	public void setCurrentTime(long currentTime) {
-		this.currentTime = currentTime;
-	}
-	
-	/**
-	 * Zählt die Zeit um 1 höher
-	 */
-	public void addCurrentTime() {
-		currentTime++;
-	}
-
 	public Town(int sizeX, int sizeY) {
 		this.sizeX = sizeX;
 		this.sizeY = sizeY;
@@ -101,6 +80,16 @@ public class Town {
 		}
 		
 		return back;
+	}
+	
+	/**
+	 * Setzt alle Tiles einer Stadt, erstmal zum debuggen, wird eventuell hinterher wieder entfernt
+	 * 
+	 * @param tiles
+	 * 			Die neuen Tiles.
+	 */
+	public void setTiles(Tile[][] tiles) {
+		this.tiles = tiles;
 	}
 	
 	//Test
