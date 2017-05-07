@@ -21,4 +21,21 @@ public class Town {
 		return sizeY;
 	}
 	
+	public void generateTiles(float[][][] list ) {
+		if (sizeX < 1 || sizeY < 1) throw new NullPointerException("Größe X / Y muss größer als 0 sein! X:"+sizeX+" Y:"+sizeY);
+		tiles = new Tile[sizeX][sizeY];
+		
+		for (int x=0;x<list.length;x++) {
+			for (int y=0;y<list[0].length;y++) {
+				if (list[x][y][0] == 0) { //Straße
+					tiles[x][y] = new StreetTile(x, y, list[x][y][1]);
+				} else if (list[x][y][0] == 1) { //Haus
+					tiles[x][y] = new HouseTile(x, y, (int) list[x][y][1]);
+				} else {
+					
+				}
+			}
+		}
+	}
+	
 }
