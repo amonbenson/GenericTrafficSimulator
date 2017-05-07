@@ -1,5 +1,6 @@
 package com.trafficsim.graphics;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 
@@ -41,12 +42,21 @@ public class FrameLauncher extends JComponent {
 		Graphics2D g = (Graphics2D) graphics;
 		
 		double tileSize = Math.min(getWidth() / town.getSizeX(), getHeight() / town.getSizeY());
+		Tile[][] tiles = town.getTiles();
 		
 		for (int x = 0; x < town.getSizeX(); x++) {
 			for (int y = 0; y < town.getSizeY(); y++) {
+				Tile tile = tiles[x][y];
 				int dx = (int) (x * tileSize);
 				int dy = (int) (y * tileSize);
 				int ds = (int) tileSize + 1;
+				
+				if (tile instanceof StreetTile) g.setColor(Color.gray);
+				if (tile instanceof HouseTile) g.setColor(Color.green);
+				g.fillRect(dx, dy, ds, ds);
+				
+				g.setColor(Color.black);
+				g.drawRect(dx, dy, ds, ds);
 			}
 		}
 	}
