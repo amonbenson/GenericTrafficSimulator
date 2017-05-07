@@ -21,7 +21,7 @@ public class FrameLauncher extends JComponent {
 		// TOWN ERSTELLEN
 		town = new Town(2,2);
 		Tile[][] tiles = new Tile[2][2];
-		tiles[0][0] = new StreetTile(0,0, 5f);
+		tiles[0][0] = new StreetTile(0, 0, 5f);
 		tiles[0][1] = new StreetTile(0, 1, 2f);
 		tiles[1][0] = new HouseTile(1, 0, 5);
 		tiles[1][1] = new HouseTile(1, 1, 10);

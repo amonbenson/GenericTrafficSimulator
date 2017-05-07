@@ -10,6 +10,7 @@ public class Town {
 	
 	private Tile[][] tiles = null;
 	private int sizeX, sizeY;
+	private long time;
 	
 	public Town(int sizeX, int sizeY) {
 		this.sizeX = sizeX;
@@ -109,7 +110,7 @@ public class Town {
 	}
 
 	public void addCurrentTime() {
-		time++
+		time++;
 	}
 	
 	
