@@ -26,16 +26,26 @@ public class Town {
 		return sizeY;
 	}
 	
+	/**
+	 * Erzeugt die Tiles anhand eines dreidimensionalen Arrays.
+	 * Diese ist wie folgt aufgebaut:
+	 *
+	 * list[x][y][0] = Typ des Tiles, 0 ist Straﬂe, 1 ist Haus
+	 * list[x][y][1] = Wert des Tiles, bei einer Straﬂe die maximale Geschwindigkeit, bei einem Haus die Anzahl der Personen 
+	 *
+	 */
 	public void generateTiles(float[][][] list ) {
-		if (sizeX < 1 || sizeY < 1) throw new NullPointerException("Grˆﬂe X / Y muss grˆﬂer als 0 sein! X:"+sizeX+" Y:"+sizeY);
+		if (sizeX < 1 || sizeY < 1) throw new IllegalArgumentException("Grˆﬂe X / Y muss grˆﬂer als 0 sein! X:"+sizeX+" Y:"+sizeY);
 		tiles = new Tile[sizeX][sizeY];
 		
 		for (int x=0;x<list.length;x++) {
 			for (int y=0;y<list[0].length;y++) {
 				if (list[x][y][0] == 0) { //Straﬂe
 					tiles[x][y] = new StreetTile(x, y, list[x][y][1]);
+					System.out.println("Street");
 				} else if (list[x][y][0] == 1) { //Haus
 					tiles[x][y] = new HouseTile(x, y, (int) list[x][y][1]);
+					System.out.println("house");
 				} else {
 					logger.warning("Liste["+x+"]["+y+"][0] ist kein g¸ltiger Typ! ("+list[x][y][0]+")");
 				}
@@ -43,5 +53,7 @@ public class Town {
 		}
 		
 	}
+	
+
 	
 }
