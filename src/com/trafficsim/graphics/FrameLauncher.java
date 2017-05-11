@@ -3,14 +3,18 @@ package com.trafficsim.graphics;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 
+import com.trafficsim.town.Bus;
 import com.trafficsim.town.HouseTile;
 import com.trafficsim.town.StreetTile;
 import com.trafficsim.town.Tile;
 import com.trafficsim.town.Town;
+import com.trafficsim.town.Waypoint;
 
 public class FrameLauncher extends JComponent {
 	
@@ -26,6 +30,9 @@ public class FrameLauncher extends JComponent {
 		tiles[1][0] = new HouseTile(1, 0, 5);
 		tiles[1][1] = new HouseTile(1, 1, 10);
 		town.setTiles(tiles);
+		Bus bus = new Bus(1, 1, 5);
+		bus.getWaypoints().add(new Waypoint(0, 1));
+		town.getBusses().add(bus);
 		
 		// FRAME GEDÖNSE
 		frame = new JFrame("Generic Traffic Simulator");
@@ -59,9 +66,52 @@ public class FrameLauncher extends JComponent {
 				g.drawRect(dx, dy, ds, ds);
 			}
 		}
+		
+		//Busse zeichnen:
+		for (Bus b : town.getBusses()) {
+			g.setColor(Color.black);
+			g.fillRect((int) (b.getX() * tileSize - tileSize / 10), (int) (b.getY() * tileSize - tileSize / 10), 
+					(int) (tileSize / 5), (int) (tileSize / 5) );
+		}
+	
+		
+
 	}
 	
-	public static void main(String[] args) {
-		new FrameLauncher();
+	
+	
+	public static void main(String[] args) throws InterruptedException {
+		
+		//Temporärer KeyListener:
+		class KListener implements KeyListener {
+			private FrameLauncher frame;
+
+			public KListener(FrameLauncher frame) {
+				this.frame = frame;
+			}
+			
+			public void keyTyped(KeyEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			public void keyReleased(KeyEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+					frame.town.update();
+					frame.repaint();
+				}
+			}
+		}
+		
+		FrameLauncher frame = new FrameLauncher();
+		frame.setFocusable(true);
+		frame.addKeyListener(new KListener(frame));
 	}
+	
+
 }

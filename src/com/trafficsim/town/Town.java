@@ -30,16 +30,27 @@ public class Town {
 	private Tile[][] tiles = null; //Die Karte der Start
 	private int sizeX, sizeY; //Größe der Stadt
 	private ArrayList<RoutingEvent> routingEvents; //Liste aller Events
+	private ArrayList<Bus> busses; //alle Busse der Stadt
 	private long time; //aktuelle Zeit der Stadt
 	private Random random; //jede Stadt besitzt einen eigenen Randomgenerator (so können bestimmte Szenarien erneut simuliert werden)
 	
 	public Town(int sizeX, int sizeY) {
 		this.sizeX = sizeX;
 		this.sizeY = sizeY;
+		routingEvents = null;
+		busses = new ArrayList<Bus>();
+		time = 0;
 		random = new Random();
 	}
 	
-	public void addCurrentTime() {
+	
+	/**
+	 * Updatet die Stadt einen Tick.
+	 */
+	public void update() {
+		for (Bus b : busses) {
+			b.update();
+		}
 		time++;
 	}
 	
@@ -213,6 +224,15 @@ public class Town {
 	public ArrayList<RoutingEvent> getRoutingEvents() {
 		return routingEvents;
 	}
+	
+	public ArrayList<Bus> getBusses() {
+		return busses;
+	}
+	
+	public void setBusses(ArrayList<Bus> busses) {
+		this.busses = busses;
+	}
+
 	
 	
 }

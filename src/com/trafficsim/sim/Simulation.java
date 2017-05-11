@@ -34,7 +34,7 @@ public class Simulation {
 		 System.exit(0);
 		 for (int i=0; i<timeGoal;i++) {
 			 
-			 town.addCurrentTime();
+			
 		 }
 		 
 	}
