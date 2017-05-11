@@ -1,8 +1,7 @@
 package com.trafficsim.town;
 
-public class Person {
+public class Person extends Entity {
 	
-	private double x, y;
 	private boolean floating; // when a person "floats" it won't be drawn to the town
 	private Route route; //aktuelle Route
 	private HouseTile house;
@@ -22,8 +21,7 @@ public class Person {
 	 * 		@param house das Haus der Person
 	 */
 	public Person(double x, double y, HouseTile house) {
-		this.x = x;
-		this.y = y;
+		super(x, y);
 		this.house = house;
 		floating = false;
 		
@@ -60,22 +58,6 @@ public class Person {
 	 */
 	public void removeRoute() {
 		route = null;
-	}
-	
-	public double getX() {
-		return x;
-	}
-	
-	public void setX(double x) {
-		this.x = x;
-	}
-	
-	public double getY() {
-		return y;
-	}
-	
-	public void setY(double y) {
-		this.y = y;
 	}
 	
 	public boolean isFloating() {
