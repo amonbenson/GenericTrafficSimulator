@@ -1,5 +1,10 @@
 package com.trafficsim.town;
 
+/**
+ * Repräsentiert eine Route, welche einen Start und Endpunkt hat (Tile) und die zugehörige Person, welche sich bewegen möchte.
+ * Außerdem kann die Zeit, welche benötigt wird, um die Route zu fahren, gemessen werden.
+ *
+ */
 public class Route {
 	
 	private Tile origin, target;

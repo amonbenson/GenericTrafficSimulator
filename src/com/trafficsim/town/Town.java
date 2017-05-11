@@ -135,8 +135,12 @@ public class Town {
 		this.time = time;
 	}
 
+	/**
+	 * Generiert alle RoutingEvents für die aktuelle Simulation.
+	 */
 	public void generateRoutings() {
 		if (!areTilesReady()) throw new NullPointerException("Bisher keine Tiles erzeugt. (Tiles sind nicht ready)");
+		//Generiert für jede Person RoutingEvents:
 		ArrayList<HouseTile> houses = getHouseTiles();
 		ArrayList<RoutingEvent> tmpEvents = new ArrayList<RoutingEvent>();
 		for ( HouseTile house : houses ) {
@@ -152,16 +156,24 @@ public class Town {
 	        }
 	    });
 		
+		//RoutingEvents setzen:
 		routingEvents = tmpEvents;
 	}
-	
+	/**
+	 * Generiert Routen für die Person p und fügt diese der Liste list hinzu
+	 * @param p die Person, auf welche sich die Routen beziehen
+	 * @param list die Liste
+	 */
 	private void generateRoutingForPerson(Person p, ArrayList<RoutingEvent> list) {
 		
 		for ( int i=0;i<6;i++ ) { //TODO vernüftigen Zeitrythmus für einen Menschen finden
 			long startTime = random.nextInt(TimeHelper.DAY) + i*TimeHelper.DAY;
 			Route route = new Route(p.getHouse(), getRandomTileWithExclude(p.getHouse()), p);
-			RoutingEvent tmp = new RoutingEvent(startTime, route);
-			list.add(tmp);
+			RoutingEvent event = new RoutingEvent(startTime, route);
+			list.add(event);
+			Route routeBack = new Route(route.getTarget(), route.getOrigin(), p);
+			RoutingEvent eventBack = new RoutingEvent(startTime+TimeHelper.HOUR*8, routeBack);
+			list.add(eventBack);
 		}
 		
 	}
@@ -173,7 +185,7 @@ public class Town {
 	 */
 	private Tile getRandomTileWithExclude(Tile exclude) {
 		Tile back=null;
-		while ( (back=getRandomTile()) != exclude ) {
+		while ( (back=getRandomTile()) == exclude ) {
 			
 		}
 		return back;
