@@ -32,8 +32,8 @@ public class Waypoint {
 	/**
 	 * Prüft, ob der Wegpunkt valide im Kontext zum Wegpunkt w ist.
 	 */
-	public boolean isNextTo(Waypoint w) {
-		return isNextTo(this, w);
+	public boolean isValidTo(Waypoint w) {
+		return isValidTo(this, w);
 	}
 	
 	/**
@@ -42,7 +42,7 @@ public class Waypoint {
 	 * @param w2 Wegpunkt 2
 	 * @return true, wenn beide Wegpunkte zueinander valide sind.
 	 */
-	public static boolean isNextTo(Waypoint w1, Waypoint w2) {
+	public static boolean isValidTo(Waypoint w1, Waypoint w2) {
 		if (w1.getX() == w2.getX() ) return true;
 		if (w1.getY() == w2.getY() ) return true;
 		return false;
