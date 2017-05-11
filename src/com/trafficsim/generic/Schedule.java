@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.trafficsim.town.Bus;
 import com.trafficsim.town.BusCreationEvent;
 import com.trafficsim.town.Event;
+import com.trafficsim.town.Person;
 import com.trafficsim.town.Tile;
 import com.trafficsim.town.Waypoint;
 
@@ -45,6 +46,23 @@ public class Schedule {
 			back.add(bce);
 		}
 		return back;
+	}
+	
+	public boolean canGetToTarget(Tile t) {
+		return canGetToTarget(t.getX(), t.getY());
+	}
+	
+	/**
+	 * Prüft, ob die angegebene Koordinate im Einzugsbereich (für Personen) dieser Buslinie ist.
+	 */
+	public boolean canGetToTarget(int x, int y) {
+		for ( Waypoint s : stations ) {
+			if (x > s.getX() - Person.AREA_STATION && x < s.getX() + Person.AREA_STATION &&
+					y > s.getY() - Person.AREA_STATION && y < s.getY() + Person.AREA_STATION) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	public void setStations(ArrayList<Waypoint> stations) {
