@@ -21,4 +21,17 @@ public class RoutingEvent extends Event{
 		this.route = route;
 	}
 	
+	@Override
+	public void start(Town t) {
+		StreetTile station = route.getConnectedPerson().getNextStation(t.getTiles());
+		if (station != null) {
+			route.getConnectedPerson().setRoute(route);
+			station.getPersons().add(route.getConnectedPerson());
+		} else {
+			Town.logger.info("Person hat keine Haltestelle in der Nähe gefunden :(");
+		}
+	}
+	
+	
+	
 }

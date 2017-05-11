@@ -1,7 +1,13 @@
 package com.trafficsim.town;
 
-public class Person extends Entity {
+public class Person {
 	
+	//in welchem quadratischen Bereich die Person eine Station finden kann, bei 1 beträgt diese 3x3, bei 2 5x5 usw
+	public static int AREA_STATION=2;
+	
+	private double x, y; //Position des Person
+
+
 	private boolean floating; // when a person "floats" it won't be drawn to the town
 	private Route route; //aktuelle Route
 	private HouseTile house;
@@ -21,13 +27,32 @@ public class Person extends Entity {
 	 * 		@param house das Haus der Person
 	 */
 	public Person(double x, double y, HouseTile house) {
-		super(x, y);
 		this.house = house;
 		floating = false;
 		
 		route = null;
 	}
 
+	/**
+	 * Gibt die nächste Station um Umkreis von <code>AREA_STATION</code>*2+1 zurück, wenn eine vorhanden ist.
+	 * Ansonsten wird <code>null</code> zurückgegeben.
+	 * @return nächste Station, ansonsten <code>null</code>
+	 */
+	public StreetTile getNextStation(Tile[][] map) {
+		for (int x=house.getX()-AREA_STATION;x<=house.getX()+AREA_STATION;x++) {
+			for (int y=house.getY()-AREA_STATION;y<=house.getY()+AREA_STATION;y++) {
+				if (x >= 0 && x < map.length && y >= 0 && y < map[0].length ) { //Koordinaten müssen im Bereich liegen
+					if (map[x][y] instanceof StreetTile) {
+						if (((StreetTile) map[x][y]).isStation()) {
+							return (StreetTile) map[x][y];
+						}
+					}
+				}
+			}
+		}
+		return null;
+	}
+	
 	public HouseTile getHouse() {
 		return house;
 	}
@@ -66,5 +91,21 @@ public class Person extends Entity {
 	
 	public void setFloating(boolean floating) {
 		this.floating = floating;
+	}
+	
+	public double getX() {
+		return x;
+	}
+
+	public void setX(double x) {
+		this.x = x;
+	}
+
+	public double getY() {
+		return y;
+	}
+
+	public void setY(double y) {
+		this.y = y;
 	}
 }

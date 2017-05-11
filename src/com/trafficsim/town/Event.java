@@ -20,8 +20,13 @@ public abstract class Event {
 		this.startTime = startTime;
 	}
 	
+	public void start(Town t) {
+		
+	}
+	
 	@Override
 	public String toString() {
 		return String.valueOf(startTime);
 	}
+
 }

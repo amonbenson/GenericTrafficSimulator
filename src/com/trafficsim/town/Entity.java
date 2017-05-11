@@ -1,7 +1,7 @@
 package com.trafficsim.town;
 
-public class Entity {
-	protected double x, y; //Position des Entitys
+public abstract class Entity implements Updateable, Initable {
+	private double x, y; //Position des Entitys
 	
 	public Entity(double x, double y) {
 		this.x = x;
@@ -9,9 +9,9 @@ public class Entity {
 	}
 	
 	/**
-	 * Wird für jeden Tick einmal aufgerufen
+	 * Wird vor dem Beginn der Simulation aufgerufen
 	 */
-	public void update() { 
+	public void init() {
 		
 	}
 	

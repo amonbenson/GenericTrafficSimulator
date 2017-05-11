@@ -3,12 +3,20 @@ package com.trafficsim.graphics;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.geom.Line2D;
+import java.util.ArrayList;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 
+import com.trafficsim.generic.Chromosom;
+import com.trafficsim.generic.Schedule;
+import com.trafficsim.sim.Simulation;
 import com.trafficsim.town.Bus;
 import com.trafficsim.town.HouseTile;
 import com.trafficsim.town.StreetTile;
@@ -19,20 +27,37 @@ import com.trafficsim.town.Waypoint;
 public class FrameLauncher extends JComponent {
 	
 	private JFrame frame;
-	private Town town;
+	private Simulation simulation;
+	
+	private ArrayList<Line2D> lines = new ArrayList<Line2D>(); //hier werden die anzuzeigenen Linien gespeichert
+	
+	private int tileSize;
 	
 	public FrameLauncher() {
 		// TOWN ERSTELLEN
-		town = new Town(2,2);
-		Tile[][] tiles = new Tile[2][2];
-		tiles[0][0] = new StreetTile(0, 0, 5f);
-		tiles[0][1] = new StreetTile(0, 1, 2f);
-		tiles[1][0] = new HouseTile(1, 0, 5);
-		tiles[1][1] = new HouseTile(1, 1, 10);
-		town.setTiles(tiles);
-		Bus bus = new Bus(1, 1, 5);
-		bus.getWaypoints().add(new Waypoint(0, 1));
-		town.getBusses().add(bus);
+		simulation = new Simulation( new Town(7, 7));
+		simulation.getTown().generateTiles(Simulation.randomTown(7, 7));
+		Chromosom c = new Chromosom();
+		ArrayList<Schedule> schedules = new ArrayList<Schedule>();
+		ArrayList<Waypoint> waypoints = new ArrayList<Waypoint>();
+		waypoints.add(new Waypoint(2.5, 2.5));
+		waypoints.add(new Waypoint(2.5, 4.5));
+		waypoints.add(new Waypoint(4.5, 4.5));
+		waypoints.add(new Waypoint(4.5, 2.5));
+		ArrayList<Long> startTimes = new ArrayList<Long>();
+		startTimes.add(0l);
+		//startTimes.add(10l);
+		schedules.add(new Schedule(waypoints, startTimes));
+		c.setSchedules(schedules);
+		
+		ArrayList<Point> stations = new ArrayList<Point>();
+		stations.add(new Point(4, 2));
+		stations.add(new Point(2, 4));
+		stations.add(new Point(2, 2));
+		stations.add(new Point(4, 4));
+		c.setStations(stations);
+		
+		simulation.getTown().setChromosom(c);
 		
 		// FRAME GEDÖNSE
 		frame = new JFrame("Generic Traffic Simulator");
@@ -43,24 +68,42 @@ public class FrameLauncher extends JComponent {
 		frame.setSize(800, 800);
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
+		
+		tileSize = Math.min(getWidth() / simulation.getTown().getSizeX(), getHeight() / simulation.getTown().getSizeY());
 	}
 	
 	public void paintComponent(Graphics graphics) {
 		Graphics2D g = (Graphics2D) graphics;
 		
-		double tileSize = Math.min(getWidth() / town.getSizeX(), getHeight() / town.getSizeY());
-		Tile[][] tiles = town.getTiles();
+		double tileSize = Math.min(getWidth() / simulation.getTown().getSizeX(), getHeight() / simulation.getTown().getSizeY());
+		Tile[][] tiles = simulation.getTown().getTiles();
 		
-		for (int x = 0; x < town.getSizeX(); x++) {
-			for (int y = 0; y < town.getSizeY(); y++) {
+		for (int x = 0; x < simulation.getTown().getSizeX(); x++) {
+			for (int y = 0; y < simulation.getTown().getSizeY(); y++) {
 				Tile tile = tiles[x][y];
 				int dx = (int) (x * tileSize);
 				int dy = (int) (y * tileSize);
 				int ds = (int) tileSize + 1;
 				
-				if (tile instanceof StreetTile) g.setColor(Color.gray);
-				if (tile instanceof HouseTile) g.setColor(Color.green);
+				if (tile instanceof StreetTile) {
+					StreetTile s = (StreetTile) tile;
+					if (s.isStation()) {
+						g.setColor(Color.LIGHT_GRAY);
+					} else {
+						g.setColor(Color.gray);
+					}
+				}
+				if (tile instanceof HouseTile) {
+					g.setColor(Color.green);
+				}
 				g.fillRect(dx, dy, ds, ds);
+				if (tile instanceof HouseTile) {
+					g.setColor(Color.white);
+					g.drawString(String.valueOf(((HouseTile) tile).getNumberPersons()), dx+(int)(tileSize/2), dy+(int)(tileSize/2));
+				} else if (tile instanceof StreetTile) {
+					g.setColor(Color.white);
+					g.drawString(String.valueOf(((StreetTile) tile).getPersons().size()), dx+(int)(tileSize/2), dy+(int)(tileSize/2));
+				}
 				
 				g.setColor(Color.black);
 				g.drawRect(dx, dy, ds, ds);
@@ -68,7 +111,7 @@ public class FrameLauncher extends JComponent {
 		}
 		
 		//Busse zeichnen:
-		for (Bus b : town.getBusses()) {
+		for (Bus b : simulation.getTown().getBusses()) {
 			g.setColor(Color.black);
 			g.fillRect((int) (b.getX() * tileSize - tileSize / 10), (int) (b.getY() * tileSize - tileSize / 10), 
 					(int) (tileSize / 5), (int) (tileSize / 5) );
@@ -82,7 +125,7 @@ public class FrameLauncher extends JComponent {
 	
 	public static void main(String[] args) throws InterruptedException {
 		
-		//Temporärer KeyListener:
+		//Temporärer KeyListener, soll noch ausgelagert werden:
 		class KListener implements KeyListener {
 			private FrameLauncher frame;
 
@@ -102,14 +145,16 @@ public class FrameLauncher extends JComponent {
 			
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-					frame.town.update();
+					frame.simulation.getTown().update();
 					frame.repaint();
 				}
 			}
 		}
 		
+		
 		FrameLauncher frame = new FrameLauncher();
 		frame.setFocusable(true);
+		frame.simulation.getTown().init();
 		frame.addKeyListener(new KListener(frame));
 	}
 	

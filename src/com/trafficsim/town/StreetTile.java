@@ -1,23 +1,69 @@
 package com.trafficsim.town;
 
+import java.util.ArrayList;
+
+/**
+ * Repräsentiert ein Straßenstück.
+ * Dieses kann auch eine Station sein, das ist abhängig von der gewählten Simulation.
+ * Auch wenn es nicht OOP ist, dass eine Straße auch eine Station sein kann, ist dies hier sinnvoller,
+ * da keine neuen Bushaltestellenobjekte erzeugt werden müssen und es keine Pointerfehler geben wird.
+ * 
+ */
 public class StreetTile extends Tile {
 	
-	private float maxSpeed;
+	private double maxSpeed;
 	
-	public StreetTile(int x, int y, float maxSpeed) {
+	private boolean isStation;
+	private ArrayList<Person> waitingPersons;
+	
+	public StreetTile(int x, int y, double maxSpeed) {
 		super(x, y);
 		this.maxSpeed = maxSpeed;
+		this.isStation = false;
+		this.waitingPersons = new ArrayList<Person>();
+		setToStreet();
 	}
 
-	public float getMaxSpeed() {
+	public double getMaxSpeed() {
 		return maxSpeed;
 	}
 
-	public void setMaxSpeed(float maxSpeed) {
+	public void setMaxSpeed(double maxSpeed) {
 		this.maxSpeed = maxSpeed;
 	}
-
-
 	
+	/**
+	 * Setzt dieses Objekt zum Typ Bushaltestelle, hier muss die maximale Anzahl an wartenden Person
+	 * @param maxPersons
+	 */
+	public void setToStation() {
+		isStation = true;
+		waitingPersons = new ArrayList<Person>();
+	}
+	
+	/**
+	 * Gibt an, ob die Straße eine Bushaltestelle ist.
+	 */
+	public boolean isStation() {
+		return isStation;
+	}
+	
+	/**
+	 * Setzt dieses Objekt zum Typ Straße.
+	 */
+	public void setToStreet() {
+		if (isStation) {
+			isStation = false;
+			waitingPersons.clear();
+		}
+	}
+	
+	public ArrayList<Person> getPersons() {
+		return waitingPersons;
+	}
+	
+	public void setPersons(ArrayList<Person> persons) {
+		this.waitingPersons = persons;
+	}
 	
 }

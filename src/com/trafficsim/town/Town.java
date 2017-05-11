@@ -1,15 +1,21 @@
 package com.trafficsim.town;
 
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Random;
 import java.util.logging.Logger;
 
+import com.trafficsim.generic.Chromosom;
+import com.trafficsim.generic.Schedule;
 import com.trafficsim.sim.Simulation;
 
-public class Town {
+public class Town implements Updateable, Initable {
 	
+
+
+
 	public static Logger logger = Logger.getGlobal();
 	
 	//Test
@@ -29,7 +35,10 @@ public class Town {
 	
 	private Tile[][] tiles = null; //Die Karte der Start
 	private int sizeX, sizeY; //Größe der Stadt
-	private ArrayList<RoutingEvent> routingEvents; //Liste aller Events
+	private Chromosom chromosom; //Chromosom, welches auf diese Stadt angewendet wurde.
+	private ArrayList<Event> events; //Liste aller Events
+
+	private int events_index; //aktuelle Position der Events
 	private ArrayList<Bus> busses; //alle Busse der Stadt
 	private long time; //aktuelle Zeit der Stadt
 	private Random random; //jede Stadt besitzt einen eigenen Randomgenerator (so können bestimmte Szenarien erneut simuliert werden)
@@ -37,7 +46,7 @@ public class Town {
 	public Town(int sizeX, int sizeY) {
 		this.sizeX = sizeX;
 		this.sizeY = sizeY;
-		routingEvents = null;
+		events = new ArrayList<Event>();
 		busses = new ArrayList<Bus>();
 		time = 0;
 		random = new Random();
@@ -45,21 +54,64 @@ public class Town {
 	
 	
 	/**
-	 * Updatet die Stadt einen Tick.
-	 */
-	public void update() {
-		for (Bus b : busses) {
-			b.update();
-		}
-		time++;
-	}
-	
-	/**
 	 * Gibt an, ob die Tiles bereits erzeugt wurden.
 	 */
 	public boolean areTilesReady() {
 		if (tiles == null) return false;
 		else return true;
+	}
+	
+	/**
+	 * Generiert Routen für die Person p und fügt diese der Liste list hinzu
+	 * @param p die Person, auf welche sich die Routen beziehen
+	 * @param list die Liste
+	 */
+	private void generateRoutingForPerson(Person p, ArrayList<Event> list) {
+		
+		for ( int i=0;i<6;i++ ) { //TODO vernüftigen Zeitrythmus für einen Menschen finden
+			long startTime = random.nextInt(TimeHelper.MINUTE) + i*TimeHelper.DAY;
+			Route route = new Route(p.getHouse(), getRandomTileWithExclude(p.getHouse()), p);
+			RoutingEvent event = new RoutingEvent(startTime, route);
+			list.add(event);
+			Route routeBack = new Route(route.getTarget(), route.getOrigin(), p);
+			RoutingEvent eventBack = new RoutingEvent(startTime+TimeHelper.HOUR*8, routeBack);
+			list.add(eventBack);
+		}
+		
+	}
+	
+
+
+	
+
+	
+	/**
+	 * Generiert alle RoutingEvents für die aktuelle Simulation.
+	 */
+	private void generateRoutings() {
+		if (!areTilesReady()) throw new NullPointerException("Bisher keine Tiles erzeugt. (Tiles sind nicht ready)");
+		//Generiert für jede Person RoutingEvents:
+		ArrayList<HouseTile> houses = getHouseTiles();
+		ArrayList<Event> tmpEvents = new ArrayList<Event>();
+		for ( HouseTile house : houses ) {
+			for ( int i=0;i<house.getNumberPersons();i++) {
+				Person p = new Person(house);
+				generateRoutingForPerson(p, tmpEvents);
+			}
+		}
+		//RoutingEvents hinzufügen:
+		events.addAll(tmpEvents);
+	}
+	
+	/**
+	 * Sortiert die interne Liste <code>events</code> nach der Beginnzeit
+	 */
+	private void sortEvents() {
+		Collections.sort(events, new Comparator<Event>() {
+	        public int compare(Event o1, Event o2) {
+	        	return Long.compare(o1.getStartTime(), o2.getStartTime());
+	        }
+	    });
 	}
 	
 	/**
@@ -78,10 +130,8 @@ public class Town {
 			for (int y=0;y<list[0].length;y++) {
 				if (list[x][y][0] == 0) { //Straße
 					tiles[x][y] = new StreetTile(x, y, list[x][y][1]);
-					System.out.println("Street");
 				} else if (list[x][y][0] == 1) { //Haus
 					tiles[x][y] = new HouseTile(x, y, (int) list[x][y][1]);
-					System.out.println("house");
 				} else {
 					logger.warning("Liste["+x+"]["+y+"][0] ist kein gültiger Typ! ("+list[x][y][0]+")");
 				}
@@ -89,31 +139,16 @@ public class Town {
 		}
 	}
 	
-	public int getSizeX() {
-		return sizeX;
-	}
 	
-	public int getSizeY() {
-		return sizeY;
+	
+	public ArrayList<Bus> getBusses() {
+		return busses;
 	}
 	
 
 	
-	/**
-	 * Gibt alle StreetTiles zurück.
-	 */
-	public ArrayList<StreetTile> getStreetTiles() {
-		if (!areTilesReady()) throw new NullPointerException("Bisher keine Tiles erzeugt. (Tiles sind nicht ready)");
-		
-		ArrayList<StreetTile> back = new ArrayList<StreetTile>();
-		for (int x=0;x<tiles.length;x++) {
-			for (int y=0;y<tiles[0].length;y++) {
-				if (tiles[x][y] instanceof StreetTile) {
-					back.add((StreetTile)tiles[x][y]);
-				}
-			}
-		}	
-		return back;
+	public long getCurrentTime() {
+		return time;
 	}
 	
 	/**
@@ -134,61 +169,13 @@ public class Town {
 	}
 	
 	
-	public Tile[][] getTiles() {
-		return tiles;
+	/**
+	 * Gibt ein zufälliges Tile zurück.
+	 */
+	private Tile getRandomTile() {
+		return tiles[random.nextInt(tiles.length)][random.nextInt(tiles[0].length)];
 	}
 
-	public long getCurrentTime() {
-		return time;
-	}
-	
-	public void setCurrentTime(int time) {
-		this.time = time;
-	}
-
-	/**
-	 * Generiert alle RoutingEvents für die aktuelle Simulation.
-	 */
-	public void generateRoutings() {
-		if (!areTilesReady()) throw new NullPointerException("Bisher keine Tiles erzeugt. (Tiles sind nicht ready)");
-		//Generiert für jede Person RoutingEvents:
-		ArrayList<HouseTile> houses = getHouseTiles();
-		ArrayList<RoutingEvent> tmpEvents = new ArrayList<RoutingEvent>();
-		for ( HouseTile house : houses ) {
-			for ( int i=0;i<house.getNumberPersons();i++) {
-				Person p = new Person(house);
-				generateRoutingForPerson(p, tmpEvents);
-			}
-		}
-		//Nun alle RoutingEvents nach der Beginnzeit sortieren:
-		Collections.sort(tmpEvents, new Comparator<RoutingEvent>() {
-	        public int compare(RoutingEvent o1, RoutingEvent o2) {
-	        	return Long.compare(o1.getStartTime(), o2.getStartTime());
-	        }
-	    });
-		
-		//RoutingEvents setzen:
-		routingEvents = tmpEvents;
-	}
-	/**
-	 * Generiert Routen für die Person p und fügt diese der Liste list hinzu
-	 * @param p die Person, auf welche sich die Routen beziehen
-	 * @param list die Liste
-	 */
-	private void generateRoutingForPerson(Person p, ArrayList<RoutingEvent> list) {
-		
-		for ( int i=0;i<6;i++ ) { //TODO vernüftigen Zeitrythmus für einen Menschen finden
-			long startTime = random.nextInt(TimeHelper.DAY) + i*TimeHelper.DAY;
-			Route route = new Route(p.getHouse(), getRandomTileWithExclude(p.getHouse()), p);
-			RoutingEvent event = new RoutingEvent(startTime, route);
-			list.add(event);
-			Route routeBack = new Route(route.getTarget(), route.getOrigin(), p);
-			RoutingEvent eventBack = new RoutingEvent(startTime+TimeHelper.HOUR*8, routeBack);
-			list.add(eventBack);
-		}
-		
-	}
-	
 	/**
 	 * Gibt ein zufälliges Tile, exklusive dem Parameter, zurück.
 	 * Exklusives Item wird hier immer mithilfe des Pointers betrachtet, nicht nach Inhalt.
@@ -201,13 +188,49 @@ public class Town {
 		}
 		return back;
 	}
-	/**
-	 * Gibt ein zufälliges Tile zurück.
-	 */
-	private Tile getRandomTile() {
-		return tiles[random.nextInt(tiles.length)][random.nextInt(tiles[0].length)];
+	
+	public ArrayList<Event> getEvents() {
+		return events;
+	}
+
+	public int getSizeX() {
+		return sizeX;
+	}
+	public int getSizeY() {
+		return sizeY;
 	}
 	
+	/**
+	 * Gibt alle StreetTiles zurück.
+	 */
+	public ArrayList<StreetTile> getStreetTiles() {
+		if (!areTilesReady()) throw new NullPointerException("Bisher keine Tiles erzeugt. (Tiles sind nicht ready)");
+		
+		ArrayList<StreetTile> back = new ArrayList<StreetTile>();
+		for (int x=0;x<tiles.length;x++) {
+			for (int y=0;y<tiles[0].length;y++) {
+				if (tiles[x][y] instanceof StreetTile) {
+					back.add((StreetTile)tiles[x][y]);
+				}
+			}
+		}	
+		return back;
+	}
+	public Tile[][] getTiles() {
+		return tiles;
+	}
+	
+	public Chromosom getChromosom() {
+		return chromosom;
+	}
+	
+	public void setBusses(ArrayList<Bus> busses) {
+		this.busses = busses;
+	}
+
+	public void setCurrentTime(int time) {
+		this.time = time;
+	}
 	
 	/**
 	 * Setzt alle Tiles einer Stadt, erstmal zum debuggen, wird eventuell hinterher wieder entfernt
@@ -220,19 +243,96 @@ public class Town {
 	public void setTiles(Tile[][] tiles) {
 		this.tiles = tiles;
 	}
+	
+	/**
+	 * Setzt das Chromosom c als Eingabewert der Simulation.
+	 * @param c Chromosom zur Eingabe, wenn dieser <code>null</code> ist, wird die Stadt wieder ursprünglich gemacht
+	 */
+	public void setChromosom(Chromosom chromosom) {
+		if (chromosom != null) {
+			reset();
+			//Bushaltestellen setzen:
+			for ( Point p : chromosom.getStations() ) {
+				if (! (tiles[p.x][p.y] instanceof StreetTile) ) {
+					logger.warning("Achtung, Station im Chromosom verweist nicht auf eine gültige Straßenkoordinate!"+" X: "+p.x+" Y: "+p.y);
+				} else { //korrekte Koordinate
+					StreetTile street = (StreetTile) tiles[p.x][p.y];
+					street.setToStation();
+				}
+			}
+			
+			//Buslinien einfügen:
+			for ( Schedule schedule : chromosom.getSchedules()) {
+				schedule.calcWaypoints(tiles); //kreiert die internen Wegpunkte
+				events.addAll(schedule.getBusCreationEvents());
+			}
+			
+			//Generiert die Routen:
+			generateRoutings();
+			
+			//Sortiert schließlich die fertige Eventliste:
+			sortEvents();
+			
+		} else { //nur einen Reset
+			reset();
+		}
+	}
+	
+	public void reset() {
+		for (int x = 0; x < getSizeX(); x++) {
+			for (int y = 0; y < getSizeY(); y++) {
+				if (tiles[x][y] instanceof StreetTile) {
+					((StreetTile) tiles[x][y]).setToStreet();
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Updatet die Stadt einen Tick. Die Zeit wird mitgerechnet
+	 */
+	public void update() {
+		for (Bus b : busses) {
+			b.update();
+		}
+		for (int i=events_index;i<events.size();i++) {
+			if (events.get(i).getStartTime() == time) {
+				events.get(i).start(this);
+				events_index++;
+			} else {
+				break;
+			}
+		}
+		time++;
+	}
 
-	public ArrayList<RoutingEvent> getRoutingEvents() {
-		return routingEvents;
-	}
-	
-	public ArrayList<Bus> getBusses() {
-		return busses;
-	}
-	
-	public void setBusses(ArrayList<Bus> busses) {
-		this.busses = busses;
+	/**
+	 * Initialisiert die Objekte, welche vor dem Start der Simulation initialisiert werden müssen
+	 */
+	public void init() {
+		for (Bus b : busses) {
+			b.init();
+		}
 	}
 
+	/**
+	 * Simuliert die Stadt um einen Schritt rückwärts. Die Zeit wird um 1 abgezogen.
+	 */
+	public void revert() {
+		for (Bus b : busses) {
+			b.revert();
+		}
+		time--;
+	}
 	
+	
+	public Random getRandom() {
+		return random;
+	}
+
+
+	public void setRandom(Random random) {
+		this.random = random;
+	}
 	
 }
