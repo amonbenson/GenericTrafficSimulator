@@ -31,7 +31,6 @@ public class Simulation {
 	
 	public void startSimulation(long timeGoal) {
 		 if ( town == null ) throw new NullPointerException("Town is null, cannot start simulation");
-		 town.setCurrentTime(0);
 		 for (int i=0; i<timeGoal;i++) {
 			 town.update();
 		 }

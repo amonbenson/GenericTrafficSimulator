@@ -40,14 +40,7 @@ public class StreetTile extends Tile {
 		isStation = true;
 		waitingPersons = new ArrayList<Person>();
 	}
-	
-	/**
-	 * Gibt an, ob die Straﬂe eine Bushaltestelle ist.
-	 */
-	public boolean isStation() {
-		return isStation;
-	}
-	
+
 	/**
 	 * Setzt dieses Objekt zum Typ Straﬂe.
 	 */
@@ -57,6 +50,15 @@ public class StreetTile extends Tile {
 			waitingPersons.clear();
 		}
 	}
+	
+	/**
+	 * Gibt an, ob die Straﬂe eine Bushaltestelle ist.
+	 */
+	public boolean isStation() {
+		return isStation;
+	}
+	
+
 	
 	public ArrayList<Person> getPersons() {
 		return waitingPersons;

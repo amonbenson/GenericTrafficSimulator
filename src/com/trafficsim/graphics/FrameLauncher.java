@@ -6,8 +6,6 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.geom.Line2D;
 import java.util.ArrayList;
 
@@ -28,8 +26,6 @@ public class FrameLauncher extends JComponent {
 	
 	private JFrame frame;
 	private Simulation simulation;
-	
-	private ArrayList<Line2D> lines = new ArrayList<Line2D>(); //hier werden die anzuzeigenen Linien gespeichert
 	
 	private int tileSize;
 	
@@ -58,6 +54,7 @@ public class FrameLauncher extends JComponent {
 		c.setStations(stations);
 		
 		simulation.getTown().setChromosom(c);
+		simulation.getTown().applyChromosom();
 		
 		// FRAME GEDÖNSE
 		frame = new JFrame("Generic Traffic Simulator");
@@ -75,7 +72,6 @@ public class FrameLauncher extends JComponent {
 	public void paintComponent(Graphics graphics) {
 		Graphics2D g = (Graphics2D) graphics;
 		
-		double tileSize = Math.min(getWidth() / simulation.getTown().getSizeX(), getHeight() / simulation.getTown().getSizeY());
 		Tile[][] tiles = simulation.getTown().getTiles();
 		
 		for (int x = 0; x < simulation.getTown().getSizeX(); x++) {
@@ -115,6 +111,10 @@ public class FrameLauncher extends JComponent {
 			g.setColor(Color.black);
 			g.fillRect((int) (b.getX() * tileSize - tileSize / 10), (int) (b.getY() * tileSize - tileSize / 10), 
 					(int) (tileSize / 5), (int) (tileSize / 5) );
+			g.setColor(Color.white);
+			g.drawString("X:"+b.getX(), (int) (b.getX() * tileSize), (int) (b.getY() * tileSize));
+			g.drawString("Y:"+b.getY(), (int) (b.getX() * tileSize), (int) (b.getY() * tileSize)+20);
+			
 		}
 	
 		

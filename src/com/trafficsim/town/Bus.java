@@ -29,7 +29,7 @@ public class Bus extends Entity {
 		this.waypoints = waypoints;
 		this.currentWaypoint = 0;
 		
-		if (waypoints.size() != 0) checkIfWaypointIsReached();
+		if (waypoints.size() != 0) checkIfWaypointIsReached(); //Prüft, ob der Bus bereits das nächste Ziel erreicht hat
 	}
 	
 	
@@ -41,27 +41,37 @@ public class Bus extends Entity {
 	}
 	
 
-	public void update() {
+	public void update(Town t) {
 
 		//Fahre zum nächsten Wegpunkt:
 		setX(getX()+speedX);
 		setY(getY()+speedY);
-		checkIfWaypointIsReached();
+		checkIfWaypointIsReached(t);
 	}
 	
 	//TODO revert implementieren
-	public void revert() {
-		checkIfWaypointIsReached();
+	public void revert(Town t) {
+		checkIfWaypointIsReached(t);
 		
 		setX(getX()-speedX);
 		setY(getY()-speedY);
 	}
 	
 	/**
-	 * Prüft, ob nächster Wegpunkt erreicht wurde. Ist dies der Fall, wird der Index <code>currentWaypoint</code> weitergesetzt.
-	 * Außerdem wird die Geschwindigkeit neu berechnet.
+	 * @see #checkIfWaypointIsReached(Town) mit Parameter <code>null</code>
 	 */
 	private void checkIfWaypointIsReached() {
+		checkIfWaypointIsReached(null);
+	}
+	
+	/**
+	 * Prüft, ob nächster Wegpunkt erreicht wurde. Ist dies der Fall, wird der Index <code>currentWaypoint</code> weitergesetzt.
+	 * Außerdem wird die Geschwindigkeit neu berechnet (damit auch die Richtung)
+	 * 
+	 * @param t gibt den Stadtkontext an. Kann auch <code>null</code> sein, dann kann der Bus aber keine Personen einladen
+	 */
+	private void checkIfWaypointIsReached(Town t) {
+		
 		if (isNextWaypointReached()) {
 			//Genaue Position setzen:
 			setX(waypoints.get(currentWaypoint).getX());
@@ -72,6 +82,21 @@ public class Bus extends Entity {
 			if (currentWaypoint>=waypoints.size()) {
 				currentWaypoint = 0;
 			}
+			
+			if (t != null) { //Stadtkontext -> Prüfe, ob auf Station gelandet ist
+				
+				//Es wird immer davon ausgegangen, dass die aktuelle Koordinate eine Straße ist:
+				StreetTile st = (StreetTile) t.getTiles()[(int)getX()][(int)getY()];
+				if ( st.isStation() ) {
+					persons = new ArrayList<Person>(st.getPersons().subList(0, 
+							Math.min(maxPersons, st.getPersons().size()))); //Personen setzen
+					//Diese Personen aus Station löschen:
+					for (int i=0;i<persons.size();i++) {
+						st.getPersons().remove(0);
+					}
+				}
+			}
+			
 			
 			calcSpeed();
 		}
@@ -162,6 +187,7 @@ public class Bus extends Entity {
 	public static double getDefaultSpeed() {
 		return 0.3d;
 	}
+
 
 
 }
