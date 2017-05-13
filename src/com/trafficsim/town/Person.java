@@ -1,11 +1,8 @@
 package com.trafficsim.town;
 
-import java.util.ArrayList;
-
 public class Person {
 	
-	//in welchem quadratischen Bereich die Person eine Station finden kann, bei 1 beträgt diese 3x3, bei 2 5x5 usw
-	public static int AREA_STATION=2;
+
 	
 	private double x, y; //Position des Person
 
@@ -35,46 +32,7 @@ public class Person {
 		route = null;
 	}
 
-	/**
-	 * Gibt die nächste Station um Umkreis von <code>AREA_STATION</code>*2+1 zurück, wenn eine vorhanden ist.
-	 * Ansonsten wird <code>null</code> zurückgegeben.
-	 * @return nächste Station, ansonsten <code>null</code>
-	 */
-	public StreetTile getNextStation(Tile[][] map) {
-		for (int x=house.getX()-AREA_STATION;x<=house.getX()+AREA_STATION;x++) {
-			for (int y=house.getY()-AREA_STATION;y<=house.getY()+AREA_STATION;y++) {
-				if (x >= 0 && x < map.length && y >= 0 && y < map[0].length ) { //Koordinaten müssen im Bereich liegen
-					if (map[x][y] instanceof StreetTile) {
-						if (((StreetTile) map[x][y]).isStation()) {
-							return (StreetTile) map[x][y];
-						}
-					}
-				}
-			}
-		}
-		return null;
-	}
-	
-	/**
-	 * Gibt alle verfügbaren Stationen dieser Person zurück.
-	 * Falls es keine gibt, wird <code>null</code>zurückgegeben.
-	 * @param map die Karte der Stadt
-	 */
-	public ArrayList<StreetTile> getAllNextStations(Tile[][] map) {
-		ArrayList<StreetTile> back = new ArrayList<StreetTile>();
-		for (int x=house.getX()-AREA_STATION;x<=house.getX()+AREA_STATION;x++) {
-			for (int y=house.getY()-AREA_STATION;y<=house.getY()+AREA_STATION;y++) {
-				if (x >= 0 && x < map.length && y >= 0 && y < map[0].length ) { //Koordinaten müssen im Bereich liegen
-					if (map[x][y] instanceof StreetTile) {
-						if (((StreetTile) map[x][y]).isStation()) {
-							back.add((StreetTile)map[x][y]);
-						}
-					}
-				}
-			}
-		}
-		return back;
-	}
+
 	
 	public HouseTile getHouse() {
 		return house;

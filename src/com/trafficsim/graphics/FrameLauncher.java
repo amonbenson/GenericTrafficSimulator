@@ -6,17 +6,17 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.geom.Line2D;
 import java.util.ArrayList;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 
 import com.trafficsim.generic.Chromosom;
-import com.trafficsim.generic.Schedule;
 import com.trafficsim.sim.Simulation;
 import com.trafficsim.town.Bus;
+import com.trafficsim.town.BusStartTime;
 import com.trafficsim.town.HouseTile;
+import com.trafficsim.town.Schedule;
 import com.trafficsim.town.StreetTile;
 import com.trafficsim.town.Tile;
 import com.trafficsim.town.Town;
@@ -40,10 +40,8 @@ public class FrameLauncher extends JComponent {
 		waypoints.add(new Waypoint(2.5, 4.5));
 		waypoints.add(new Waypoint(4.5, 4.5));
 		waypoints.add(new Waypoint(4.5, 2.5));
-		ArrayList<Long> startTimes = new ArrayList<Long>();
-		startTimes.add(0l);
-		//startTimes.add(10l);
-		schedules.add(new Schedule(waypoints, startTimes));
+		ArrayList<BusStartTime> startTimes = new ArrayList<BusStartTime>();
+		schedules.add(new Schedule(waypoints, startTimes, 0, "187"));
 		c.setSchedules(schedules);
 		
 		ArrayList<Point> stations = new ArrayList<Point>();

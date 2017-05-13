@@ -6,10 +6,12 @@ package com.trafficsim.town;
  */
 public class RoutingEvent extends Event{
 
+	private Person person;
 	private Route route;
 	
-	public RoutingEvent(long startTime, Route route) {
+	public RoutingEvent(long startTime, Person person, Route route) {
 		super(startTime);
+		this.person = person;
 		this.route = route;
 	}
 	
@@ -23,12 +25,23 @@ public class RoutingEvent extends Event{
 	
 	@Override
 	public void start(Town t) {
-		StreetTile station = route.getConnectedPerson().getNextStation(t.getTiles());
-		if (station != null) {
-			route.getConnectedPerson().setRoute(route);
-			station.getPersons().add(route.getConnectedPerson());
+		
+		if (route.getStations() != null) {
+			Tile startTile = t.getTiles()[(int) route.getStations().get(0).getStation().getX()][(int) route.getStations().get(0).getStation().getY()];
+			if (startTile instanceof StreetTile) {
+				StreetTile st = (StreetTile) startTile;
+				if (st.isStation()) { //Fügt die Person der Startstation hinzu
+					person.setRoute(route);
+					st.addPerson(person);
+				} else {
+					Town.logger.warning("Startfield isn't a station (but a street)");
+				}
+			} else {
+				Town.logger.warning("Startfield isn't a street");
+			}
+			
 		} else {
-			Town.logger.info("Person hat keine Haltestelle in der Nähe gefunden :(");
+			Town.logger.warning("Route is null");
 		}
 	}
 	

@@ -15,12 +15,16 @@ public class StreetTile extends Tile {
 	
 	private boolean isStation;
 	private ArrayList<Person> waitingPersons;
+	private ArrayList<Schedule> schedules; //gibt die fahrenden Linien an
 	
+
+
 	public StreetTile(int x, int y, double maxSpeed) {
 		super(x, y);
 		this.maxSpeed = maxSpeed;
 		this.isStation = false;
 		this.waitingPersons = new ArrayList<Person>();
+		schedules = new ArrayList<Schedule>();
 		setToStreet();
 	}
 
@@ -58,7 +62,12 @@ public class StreetTile extends Tile {
 		return isStation;
 	}
 	
-
+	/**
+	 * Fügt die Person <code>p</code> zu den wartenden Personen hinzu.
+	 */
+	public void addPerson(Person p) {
+		waitingPersons.add(p);
+	}
 	
 	public ArrayList<Person> getPersons() {
 		return waitingPersons;
@@ -68,4 +77,16 @@ public class StreetTile extends Tile {
 		this.waitingPersons = persons;
 	}
 	
+	
+	public ArrayList<Schedule> getSchedules() {
+		return schedules;
+	}
+
+	public void setSchedules(ArrayList<Schedule> schedules) {
+		this.schedules = schedules;
+	}
+	
+	public void addSchedule(Schedule schedule) {
+		this.schedules.add(schedule);
+	}
 }

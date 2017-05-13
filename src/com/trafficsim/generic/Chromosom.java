@@ -3,6 +3,8 @@ package com.trafficsim.generic;
 import java.awt.Point;
 import java.util.ArrayList;
 
+import com.trafficsim.town.Schedule;
+
 public class Chromosom {
 	private ArrayList<Schedule> schedules;
 	private ArrayList<Point> stations;

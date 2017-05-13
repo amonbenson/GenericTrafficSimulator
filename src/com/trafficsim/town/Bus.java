@@ -7,29 +7,33 @@ public class Bus extends Entity {
 	private int maxPersons; //maximale Anzahl der Personen des Busses
 	private double speedX, speedY; //Geschwindigkeit des Busses
 	private ArrayList<Person> persons; //Liste der momentanen Personen im Bus
-	private ArrayList<Waypoint> waypoints; //Wegpunkte des Busses, sortiert nach Reihenfolge ( das 1. Element wird als erstes angesteuert ) 
+	private SpecificSchedule schedule; //ein Bus hat immer eine Buslinie mit Richtungsangabe
 	private int currentWaypoint; //gibt an, welcher Wegpunkt gerade als nächstes angefahren werden soll
+	private Town town; //Town-Kontext
 	
 	private boolean nextWaypointSmaller;
 	
 
-
-	public Bus(double x, double y, int maxPersons) {
-		this(x, y, maxPersons, new ArrayList<Person>(maxPersons), new ArrayList<Waypoint>());
+	public Bus(double x, double y, SpecificSchedule schedule, Town town) {
+		this(x, y, getDefaultMaxPersons(), new ArrayList<Person>(getDefaultMaxPersons()), schedule, town);
 	}
 
-	public Bus(double x, double y, int maxPersons, ArrayList<Waypoint> waypoints) {
-		this(x, y, maxPersons, new ArrayList<Person>(maxPersons), waypoints);
+	public Bus(double x, double y, int maxPersons, SpecificSchedule schedule, Town town) {
+		this(x, y, maxPersons, new ArrayList<Person>(maxPersons), schedule, town);
 	}
 	
-	public Bus(double x, double y, int maxPersons, ArrayList<Person> persons, ArrayList<Waypoint> waypoints) {
+	public Bus(double x, double y, int maxPersons, ArrayList<Person> persons, SpecificSchedule schedule, Town town) {
 		super(x, y);
+		
+		if (schedule == null) throw new NullPointerException("Schedule can't be null.");
+		if (town == null) throw new NullPointerException("Town can't be null.");
+		
 		this.maxPersons = maxPersons;
 		this.persons = persons;
-		this.waypoints = waypoints;
+		this.schedule = schedule;
+		this.town = town;
 		this.currentWaypoint = 0;
 		
-		if (waypoints.size() != 0) checkIfWaypointIsReached(); //Prüft, ob der Bus bereits das nächste Ziel erreicht hat
 	}
 	
 	
@@ -41,27 +45,20 @@ public class Bus extends Entity {
 	}
 	
 
-	public void update(Town t) {
+	public void update() {
 
 		//Fahre zum nächsten Wegpunkt:
 		setX(getX()+speedX);
 		setY(getY()+speedY);
-		checkIfWaypointIsReached(t);
+		checkIfWaypointIsReached();
 	}
 	
 	//TODO revert implementieren
-	public void revert(Town t) {
-		checkIfWaypointIsReached(t);
+	public void revert() {
+		checkIfWaypointIsReached();
 		
 		setX(getX()-speedX);
 		setY(getY()-speedY);
-	}
-	
-	/**
-	 * @see #checkIfWaypointIsReached(Town) mit Parameter <code>null</code>
-	 */
-	private void checkIfWaypointIsReached() {
-		checkIfWaypointIsReached(null);
 	}
 	
 	/**
@@ -70,32 +67,36 @@ public class Bus extends Entity {
 	 * 
 	 * @param t gibt den Stadtkontext an. Kann auch <code>null</code> sein, dann kann der Bus aber keine Personen einladen
 	 */
-	private void checkIfWaypointIsReached(Town t) {
-		
+	private void checkIfWaypointIsReached() {
 		if (isNextWaypointReached()) {
 			//Genaue Position setzen:
-			setX(waypoints.get(currentWaypoint).getX());
-			setY(waypoints.get(currentWaypoint).getY());
+			if (schedule.isNormal()) {
+				setX(schedule.getSchedule().getWaypoint(currentWaypoint).getX());
+				setY(schedule.getSchedule().getWaypoint(currentWaypoint).getY());
+			} else {
+				setX(schedule.getSchedule().getWaypointReverse(currentWaypoint).getX());
+				setY(schedule.getSchedule().getWaypointReverse(currentWaypoint).getY());				
+			}
+
 			
 			//Halte den Wegpunkt immer im richtigen Bereich: (Rotationsprinzip)
 			currentWaypoint++;
-			if (currentWaypoint>=waypoints.size()) {
+			if (currentWaypoint>=schedule.getSchedule().getWaypointSize()) {
 				currentWaypoint = 0;
 			}
 			
-			if (t != null) { //Stadtkontext -> Prüfe, ob auf Station gelandet ist
-				
-				//Es wird immer davon ausgegangen, dass die aktuelle Koordinate eine Straße ist:
-				StreetTile st = (StreetTile) t.getTiles()[(int)getX()][(int)getY()];
-				if ( st.isStation() ) {
-					persons = new ArrayList<Person>(st.getPersons().subList(0, 
-							Math.min(maxPersons, st.getPersons().size()))); //Personen setzen
-					//Diese Personen aus Station löschen:
-					for (int i=0;i<persons.size();i++) {
-						st.getPersons().remove(0);
-					}
+
+			//Es wird immer davon ausgegangen, dass die aktuelle Koordinate eine Straße ist:
+			StreetTile st = (StreetTile) town.getTiles()[(int)getX()][(int)getY()];
+			if ( st.isStation() ) {
+				persons = new ArrayList<Person>(st.getPersons().subList(0, 
+						Math.min(maxPersons, st.getPersons().size()))); //Personen setzen
+				//Diese Personen aus Station löschen:
+				for (int i=0;i<persons.size();i++) {
+					st.getPersons().remove(0);
 				}
 			}
+		
 			
 			
 			calcSpeed();
@@ -106,10 +107,23 @@ public class Bus extends Entity {
 	 * Prüft, ob nächster Wegpunkt erreicht wurde ( Vergleich mithilfe genauer Koordinaten )
 	 */
 	private boolean isNextWaypointReached() {
-		if (nextWaypointSmaller) {
-			return (waypoints.get(currentWaypoint).getX() >= getX() && waypoints.get(currentWaypoint).getY() >= getY());
-		} else { //next Waypoint bigger
-			return (waypoints.get(currentWaypoint).getX() <= getX() && waypoints.get(currentWaypoint).getY() <= getY());			
+		
+		if (schedule.isNormal()) {
+			if (nextWaypointSmaller) {
+				return (schedule.getSchedule().getWaypoint(currentWaypoint).getX() >= getX() &&
+						schedule.getSchedule().getWaypoint(currentWaypoint).getY() >= getY());
+			} else {
+				return (schedule.getSchedule().getWaypoint(currentWaypoint).getX() <= getX() &&
+						schedule.getSchedule().getWaypoint(currentWaypoint).getY() <= getY());				
+			}
+		} else { //also reverse
+			if (nextWaypointSmaller) {
+				return (schedule.getSchedule().getWaypointReverse(currentWaypoint).getX() >= getX() &&
+						schedule.getSchedule().getWaypointReverse(currentWaypoint).getY() >= getY());
+			} else {
+				return (schedule.getSchedule().getWaypointReverse(currentWaypoint).getX() <= getX() &&
+						schedule.getSchedule().getWaypointReverse(currentWaypoint).getY() <= getY());				
+			}
 		}
 	}
 	
@@ -119,22 +133,42 @@ public class Bus extends Entity {
 	private void calcSpeed() {
 		speedX = 0;
 		speedY = 0;
-		if (waypoints.size() != 0) {
-			if (getX() == waypoints.get(currentWaypoint).getX()) { //Bewegung auf der Y-Achse
-				if (getY() < waypoints.get(currentWaypoint).getY()) { //Bewegung nach oben
-					speedY=getDefaultSpeed();
-					nextWaypointSmaller = false;
-				} else { //Bewegung nach unten
-					speedY=-getDefaultSpeed();
-					nextWaypointSmaller = true;
+		if (schedule.getSchedule().getWaypointSize() != 0) {
+			if (schedule.isNormal()) {
+				if (getX() == schedule.getSchedule().getWaypoint(currentWaypoint).getX()) { //Bewegung auf der Y-Achse
+					if (getY() < schedule.getSchedule().getWaypoint(currentWaypoint).getY()) { //Bewegung nach oben
+						speedY=getDefaultSpeed();
+						nextWaypointSmaller = false;
+					} else { //Bewegung nach unten
+						speedY=-getDefaultSpeed();
+						nextWaypointSmaller = true;
+					}
+				} else { //Bewegung auf der X-Achse
+					if (getX() < schedule.getSchedule().getWaypoint(currentWaypoint).getX()) { //Bewegung nach rechts
+						speedX=getDefaultSpeed();
+						nextWaypointSmaller = false;
+					} else { //Bewegung nach links
+						speedX=-getDefaultSpeed();
+						nextWaypointSmaller = true;
+					}
 				}
-			} else { //Bewegung auf der X-Achse
-				if (getX() < waypoints.get(currentWaypoint).getX()) { //Bewegung nach rechts
-					speedX=getDefaultSpeed();
-					nextWaypointSmaller = false;
-				} else { //Bewegung nach links
-					speedX=-getDefaultSpeed();
-					nextWaypointSmaller = true;
+			} else { //Reverse Bewegung
+				if (getX() == schedule.getSchedule().getWaypointReverse(currentWaypoint).getX()) { //Bewegung auf der Y-Achse
+					if (getY() < schedule.getSchedule().getWaypointReverse(currentWaypoint).getY()) { //Bewegung nach oben
+						speedY=getDefaultSpeed();
+						nextWaypointSmaller = false;
+					} else { //Bewegung nach unten
+						speedY=-getDefaultSpeed();
+						nextWaypointSmaller = true;
+					}
+				} else { //Bewegung auf der X-Achse
+					if (getX() < schedule.getSchedule().getWaypointReverse(currentWaypoint).getX()) { //Bewegung nach rechts
+						speedX=getDefaultSpeed();
+						nextWaypointSmaller = false;
+					} else { //Bewegung nach links
+						speedX=-getDefaultSpeed();
+						nextWaypointSmaller = true;
+					}
 				}
 			}
 		}
@@ -143,19 +177,12 @@ public class Bus extends Entity {
 	public double getSpeedX() {
 		return speedX;
 	}
-
 	public double getSpeedY() {
 		return speedY;
 	}
-	
-	public ArrayList<Waypoint> getWaypoints() {
-		return waypoints;
-	}
-	
 	public ArrayList<Person> getPersons() {
 		return persons;
 	}
-	
 	public int getMaxPersons() {
 		return maxPersons;
 	}
@@ -165,19 +192,12 @@ public class Bus extends Entity {
 	public void setSpeedX(double speedX) {
 		this.speedX = speedX;
 	}
-
 	public void setSpeedY(double speedY) {
 		this.speedY = speedY;
 	}
-
-	public void setWaypoints(ArrayList<Waypoint> waypoints) {
-		this.waypoints = waypoints;
-	}
-	
 	public void setPersons(ArrayList<Person> persons) {
 		this.persons = persons;
 	}
-	
 	public void setMaxPersons(int maxPersons) {
 		this.maxPersons = maxPersons;
 	}
@@ -186,6 +206,10 @@ public class Bus extends Entity {
 	
 	public static double getDefaultSpeed() {
 		return 0.3d;
+	}
+	
+	public static int getDefaultMaxPersons() {
+		return 20;
 	}
 
 
