@@ -1,6 +1,7 @@
 package com.trafficsim.town;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Repräsentiert eine Route, welche einen Start und Endpunkt hat (Tile) und die zugehörige Person, welche sich bewegen möchte.
@@ -140,4 +141,13 @@ public class Route {
 		return false;
 	}
 	
+	@Override
+	public String toString() {
+		return "Origin "+origin+"\n"+
+				"Target "+target+"\n"+
+				"timeOrigin "+timeOrigin+"\n"+
+				"timeTarget "+timeTarget+"\n"+
+				"ChangeStations: "+Arrays.toString(stations.toArray())+"\n"+
+				"nextStation(position): "+nextStation+"\n";
+	}
 }

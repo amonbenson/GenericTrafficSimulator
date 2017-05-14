@@ -1,6 +1,7 @@
 package com.trafficsim.town;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class HouseTile extends Tile {
 
@@ -29,4 +30,9 @@ public class HouseTile extends Tile {
 		this.numberPersons = numberPersons;
 	}
 
+	@Override
+	public String toString() {
+		return "Personen: "+Arrays.toString(persons.toArray())+"\n"
+				+"Anzahl wohnender Personen: "+numberPersons+"\n";
+	}
 }

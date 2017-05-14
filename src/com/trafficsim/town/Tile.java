@@ -21,10 +21,7 @@ public abstract class Tile {
 		return y;
 	}
 	
-	@Override
-	public String toString() {
-		return "X: "+x+" Y:"+y;
-	}
+
 	
 	/**
 	 * Gibt die nächste Station um Umkreis von <code>AREA_STATION</code>*2+1 zurück, wenn eine vorhanden ist.
@@ -69,5 +66,10 @@ public abstract class Tile {
 	
 	public Waypoint toWaypoint() {
 		return new Waypoint(x, y);
+	}
+	
+	@Override
+	public String toString() {
+		return "X: "+x+" Y:"+y;
 	}
 }

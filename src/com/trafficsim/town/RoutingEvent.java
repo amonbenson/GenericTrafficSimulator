@@ -45,6 +45,10 @@ public class RoutingEvent extends Event{
 		}
 	}
 	
+	@Override
+	public String toString() {
+		return person+"\n"+route;
+	}
 	
 	
 }

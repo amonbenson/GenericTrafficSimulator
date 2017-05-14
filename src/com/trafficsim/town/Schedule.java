@@ -1,6 +1,7 @@
 package com.trafficsim.town;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Repräsentiert eine Buslinie
@@ -145,8 +146,18 @@ public class Schedule {
 
 
 	
+	@Override
+	public String toString() {
+		return "Stations: "+Arrays.toString(stations.toArray())+"\n"+
+				"Waypoints: "+Arrays.toString(waypoints.toArray())+"\n"+
+				"Name: "+name+"\n"+
+				"BusStartTimes: "+Arrays.toString(busStartTimes.toArray())+"\n"+
+				"minDelay: "+minDelay+"\n";
+	}
 
 	public static int getDefaultMaxPersons() {
 		return 30;
 	}
+	
+	
 }

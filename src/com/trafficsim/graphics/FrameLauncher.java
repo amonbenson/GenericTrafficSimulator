@@ -17,6 +17,7 @@ import com.trafficsim.town.Bus;
 import com.trafficsim.town.BusDirection;
 import com.trafficsim.town.BusStartTime;
 import com.trafficsim.town.HouseTile;
+import com.trafficsim.town.Route;
 import com.trafficsim.town.Schedule;
 import com.trafficsim.town.StreetTile;
 import com.trafficsim.town.Tile;

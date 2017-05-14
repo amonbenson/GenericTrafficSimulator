@@ -51,4 +51,9 @@ public class Waypoint {
 	public boolean isSame(Waypoint w) {
 		return (getX() == w.getX() && getY() == w.getY());
 	}
+	
+	@Override
+	public String toString() {
+		return "X: "+x+"Y: "+y+"\n";
+	}
 }

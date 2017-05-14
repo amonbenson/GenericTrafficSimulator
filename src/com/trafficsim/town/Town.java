@@ -374,6 +374,7 @@ public class Town {
 		Route route = new Route(origin, target, stations);
 		
 		RoutingEvent event = new RoutingEvent(random.nextInt(10), p, route);
+		System.out.println(event);
 		list.add(event);
 		
 	}

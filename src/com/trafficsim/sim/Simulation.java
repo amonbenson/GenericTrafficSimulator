@@ -44,15 +44,7 @@ public class Simulation {
 	public void setTown(Town town) {
 		this.town = town;
 	}
-	
-	public static void main(String[] args) {
-		Town t = new Town(5, 5);
-		Random r = t.getRandom();
-		t.generateTiles(randomTown(5, 5, r));
-		
-		Simulation s = new Simulation(t);
-		s.startSimulation();
-	}
+
 	
 	public static float[][][] randomTown(int width, int height) {
 		return randomTown(width, height, new Random());
@@ -62,15 +54,16 @@ public class Simulation {
 		float[][][] townList = new float[width][height][2];
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
-				if ( x == 2 || x == 4 || y == 2 || y == 4 ) {
+				if ( x == 2 || x == 4 || y == 2 || y == 4 ) { //Straße
 					townList[x][y][0] = 0;
 					townList[x][y][1] = 0.3f;
-				} else {
+				} else { //Haus
 					townList[x][y][0] = 1;
-					townList[x][y][1] = r.nextInt(5)+1;
+					townList[x][y][1] = 0;
 				}
 			}
 		}
+		townList[0][0][1] = 1; //0px, 0py einen Menschen setzen
 		return townList;
 	}
 }

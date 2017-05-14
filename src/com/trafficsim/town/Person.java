@@ -89,4 +89,12 @@ public class Person {
 	public void setY(double y) {
 		this.y = y;
 	}
+	
+	@Override
+	public String toString() {
+		return "X: "+x+"\n"
+				+ "Y: "+y+"\n"
+				+ "Route wird ausgelassen..\n"
+				+ house;
+	}
 }

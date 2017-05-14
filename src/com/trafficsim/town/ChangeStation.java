@@ -32,4 +32,10 @@ public class ChangeStation {
 		if (schedule == null) throw new NullPointerException("Schedule can't be null.");
 		this.schedule = schedule;
 	}
+	
+	@Override
+	public String toString() {
+		return "Waypoint: "+station+"\n"+
+				"SpecificSchedule: \t"+schedule+"\n";
+	}
 }

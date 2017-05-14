@@ -29,7 +29,11 @@ public class BusStartTime {
 		this.direction = direction;
 	}
 	
-
+	@Override
+	public String toString() {
+		return "StartTime: "+startTime+"\n"+
+				"Direction: "+direction+"\n";
+	}
 
 	
 }
