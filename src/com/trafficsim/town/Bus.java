@@ -1,6 +1,7 @@
 package com.trafficsim.town;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class Bus extends Entity {
 
@@ -89,6 +90,30 @@ public class Bus extends Entity {
 			//Es wird immer davon ausgegangen, dass die aktuelle Koordinate eine Straße ist:
 			StreetTile st = (StreetTile) town.getTiles()[(int)getX()][(int)getY()];
 			if ( st.isStation() ) {
+				
+				//Personen umsteigen lassen: (oder aussteigen lassen)
+				for (Iterator<Person> iterator = persons.iterator(); iterator.hasNext();) {
+				    Person p = iterator.next();
+					if (p.getRoute().getNextStation().getStation().isSame(st.toWaypoint())) { //Umsteigen und ausladen
+						p.getRoute().reachedChangeStation();
+						st.addPerson(p);
+						iterator.remove();
+					}
+				}
+				
+				//Personen, die müssen, einsteigen lassen:
+				for (Iterator<Person> iterator = st.getPersons().iterator(); iterator.hasNext();) {
+					Person p = iterator.next();
+					if (p.getRoute().getCurrentStation().getStation().isSame(st.toWaypoint())) { //Person muss umsteigen
+						if (persons.size()<maxPersons) { //wenn noch Personen einsteigen können
+							persons.add(p);
+							iterator.remove();
+						} else { //ansonsten die Schleife beenden, da der Bus voll ist
+							break;
+						}
+					}
+				}
+				
 				persons = new ArrayList<Person>(st.getPersons().subList(0, 
 						Math.min(maxPersons, st.getPersons().size()))); //Personen setzen
 				//Diese Personen aus Station löschen:

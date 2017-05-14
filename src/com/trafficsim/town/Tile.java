@@ -66,4 +66,8 @@ public abstract class Tile {
 		}
 		return back;
 	}
+	
+	public Waypoint toWaypoint() {
+		return new Waypoint(x, y);
+	}
 }

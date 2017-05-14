@@ -102,6 +102,16 @@ public class Route {
 	}
 	
 	/**
+	 * Gibt die Station zurück, bei welcher die Person zuletzt war, oder momentan noch ist (und wartet)
+	 */
+	public ChangeStation getCurrentStation() {
+		if (stations != null) {
+			return stations.get(nextStation-1);
+		}
+		return null;
+	}
+	
+	/**
 	 * Gibt die nächste Umsteigestation zurück.
 	 * Falls <code>stations</code> <code>null</code> ist, wird <code>null</code> zurückgegeben.
 	 */

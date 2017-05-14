@@ -48,4 +48,7 @@ public class Waypoint {
 		return false;
 	}
 	
+	public boolean isSame(Waypoint w) {
+		return (getX() == w.getX() && getY() == w.getY());
+	}
 }

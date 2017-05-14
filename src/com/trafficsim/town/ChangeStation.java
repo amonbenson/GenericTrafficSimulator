@@ -13,6 +13,8 @@ public class ChangeStation {
 	public ChangeStation(Waypoint station, SpecificSchedule schedule) {
 		if (station == null) throw new NullPointerException("Station can't be null.");
 		if (schedule == null) throw new NullPointerException("Schedule can't be null.");
+		this.station = station;
+		this.schedule = schedule;
 	}
 	
 	public Waypoint getStation() {

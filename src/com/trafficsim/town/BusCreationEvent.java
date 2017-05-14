@@ -22,6 +22,7 @@ public class BusCreationEvent extends Event {
 	}
 	
 	public void start(Town t) {
+		System.out.println("Bus creation event");
 		t.getBusses().add(bus);
 	}
 

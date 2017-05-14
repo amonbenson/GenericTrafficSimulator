@@ -348,7 +348,7 @@ public class Town {
 		
 		main:
 		while (true) {
-			if (warning_counter > 10000) {
+			if (warning_counter > 1000) {
 				System.out.println("Achtung, Schleife findet keine Lösung");
 			}
 			
@@ -367,6 +367,10 @@ public class Town {
 		ArrayList<ChangeStation> stations = new ArrayList<ChangeStation>();
 		stations.add(new ChangeStation(new Waypoint(origin.getX(), origin.getY()), new SpecificSchedule(schedule, BusDirection.NORMAL)));
 		stations.add(new ChangeStation(stationTarget, new SpecificSchedule(schedule, BusDirection.NORMAL)));
+		stations.get(0).getStation();
+		if (stations.get(0).getStation().isSame(stations.get(1).getStation())) {
+			return;
+		}
 		Route route = new Route(origin, target, stations);
 		
 		RoutingEvent event = new RoutingEvent(random.nextInt(10), p, route);
