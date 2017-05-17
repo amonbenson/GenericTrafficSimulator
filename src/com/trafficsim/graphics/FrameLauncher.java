@@ -1,9 +1,11 @@
 package com.trafficsim.graphics;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
@@ -63,7 +65,12 @@ public class FrameLauncher extends JComponent {
 		
 		frame.add(this);
 		
-		frame.setSize(800, 800);
+		if (Toolkit.getDefaultToolkit().getScreenResolution() >= 240) {
+			frame.setSize(1600, 1600);
+			setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 50));
+		}
+		else frame.setSize(800, 800);
+		
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 		
