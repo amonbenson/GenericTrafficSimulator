@@ -91,4 +91,9 @@ public class StreetTile extends Tile {
 	public void addSchedule(Schedule schedule) {
 		this.schedules.add(schedule);
 	}
+	
+	public boolean hasSchedule(Schedule s) {
+		return schedules.contains(s);
+	}
+	
 }

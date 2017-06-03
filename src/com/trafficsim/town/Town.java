@@ -8,6 +8,7 @@ import java.util.Random;
 import java.util.logging.Logger;
 
 import com.trafficsim.generic.Chromosom;
+import com.trafficsim.pathfinding.RoutingAlgorithm;
 
 public class Town implements Updateable {
 	
@@ -231,7 +232,9 @@ public class Town implements Updateable {
 						logger.warning("Busstation verweist nicht auf eine Straße");
 					} else {
 						StreetTile station = (StreetTile) tiles[(int) (w.getX())][(int) (w.getY())];
-						station.addSchedule(schedule);
+						if (!station.hasSchedule(schedule)) { //Diese Linie nur hinzufügen, wenn diese noch nicht existiert
+							station.addSchedule(schedule);
+						}
 					}
 				}
 			}
@@ -242,6 +245,8 @@ public class Town implements Updateable {
 			//Sortiert schließlich die fertige Eventliste:
 			sortEvents();
 			
+			RoutingAlgorithm.init(tiles);
+			System.out.println("Qait");
 		}
 	}
 	

@@ -47,9 +47,23 @@ public class Waypoint {
 		if (w1.getY() == w2.getY() ) return true;
 		return false;
 	}
+
 	
+	/**
+	 * Gibt zurück, ob zwei Koordinaten dieselben sind.
+	 * Rundet die angegebenen Koordinaten auf Integerwerte.
+	 * @see #isSame(int, int)
+	 */
 	public boolean isSame(Waypoint w) {
-		return ((int) getX() == (int) w.getX() && (int) getY() == (int) w.getY());
+		return isSame((int)w.getX(), (int)w.getY());
+	}
+	
+	/**
+	 * Gibt zurück, ob zwei Koordinaten dieselben sind.
+	 * Rundet die angegebenen Koordinaten auf Integerwerte.
+	 */
+	public boolean isSame(int x, int y) {
+		return ((int) getX() == (int) x && (int) getY() == y);		
 	}
 	
 	@Override

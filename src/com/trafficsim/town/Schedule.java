@@ -81,6 +81,37 @@ public class Schedule {
 	public int getWaypointSize() {
 		return waypoints.size();
 	}
+	
+	/**
+	 * Gibt die Station des Indexes <code>index</code> zurück.
+	 */
+	public Waypoint getStation(int index) {
+		return stations.get(index);
+	}
+	/**
+	 * Gibt die Station links/vorherig vom <code>index/<code> zurück.
+	 * Falls diese außerhalb des Arrays liegt, wird <code>null</code> zurückgegeben.
+	 */
+	public Waypoint getStationLeft(int index) {
+		if (index-1 < 0) {
+			return null;
+		} else {
+			return stations.get(index-1);
+		}
+	}
+	
+	/**
+	 * Gibt die Station rechts/nächste vom <code>index</code> zurück.
+	 * Falls diese außerhalb des Arrays liegt, wird <code>null</code> zurückgegeben.
+	 */
+	public Waypoint getStationRight(int index) {
+		if (index+1 >= stations.size()) {
+			return null;
+		} else {
+			return stations.get(index+1);
+		}
+	}
+	
 	/**
 	 * Gibt den Waypoint des Indexes <code>index</code> zurück.
 	 */
@@ -93,6 +124,19 @@ public class Schedule {
 	 */
 	public Waypoint getWaypointReverse(int index) {
 		return waypoints.get(waypoints.size()-index-1);
+	}
+	
+	/**
+	 * Gibt den Index an, wo die angegebende Koordinate für die Station in diesem Fahrplan zu finden ist.
+	 * Falls diese nicht zu finden ist, wird -1 zurückgegeben.
+	 */
+	public int getStationIndex(int x, int y) {
+		for (int i=0;i<stations.size();i++ ) {
+			if (stations.get(i).isSame(x, y)) {
+				return i;
+			}
+		}
+		return -1;
 	}
 	
 	/**
