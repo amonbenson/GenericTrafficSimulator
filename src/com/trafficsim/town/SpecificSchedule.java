@@ -38,6 +38,9 @@ public class SpecificSchedule {
 	public boolean isNormal() {
 		return (direction == BusDirection.NORMAL)?true:false;
 	}
+	public boolean isSameDirection(BusDirection d) {
+		return (d.compareTo(direction) == 0);
+	}
 	@Override
 	public String toString() {
 		return "Schedule: "+schedule+"\n"+

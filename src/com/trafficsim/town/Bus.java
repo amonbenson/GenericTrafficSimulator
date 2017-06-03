@@ -86,17 +86,20 @@ public class Bus extends Entity {
 				currentWaypoint = 0;
 			}
 			
-
+			
 			//Es wird immer davon ausgegangen, dass die aktuelle Koordinate eine Straße ist:
 			StreetTile st = (StreetTile) town.getTiles()[(int)getX()][(int)getY()];
 			if ( st.isStation() ) {
-				
 				//Personen umsteigen lassen: (oder aussteigen lassen)
 				for (Iterator<Person> iterator = persons.iterator(); iterator.hasNext();) {
 				    Person p = iterator.next();
-					if (p.getRoute().getNextStation().getStation().isSame(st.toWaypoint())) { //Umsteigen und ausladen
+				    if (p.getRoute().getNextStation().getStation().isSame(st.toWaypoint())) { //Umsteigen und ausladen
 						p.getRoute().reachedChangeStation();
-						st.addPerson(p);
+						//Die Person wird der Station nur hinzugefügt, wenn diese nicht das Ziel ist:
+						if (!p.getRoute().isFinished()) {
+							st.addPerson(p);							
+						}
+
 						iterator.remove();
 					}
 				}
@@ -104,7 +107,9 @@ public class Bus extends Entity {
 				//Personen, die müssen, einsteigen lassen:
 				for (Iterator<Person> iterator = st.getPersons().iterator(); iterator.hasNext();) {
 					Person p = iterator.next();
-					if (p.getRoute().getCurrentStation().getStation().isSame(st.toWaypoint())) { //Person muss umsteigen
+					//Wenn die Person genau diesen Bus benötigt, also wenn er den gleichen Namen und die richtige Richtung hat, muss diese einsteigen
+					if (p.getRoute().getCurrentStation().getSchedule().isSameDirection(schedule.getDirection()) &&
+							p.getRoute().getCurrentStation().getSchedule().getSchedule().hasSameName(schedule.getSchedule().getName())) {
 						if (persons.size()<maxPersons) { //wenn noch Personen einsteigen können
 							persons.add(p);
 							iterator.remove();
@@ -112,13 +117,6 @@ public class Bus extends Entity {
 							break;
 						}
 					}
-				}
-				
-				persons = new ArrayList<Person>(st.getPersons().subList(0, 
-						Math.min(maxPersons, st.getPersons().size()))); //Personen setzen
-				//Diese Personen aus Station löschen:
-				for (int i=0;i<persons.size();i++) {
-					st.getPersons().remove(0);
 				}
 			}
 		

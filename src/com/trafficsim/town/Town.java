@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 
 import com.trafficsim.generic.Chromosom;
 
-public class Town {
+public class Town implements Updateable {
 	
 
 
@@ -177,7 +177,7 @@ public class Town {
 	/**
 	 * Initialisiert die Objekte, welche vor dem Start der Simulation initialisiert werden müssen
 	 */
-	public void init() {
+	private void init() {
 		for (Bus b : busses) {
 			b.init();
 		}
@@ -223,7 +223,7 @@ public class Town {
 			}
 			//Buslinien einfügen:
 			for ( Schedule schedule : chromosom.getSchedules()) {
-				schedule.calcWaypoints(tiles); //kreiert die internen Wegpunkte
+				schedule.calcWaypoints(tiles); //kreiert die internen Wegpunkte TODO eventuell muss auf eine Kopie zugegriffen werden
 				events.addAll(schedule.getBusCreationEvents(this));
 				//Jede Station muss wissen, dass hier diese Linie fährt:
 				for ( Waypoint w : schedule.getStations() ) {
@@ -285,7 +285,8 @@ public class Town {
 	}
 	
 	/**
-	 * Wandelt die Stadt wieder in die Ursprüngliche um, alle Änderungen eines angewendeten Chromosoms werden rückgängig gemacht
+	 * Wandelt die Stadt wieder in die Ursprüngliche um, alle Änderungen eines angewendeten Chromosoms werden rückgängig gemacht.
+	 * Löscht außerdem die bisherigen Events
 	 */
 	public void toNormal() {
 		//Löscht aus allen Straßen die möglichen Stationen
@@ -296,6 +297,7 @@ public class Town {
 				}
 			}
 		}
+		events.clear();
 	}
 	
 	
@@ -330,53 +332,46 @@ public class Town {
 	 */
 	private void generateRoutingForPerson(Person p, ArrayList<Event> list) {
 		
-		/*for ( int i=0;i<6;i++ ) { //TODO vernüftigen Zeitrythmus für einen Menschen finden
-			long startTime = random.nextInt(TimeHelper.MINUTE) + i*TimeHelper.DAY;
-			Route route = new Route(p.getHouse(), getRandomTileWithExclude(p.getHouse()))
-			RoutingEvent event = new RoutingEvent(startTime, route);
-			list.add(event);
-			Route routeBack = new Route(route.getTarget(), route.getOrigin(), p);
-			RoutingEvent eventBack = new RoutingEvent(startTime+TimeHelper.HOUR*8, routeBack);
-			list.add(eventBack);
-		}*/
 		
 		int warning_counter = 0;
-		StreetTile origin;
-		Tile target;
-		Waypoint stationTarget;
-		Schedule schedule;
+		StreetTile origin = null;
+		Tile target = null;
+		Waypoint stationTarget = null;
+		ArrayList<ChangeStation> stations = null;
 		
 		main:
 		while (true) {
 			if (warning_counter > 1000) {
 				System.out.println("Achtung, Schleife findet keine Lösung");
+				break main;
 			}
 			
 			origin = p.getHouse().getAllNextStations(tiles).get(random.nextInt(p.getHouse().getAllNextStations(tiles).size()));
 			target = getRandomTileWithExclude(origin);
 			for ( Schedule s : origin.getSchedules() ) {
 				if (s.canGetToTarget(target)) {
-					stationTarget = s.whichStationIsInArea(target.getX(), target.getY());
-					schedule = s;
+					stations = new ArrayList<ChangeStation>();
+					stations.add(new ChangeStation(new Waypoint(origin.getX(), origin.getY()), new SpecificSchedule(s, BusDirection.REVERSE)));
+					stations.add(new ChangeStation(s.whichStationIsInArea(target.getX(), target.getY()), new SpecificSchedule(s, BusDirection.REVERSE)));
+					if (stations.get(0).getStation().isSame(stations.get(1).getStation())) {
+						continue;
+					}
 					break main;
 				}
 			}
+			
+
+			
 			warning_counter++;
 		}
 		
-		ArrayList<ChangeStation> stations = new ArrayList<ChangeStation>();
-		stations.add(new ChangeStation(new Waypoint(origin.getX(), origin.getY()), new SpecificSchedule(schedule, BusDirection.NORMAL)));
-		stations.add(new ChangeStation(stationTarget, new SpecificSchedule(schedule, BusDirection.NORMAL)));
-		stations.get(0).getStation();
-		if (stations.get(0).getStation().isSame(stations.get(1).getStation())) {
-			return;
-		}
+
+		try {
 		Route route = new Route(origin, target, stations);
 		
 		RoutingEvent event = new RoutingEvent(random.nextInt(10), p, route);
-		System.out.println(event);
 		list.add(event);
-		
+		} catch (Exception e) { }
 	}
 	
 	/**

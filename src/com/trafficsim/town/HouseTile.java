@@ -32,7 +32,8 @@ public class HouseTile extends Tile {
 
 	@Override
 	public String toString() {
-		return "Personen: "+Arrays.toString(persons.toArray())+"\n"
+
+		return 	super.toString()+"Personen: "+Arrays.toString(persons.toArray())+"\n"
 				+"Anzahl wohnender Personen: "+numberPersons+"\n";
 	}
 }

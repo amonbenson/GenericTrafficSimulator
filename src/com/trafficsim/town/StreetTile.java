@@ -15,7 +15,7 @@ public class StreetTile extends Tile {
 	
 	private boolean isStation;
 	private ArrayList<Person> waitingPersons;
-	private ArrayList<Schedule> schedules; //gibt die fahrenden Linien an
+	private ArrayList<Schedule> schedules; //gibt die hier fahrenden Linien an, wie z.B. 187 und 282
 	
 
 
@@ -43,6 +43,7 @@ public class StreetTile extends Tile {
 	public void setToStation() {
 		isStation = true;
 		waitingPersons = new ArrayList<Person>();
+		schedules = new ArrayList<Schedule>();
 	}
 
 	/**
@@ -52,6 +53,7 @@ public class StreetTile extends Tile {
 		if (isStation) {
 			isStation = false;
 			waitingPersons.clear();
+			schedules.clear();
 		}
 	}
 	

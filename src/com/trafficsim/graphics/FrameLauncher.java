@@ -1,13 +1,9 @@
 package com.trafficsim.graphics;
 
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.Toolkit;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.util.ArrayList;
 
 import javax.swing.JComponent;
@@ -19,7 +15,6 @@ import com.trafficsim.town.Bus;
 import com.trafficsim.town.BusDirection;
 import com.trafficsim.town.BusStartTime;
 import com.trafficsim.town.HouseTile;
-import com.trafficsim.town.Route;
 import com.trafficsim.town.Schedule;
 import com.trafficsim.town.StreetTile;
 import com.trafficsim.town.Tile;
@@ -29,31 +24,45 @@ import com.trafficsim.town.Waypoint;
 public class FrameLauncher extends JComponent {
 	
 	private JFrame frame;
-	private Simulation simulation;
+	public Simulation simulation;
 	
 	private int tileSize;
 	
 	public FrameLauncher() {
 		// TOWN ERSTELLEN
-		simulation = new Simulation( new Town(7, 7));
-		simulation.getTown().generateTiles(Simulation.randomTown(7, 7));
+		simulation = new Simulation( new Town(7, 6));
+		simulation.getTown().generateTiles(Simulation.randomTown(7, 6));
 		Chromosom c = new Chromosom();
 		ArrayList<Schedule> schedules = new ArrayList<Schedule>();
 		ArrayList<Waypoint> waypoints = new ArrayList<Waypoint>();
-		waypoints.add(new Waypoint(2.5, 2.5));
-		waypoints.add(new Waypoint(2.5, 4.5));
-		waypoints.add(new Waypoint(4.5, 4.5));
-		waypoints.add(new Waypoint(4.5, 2.5));
+		waypoints.add(new Waypoint(0.5, 0.5));
+		waypoints.add(new Waypoint(3.5, 0.5));
+		waypoints.add(new Waypoint(3.5, 3.5));
+		waypoints.add(new Waypoint(3.5, 0.5));
 		ArrayList<BusStartTime> startTimes = new ArrayList<BusStartTime>();
 		startTimes.add(new BusStartTime(0, BusDirection.NORMAL));
 		schedules.add(new Schedule(waypoints, startTimes, 0, "187"));
+		
+		waypoints = new ArrayList<Waypoint>();
+		waypoints.add(new Waypoint(0.5, 5.5));		
+		waypoints.add(new Waypoint(3.5, 5.5));
+		waypoints.add(new Waypoint(3.5, 3.5));
+		waypoints.add(new Waypoint(5.5, 3.5));
+		waypoints.add(new Waypoint(3.5, 3.5));
+		waypoints.add(new Waypoint(3.5, 5.5));		
+		
+		startTimes = new ArrayList<BusStartTime>();
+		startTimes.add(new BusStartTime(0, BusDirection.NORMAL));
+		schedules.add(new Schedule(waypoints, startTimes, 0, "188"));
 		c.setSchedules(schedules);
 		
 		ArrayList<Point> stations = new ArrayList<Point>();
-		stations.add(new Point(4, 2));
-		stations.add(new Point(2, 4));
-		stations.add(new Point(2, 2));
-		stations.add(new Point(4, 4));
+		stations.add(new Point(0, 0));
+		stations.add(new Point(3, 0));
+		stations.add(new Point(3, 3));
+		stations.add(new Point(3, 5));
+		stations.add(new Point(5, 3));
+		stations.add(new Point(0, 5));
 		c.setStations(stations);
 		
 		simulation.getTown().setChromosom(c);
@@ -65,12 +74,7 @@ public class FrameLauncher extends JComponent {
 		
 		frame.add(this);
 		
-		if (Toolkit.getDefaultToolkit().getScreenResolution() >= 240) {
-			frame.setSize(1600, 1600);
-			setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 50));
-		}
-		else frame.setSize(800, 800);
-		
+		frame.setSize(800, 800);
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 		
@@ -133,36 +137,11 @@ public class FrameLauncher extends JComponent {
 	
 	public static void main(String[] args) throws InterruptedException {
 		
-		//Temporärer KeyListener, soll noch ausgelagert werden:
-		class KListener implements KeyListener {
-			private FrameLauncher frame;
 
-			public KListener(FrameLauncher frame) {
-				this.frame = frame;
-			}
-			
-			public void keyTyped(KeyEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			public void keyReleased(KeyEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			public void keyPressed(KeyEvent e) {
-				if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-					frame.simulation.getTown().update();
-					frame.repaint();
-				}
-			}
-		}
 		
 		
 		FrameLauncher frame = new FrameLauncher();
 		frame.setFocusable(true);
-		frame.simulation.getTown().init();
 		frame.addKeyListener(new KListener(frame));
 	}
 	

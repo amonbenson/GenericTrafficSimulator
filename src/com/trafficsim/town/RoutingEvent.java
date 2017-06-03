@@ -26,6 +26,8 @@ public class RoutingEvent extends Event{
 	@Override
 	public void start(Town t) {
 		
+		System.out.println("Routing Event wurde gestartet");
+		
 		if (route.getStations() != null) {
 			Tile startTile = t.getTiles()[(int) route.getStations().get(0).getStation().getX()][(int) route.getStations().get(0).getStation().getY()];
 			if (startTile instanceof StreetTile) {

@@ -59,6 +59,9 @@ public class Schedule {
 		waypoints  = stations; //Momentan gibt es noch kein Wegfindungsalgorithmus, also müssen Stationen immer nebeneinander liegen
 	}
 	
+	public boolean hasSameName(String name) {
+		return name.equalsIgnoreCase(this.name);
+	}
 	
 	public long getMinDelay() {
 		return minDelay;

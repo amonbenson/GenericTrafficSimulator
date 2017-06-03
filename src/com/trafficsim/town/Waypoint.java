@@ -49,7 +49,7 @@ public class Waypoint {
 	}
 	
 	public boolean isSame(Waypoint w) {
-		return (getX() == w.getX() && getY() == w.getY());
+		return ((int) getX() == (int) w.getX() && (int) getY() == (int) w.getY());
 	}
 	
 	@Override
