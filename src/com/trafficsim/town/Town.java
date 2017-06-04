@@ -8,7 +8,6 @@ import java.util.Random;
 import java.util.logging.Logger;
 
 import com.trafficsim.generic.Chromosom;
-import com.trafficsim.pathfinding.RoutingAlgorithm;
 
 public class Town implements Updateable {
 	

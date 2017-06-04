@@ -1,13 +1,10 @@
-package com.trafficsim.pathfinding;
+package com.trafficsim.town;
 
 import java.util.ArrayList;
 
-import com.trafficsim.town.Event;
-import com.trafficsim.town.Person;
-import com.trafficsim.town.Schedule;
-import com.trafficsim.town.StreetTile;
-import com.trafficsim.town.Tile;
-import com.trafficsim.town.Waypoint;
+import com.trafficsim.pathfinding.Graph;
+import com.trafficsim.pathfinding.Vertex;
+import com.trafficsim.pathfinding.VertexEdge;
 
 /**
  * Kümmert sich um den Wegfindungsalgorithmus, welcher den besten Weg für eine Route von Menschen findet
@@ -17,8 +14,8 @@ import com.trafficsim.town.Waypoint;
 public class RoutingAlgorithm {
 	
 	private static Tile[][] tiles;
-	private static Graph stationGraph; //Graph, welcher das Stationennetz darstellt
-	
+	private static Graph stationGraph; //Graph, welcher das Stationennetz darstellt TODO implementieren
+	private static Graph waypointGraph; //Graph, welcher das Stationennetz und Wegpunkte darstellt	
 	
 	public static void init(Tile[][] tiles) {
 		RoutingAlgorithm.tiles = tiles;
@@ -32,7 +29,14 @@ public class RoutingAlgorithm {
 	}
 	
 	
-	
+	/**
+	 * Generiert den Graphen, welcher alle Straßenwegpunkte anzeigt.
+	 * Dafür muss die Funktion in <code>Town</code> <code>applyChromosom</code> schon aufgerufen geworden sein.
+	 */
+	private static void generateStreetGraph(Tile[][] tiles) {
+		waypointGraph = new Graph();
+		
+	}
 	
 	/**
 	 * Generiert den Graphen, welcher alle Stationen anzeigt.
@@ -54,7 +58,6 @@ public class RoutingAlgorithm {
 						Vertex v = new Vertex();
 						v.x = x;
 						v.y = y;
-						v.outnodes = new ArrayList<VertexEdge>();
 						allVertexes.add(v);
 					}
 				}
@@ -106,6 +109,5 @@ public class RoutingAlgorithm {
 
 	
 
-	
 
 }
