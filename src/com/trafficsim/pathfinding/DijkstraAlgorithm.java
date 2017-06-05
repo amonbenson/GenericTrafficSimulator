@@ -49,46 +49,60 @@ public class DijkstraAlgorithm implements Pathfinding {
 					if ( ((Float)ve.vertex.data.get("distance")) == -1 ) {
 						System.out.println("Nachbarknoten auf unendlich: "+ve.vertex.data.get("name") + ", jetzt auf "+val);
 						ve.vertex.data.put("distance", (Float)val);
+						ve.vertex.data.put("before", current);
 					} else { //Eventuell relax?
 						if ( ((Float)ve.vertex.data.get("distance")) > val ) { //Relax?
 							System.out.println("Relaxiere "+ve.vertex.data.get("name") + " auf "+val);
 							ve.vertex.data.put("distance", (Float)val);
+							ve.vertex.data.put("before", current);
 						}
 					}
 				}
 				
 				//Suche den Nachbarknoten mit kleinster Distanz, welcher noch nicht in der visited Liste ist:
+				//Dafür als erstes ein nicht visited Element suchen und als Kontext setzen
 				Vertex tmp = null;
-				for (VertexEdge out : current.outnodes) {
-					if (!visited.contains(out.vertex)) {
-						tmp = out.vertex;
-						tmp.data.put("distance", out.edgeVal + ((Float) current.data.get("distance")));
+				for (Vertex v : visited) {
+					for (VertexEdge out : v.outnodes) {
+						if (!visited.contains(out.vertex)) {
+							tmp = out.vertex;
+						}
+					}
+				}
+				//Nun einen Nachbarknoten finden, welcher nicht visited ist und die kleinste Distanz hat:
+				for (Vertex v : visited) {
+					for (VertexEdge out : v.outnodes) {
+						if (!visited.contains(out.vertex)) {
+							System.out.println("Unbesuchter Knoten gefunden: "+out.vertex.data.get("name"));
+							System.out.println(out.edgeVal + ((Float) current.data.get("distance")) + "?"+ (Float) tmp.data.get("distance"));
+							if (out.edgeVal + ((Float) current.data.get("distance")) < (Float) tmp.data.get("distance")) {
+								tmp = out.vertex;
+								System.out.println("Besseren Nachbarknoten gefunden");
+							}
+						}
 					}
 				}
 				
 
-				for (VertexEdge out : current.outnodes) {
-					if (!visited.contains(out.vertex)) {
-						System.out.println("Unbesuchter Knoten gefunden: "+out.vertex.data.get("name"));
-						System.out.println(out.edgeVal + ((Float) current.data.get("distance")) + "?"+ (Float) tmp.data.get("distance"));
-						if (out.edgeVal + ((Float) current.data.get("distance")) < (Float) tmp.data.get("distance")) {
-							tmp = out.vertex;
-							System.out.println("Besseren Nachbarknoten gefunden");
-						}
-					}
-				}
+
 				System.out.println("Bester Nachbarknoten: "+tmp.data.get("name"));
 				//Markiere diesen als besucht:
 				current = tmp;
 				visited.add(current);
 				System.out.println("Wurde als besucht markiert: "+current.data.get("name"));
-				if ( ((String)current.data.get("name")).equalsIgnoreCase("z") ) {
+				
+				//Prüfen, ob Zielknoten als visited markiert wurde:
+				if (current == end) {
 					System.out.println("FERTIG");
+					System.out.println("Distanz: "+current.data.get("distance"));
+					
+					Vertex c = current;
+					do {
+						System.out.println( c.data.get("name"));
+						c = (Vertex) c.data.get("before");
+					} while ( c != null );
 					return;
 				}
-				
-				
-				System.out.println();
 			}
 
 			
@@ -108,40 +122,42 @@ public class DijkstraAlgorithm implements Pathfinding {
 		Vertex f = new Vertex("f");
 		Vertex g = new Vertex("g");
 		Vertex z = new Vertex("z");
-		s.outnodes.add(new VertexEdge(a, 5));
-		s.outnodes.add(new VertexEdge(b, 2));
-		s.outnodes.add(new VertexEdge(g, 4));
+		s.outnodes.add(new VertexEdge(a, 1));
+		s.outnodes.add(new VertexEdge(b, 3));
+		s.outnodes.add(new VertexEdge(g, 5));
 		
-		a.outnodes.add(new VertexEdge(s, 5));
-		a.outnodes.add(new VertexEdge(b, 1));
-		a.outnodes.add(new VertexEdge(c, 3));
+		a.outnodes.add(new VertexEdge(s, 1));
+		a.outnodes.add(new VertexEdge(b, 14));
+		a.outnodes.add(new VertexEdge(c, 13));
 		
-		b.outnodes.add(new VertexEdge(a, 1));
-		b.outnodes.add(new VertexEdge(s, 2));
-		b.outnodes.add(new VertexEdge(c, 8));
+		b.outnodes.add(new VertexEdge(a, 14));
+		b.outnodes.add(new VertexEdge(s, 3));
+		b.outnodes.add(new VertexEdge(c, 11));
+		b.outnodes.add(new VertexEdge(g, 2));
 		
-		c.outnodes.add(new VertexEdge(a, 3));
-		c.outnodes.add(new VertexEdge(b, 8));
-		c.outnodes.add(new VertexEdge(e, 6));		
+		c.outnodes.add(new VertexEdge(a, 13));
+		c.outnodes.add(new VertexEdge(b, 11));
+		c.outnodes.add(new VertexEdge(e, 9));		
 		c.outnodes.add(new VertexEdge(d, 4));
 		
 		d.outnodes.add(new VertexEdge(c, 4));
-		d.outnodes.add(new VertexEdge(e, 10));
-		d.outnodes.add(new VertexEdge(f, 8));		
-		d.outnodes.add(new VertexEdge(g, 2));		
+		d.outnodes.add(new VertexEdge(e, 7));
+		d.outnodes.add(new VertexEdge(f, 6));		
+		d.outnodes.add(new VertexEdge(g, 10));		
 		
-		e.outnodes.add(new VertexEdge(c, 6));
-		e.outnodes.add(new VertexEdge(d, 10));
-		e.outnodes.add(new VertexEdge(z, 7));		
+		e.outnodes.add(new VertexEdge(c, 9));
+		e.outnodes.add(new VertexEdge(d, 7));
+		e.outnodes.add(new VertexEdge(z, 12));		
 		
-		f.outnodes.add(new VertexEdge(d, 8));
-		f.outnodes.add(new VertexEdge(z, 11));
+		f.outnodes.add(new VertexEdge(d, 6));
+		f.outnodes.add(new VertexEdge(z, 8));
 		
-		g.outnodes.add(new VertexEdge(s, 4));
-		g.outnodes.add(new VertexEdge(d, 2));		
+		g.outnodes.add(new VertexEdge(s, 5));
+		g.outnodes.add(new VertexEdge(d, 10));
+		g.outnodes.add(new VertexEdge(b, 2));
 		
-		z.outnodes.add(new VertexEdge(e, 7));
-		z.outnodes.add(new VertexEdge(f, 11));
+		z.outnodes.add(new VertexEdge(e, 12));
+		z.outnodes.add(new VertexEdge(f, 8));
 		
 		vertexes.add(s);
 		vertexes.add(a);
