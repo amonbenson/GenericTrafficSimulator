@@ -23,10 +23,11 @@ public class RoutingAlgorithm {
 	
 	public static void init(Tile[][] tiles) {
 		RoutingAlgorithm.tiles = tiles;
-		
+
+		generateBigGraph(tiles);
 		generateStationGraph(tiles);
 		generateWaypointGraph(tiles);
-		generateBigGraph(tiles);
+
 
 	}
 	
@@ -47,7 +48,7 @@ public class RoutingAlgorithm {
 		 * Auch das Ziel kann eventuell durch mehrere Stationen erreicht werden, also muss auch hier für jede die beste Route berechnet werden.
 		 */
 		ArrayList<StreetTile> allStationsStart = tileStart.getAllNextStations(tiles);
-		ArrayList<StreetTile> allStationsEnd = tileStart.getAllNextStations(tiles);		
+		ArrayList<StreetTile> allStationsEnd = tileEnd.getAllNextStations(tiles);		
 		PathfindingResult bestResult = null;
 		
 		DijkstraAlgorithm algorithm = new DijkstraAlgorithm();
@@ -61,6 +62,7 @@ public class RoutingAlgorithm {
 					
 					if (vertexStart != null && vertexEnd != null) { //Nur Weg berechnen, wenn beide Stationen im Graphen als Vertex vorliegen
 						PathfindingResult result = algorithm.bestWay(stationGraph, vertexStart, vertexEnd);
+						
 						if (result.length != PathfindingResult.INFINITY) { //Es muss ein Lösungsweg existieren
 							if (bestResult == null) { //Falls noch keine Lösung gefunden wurde, wird diese als beste Lösung betrachtet
 								bestResult = result;
@@ -79,6 +81,12 @@ public class RoutingAlgorithm {
 			System.out.println("Beste Lösung für die Person ist:");
 			System.out.println("Länge: "+bestResult.length);
 			System.out.println("Weg: "+Arrays.toString(bestResult.path.toArray()));
+			System.out.println(tileStart);
+			System.out.println(tileEnd);
+			//Dieses Ergebnis muss nun noch in eine Route umgewandelt werden:
+			for ( Vertex station : bestResult.path ) {
+				
+			}
 		}
 		
 	}
@@ -237,7 +245,7 @@ public class RoutingAlgorithm {
 	 * 
 	 * @see #findStationVertex(int, int)
 	 */
-	public static Vertex findStationVertex(Tile t) {
+	private static Vertex findStationVertex(Tile t) {
 		return findStationVertex(t.getX(), t.getY());
 	}
 	
@@ -245,9 +253,9 @@ public class RoutingAlgorithm {
 	 * Gibt den Vertex aus dem Stationengraph zurück, welcher auf das Tile t verweist.
 	 * Falls der Stationengraph dieses Vertex nicht besitzt, wird <code>null</code> zurückgegeben.
 	 */
-	public static Vertex findStationVertex(int x, int y) {
+	private static Vertex findStationVertex(int x, int y) {
 		for (Vertex v : stationGraph.vertexes) {
-			if (v.equalTo(x, y));
+			if (v.equalTo(x, y)) return v;
 		}
 		return null;
 	}

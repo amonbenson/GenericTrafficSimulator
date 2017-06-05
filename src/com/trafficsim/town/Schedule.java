@@ -3,6 +3,9 @@ package com.trafficsim.town;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import com.trafficsim.pathfinding.Graph;
+import com.trafficsim.pathfinding.Vertex;
+
 /**
  * Repräsentiert eine Buslinie
  */
@@ -192,6 +195,26 @@ public class Schedule {
 	}
 
 
+	/**
+	 * Gibt zurück, mit welcher Richtung der Bus schneller zur angegebenden Station kommt.
+	 */
+	public BusDirection whichDirectionIsFaster(Waypoint start, Waypoint end, Graph g) {
+		//Start- und Endvertex im Graphen finden:
+		Vertex vStart = null, vEnd = null;
+		for ( Vertex v : g.vertexes ) {
+			if ( v.equalTo(start)) {
+				vStart = v;
+			}
+			else if ( v.equalTo(end)) {
+				vEnd = v;
+			}
+			if ( vStart != null && vEnd != null ) {
+				break;
+			}
+		}
+		
+		return null;
+	}
 	
 	@Override
 	public String toString() {

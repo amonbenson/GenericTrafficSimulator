@@ -236,13 +236,15 @@ public class Town implements Updateable {
 				}
 			}
 			
+			RoutingAlgorithm.init(tiles);
+			
 			//Generiert die Routen für die Menschen:
 			generateRoutings();
 			
 			//Sortiert schließlich die fertige Eventliste:
 			sortEvents();
 			
-			RoutingAlgorithm.init(tiles);
+
 		}
 	}
 	
@@ -347,7 +349,9 @@ public class Town implements Updateable {
 			}
 			
 			origin = p.getHouse().getAllNextStations(tiles).get(random.nextInt(p.getHouse().getAllNextStations(tiles).size()));
-			target = getRandomTileWithExclude(origin);
+			target = tiles[tiles.length-1][tiles[0].length-1];
+			RoutingAlgorithm.generateRoutingForPerson(p, origin, target);
+			if (true) return;
 			for ( Schedule s : origin.getSchedules() ) {
 				if (s.canGetToTarget(target)) {
 					stations = new ArrayList<ChangeStation>();
@@ -356,6 +360,7 @@ public class Town implements Updateable {
 					if (stations.get(0).getStation().isSame(stations.get(1).getStation())) {
 						continue;
 					}
+
 					break main;
 				}
 			}

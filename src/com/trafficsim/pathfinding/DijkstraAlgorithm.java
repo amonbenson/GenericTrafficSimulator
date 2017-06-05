@@ -89,6 +89,7 @@ public class DijkstraAlgorithm implements Pathfinding {
 				}
 				
 				if (tmp == null) { //Es existiert kein Weg
+					System.out.println("Kein Weg gefunden");
 					return PathfindingResult.getEmptyResult();
 				}
 
