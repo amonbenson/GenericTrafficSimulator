@@ -1,5 +1,7 @@
 package com.trafficsim.pathfinding;
 
+import java.util.ArrayList;
+
 public interface Pathfinding {
-	public void bestWay(Graph g, Vertex start, Vertex end);
+	public ArrayList<Vertex> bestWay(Graph g, Vertex start, Vertex end);
 }

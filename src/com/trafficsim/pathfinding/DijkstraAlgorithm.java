@@ -1,27 +1,36 @@
 package com.trafficsim.pathfinding;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 
 public class DijkstraAlgorithm implements Pathfinding {
 
-	public void bestWay(Graph g, Vertex start, Vertex end) {
+	/**
+	 * Sucht den optimalen Weg von <code>start</code> nach <code>end</code> und gibt diesen zurück.
+	 * Dafür wird eine Liste mit <code>Vertex</code> (Knotenpunkte) zurückgegeben, welche die beste Route von <code>start</code> nach <code>end</code> repräsentiert.
+	 * 
+	 * Existiert kein Weg, ist die zurückgegebende Liste leer (size = 0).
+	 * 
+	 * Existiert ein Weg, wird auch der Start- und Endvertex zurückgegeben. 
+	 * Dabei ist der Startvertex immer das erste Element der Rückgabe, der Endvertex immer das letzte Element.
+	 * 
+	 * Ist Start-/Endvertex nicht im Graphen enthalten, wird eine leere Liste zurückgegeben.
+	 */
+	public ArrayList<Vertex> bestWay(Graph g, Vertex start, Vertex end) {
 		if (g.vertexes.contains(start) && g.vertexes.contains((end))) {
 			
 			HashSet<Vertex> visited = new HashSet<Vertex>();
 			Vertex current;
-			//Den Graph ersetzen, dabei alle Entfernungen auf -1 (unendlich) und den vorherigen Knoten auf null setzen:
-			ArrayList<Vertex> dijkstraGraph = new ArrayList<Vertex>();
+			//Alle Entfernungen auf -1 (unendlich) und den vorherigen Knoten auf null setzen:
 			for (Vertex v : g.vertexes) {
-				Vertex dv = v;
-				dv.data.put("distance", new Float(-1f));
-				dv.data.put("before", null);
-				dijkstraGraph.add(dv);
+				v.data.put("distance", new Float(-1f));
+				v.data.put("before", null);
 			}
 			
 			Vertex dStart = null;
 			//Startelement aus dijkstraGraph finden und setzen:
-			for (Vertex dv : dijkstraGraph) {
+			for (Vertex dv : g.vertexes) {
 				if (dv.equalTo(start)) {
 					dStart = dv;
 					break;
@@ -34,25 +43,20 @@ public class DijkstraAlgorithm implements Pathfinding {
 				current = dStart;
 			} else {
 				System.out.println("Fehler im Dijkstra-Algorithmus, Startelement konnte in neuer Liste nicht gefunden werden.");
-				return;
+				return new ArrayList<Vertex>();
 			}
-			
-			System.out.println("Los");
-			
+
 			while (visited.size() != g.vertexes.size()) {
 
 				
-				System.out.println("Berechne Distanzen neu");
 				//Neue Distanzen berechnen:
 				for ( VertexEdge ve : current.outnodes) {
 					float val = ve.edgeVal + (Float) current.data.get("distance");
 					if ( ((Float)ve.vertex.data.get("distance")) == -1 ) {
-						System.out.println("Nachbarknoten auf unendlich: "+ve.vertex.data.get("name") + ", jetzt auf "+val);
 						ve.vertex.data.put("distance", (Float)val);
 						ve.vertex.data.put("before", current);
 					} else { //Eventuell relax?
 						if ( ((Float)ve.vertex.data.get("distance")) > val ) { //Relax?
-							System.out.println("Relaxiere "+ve.vertex.data.get("name") + " auf "+val);
 							ve.vertex.data.put("distance", (Float)val);
 							ve.vertex.data.put("before", current);
 						}
@@ -73,104 +77,44 @@ public class DijkstraAlgorithm implements Pathfinding {
 				for (Vertex v : visited) {
 					for (VertexEdge out : v.outnodes) {
 						if (!visited.contains(out.vertex)) {
-							System.out.println("Unbesuchter Knoten gefunden: "+out.vertex.data.get("name"));
-							System.out.println(out.edgeVal + ((Float) current.data.get("distance")) + "?"+ (Float) tmp.data.get("distance"));
 							if (out.edgeVal + ((Float) current.data.get("distance")) < (Float) tmp.data.get("distance")) {
 								tmp = out.vertex;
-								System.out.println("Besseren Nachbarknoten gefunden");
 							}
 						}
 					}
 				}
 				
+				if (tmp == null) { //Es existiert kein Weg
+					return new ArrayList<Vertex>();
+				}
 
-
-				System.out.println("Bester Nachbarknoten: "+tmp.data.get("name"));
 				//Markiere diesen als besucht:
 				current = tmp;
 				visited.add(current);
-				System.out.println("Wurde als besucht markiert: "+current.data.get("name"));
 				
 				//Prüfen, ob Zielknoten als visited markiert wurde:
 				if (current == end) {
-					System.out.println("FERTIG");
-					System.out.println("Distanz: "+current.data.get("distance"));
+					ArrayList<Vertex> back = new ArrayList<Vertex>();
 					
 					Vertex c = current;
 					do {
-						System.out.println( c.data.get("name"));
+						back.add(c);
 						c = (Vertex) c.data.get("before");
 					} while ( c != null );
-					return;
+					//Alle Daten löschen:
+					for ( Vertex v : g.vertexes ) {
+						v.clearData();
+					}
+					Collections.reverse(back);
+					return back;
 				}
 			}
-
-			
+			System.out.println("Error in DijkstraAlgorithm");
+			return new ArrayList<Vertex>();
+		} else { //Start- oder Endknoten nicht im Graphen
+			System.out.println("Warnung, Startvertex und/oder Endvertex nicht im Graphen enthalten.");
+			return new ArrayList<Vertex>();
 		}
 	}
 
-	
-	public static void main(String[] args) {
-		Graph graph = new Graph();
-		ArrayList<Vertex> vertexes = new ArrayList<Vertex>();
-		Vertex s = new Vertex("s");
-		Vertex a = new Vertex("a");
-		Vertex b = new Vertex("b");
-		Vertex c = new Vertex("c");
-		Vertex d = new Vertex("d");
-		Vertex e = new Vertex("e");
-		Vertex f = new Vertex("f");
-		Vertex g = new Vertex("g");
-		Vertex z = new Vertex("z");
-		s.outnodes.add(new VertexEdge(a, 1));
-		s.outnodes.add(new VertexEdge(b, 3));
-		s.outnodes.add(new VertexEdge(g, 5));
-		
-		a.outnodes.add(new VertexEdge(s, 1));
-		a.outnodes.add(new VertexEdge(b, 14));
-		a.outnodes.add(new VertexEdge(c, 13));
-		
-		b.outnodes.add(new VertexEdge(a, 14));
-		b.outnodes.add(new VertexEdge(s, 3));
-		b.outnodes.add(new VertexEdge(c, 11));
-		b.outnodes.add(new VertexEdge(g, 2));
-		
-		c.outnodes.add(new VertexEdge(a, 13));
-		c.outnodes.add(new VertexEdge(b, 11));
-		c.outnodes.add(new VertexEdge(e, 9));		
-		c.outnodes.add(new VertexEdge(d, 4));
-		
-		d.outnodes.add(new VertexEdge(c, 4));
-		d.outnodes.add(new VertexEdge(e, 7));
-		d.outnodes.add(new VertexEdge(f, 6));		
-		d.outnodes.add(new VertexEdge(g, 10));		
-		
-		e.outnodes.add(new VertexEdge(c, 9));
-		e.outnodes.add(new VertexEdge(d, 7));
-		e.outnodes.add(new VertexEdge(z, 12));		
-		
-		f.outnodes.add(new VertexEdge(d, 6));
-		f.outnodes.add(new VertexEdge(z, 8));
-		
-		g.outnodes.add(new VertexEdge(s, 5));
-		g.outnodes.add(new VertexEdge(d, 10));
-		g.outnodes.add(new VertexEdge(b, 2));
-		
-		z.outnodes.add(new VertexEdge(e, 12));
-		z.outnodes.add(new VertexEdge(f, 8));
-		
-		vertexes.add(s);
-		vertexes.add(a);
-		vertexes.add(b);
-		vertexes.add(c);
-		vertexes.add(d);
-		vertexes.add(e);
-		vertexes.add(f);
-		vertexes.add(g);
-		vertexes.add(z);
-		graph.vertexes = vertexes;
-		
-		DijkstraAlgorithm algorithm = new DijkstraAlgorithm();
-		algorithm.bestWay(graph, s, z);
-	}
 }

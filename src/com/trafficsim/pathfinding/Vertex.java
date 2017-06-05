@@ -19,12 +19,6 @@ public class Vertex {
 		data = new HashMap<String, Object>();
 	}
 	
-	public Vertex(String name) {
-		outnodes = new ArrayList<VertexEdge>();
-		data = new HashMap<String, Object>();
-		data.put("name", name);
-	}
-	
 	public Vertex(Vertex v) {
 		outnodes = v.outnodes;
 		x = v.x;
@@ -45,6 +39,14 @@ public class Vertex {
 	public boolean equalTo(Waypoint w) {
 		return ((int) w.getX() == x && (int) w.getY() == y);
 	}
+	
+	/**
+	 * Löscht alle Elemente aus <code>data</code>
+	 */
+	public void clearData() {
+		data.clear();
+	}
+	
 	/**
 	 * Gibt <code>true</code> zurück, wenn der Knoten <code>v</code> (Kontrolle nach Koordinaten) als Referenzknoten vorhanden ist
 	 * Ansonsten wird <code>false</code> zurückgegeben.
@@ -56,13 +58,5 @@ public class Vertex {
 		return false;
 	}
 	
-	@Override
-	public String toString() {
-		if (data.containsKey("name")) {
-		return (String) data.get("name");
-		} else {
-			return super.toString();
-		}
-	}
 
 }
