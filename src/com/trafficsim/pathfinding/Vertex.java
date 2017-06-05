@@ -26,6 +26,13 @@ public class Vertex {
 		data = v.data;
 	}
 	
+	public Vertex(int x, int y){
+		this.outnodes = new ArrayList<VertexEdge>();
+		this.x = x;
+		this.y = y;
+		data = new HashMap<String, Object>();
+	}
+	
 	public Vertex(ArrayList<VertexEdge> outnodes, int x, int y) {
 		this.outnodes = outnodes;
 		this.x = x;
@@ -38,6 +45,9 @@ public class Vertex {
 	}
 	public boolean equalTo(Waypoint w) {
 		return ((int) w.getX() == x && (int) w.getY() == y);
+	}
+	public boolean equalTo(int x, int y) {
+		return (this.x == x && this.y == y);
 	}
 	
 	/**

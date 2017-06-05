@@ -16,8 +16,12 @@ public class DijkstraAlgorithm implements Pathfinding {
 	 * Dabei ist der Startvertex immer das erste Element der Rückgabe, der Endvertex immer das letzte Element.
 	 * 
 	 * Ist Start-/Endvertex nicht im Graphen enthalten, wird eine leere Liste zurückgegeben.
+	 * 
+	 * 
+	 * Die Rückgabe erfolgt immer im <code>PathfindingResult</code>container, welche eine Liste mit dem Lösungsweg sowie die benötigte Distanz enthält.
+	 * Falls kein Lösungsweg existiert, beträgt die Distanz -1.
 	 */
-	public ArrayList<Vertex> bestWay(Graph g, Vertex start, Vertex end) {
+	public PathfindingResult bestWay(Graph g, Vertex start, Vertex end) {
 		if (g.vertexes.contains(start) && g.vertexes.contains((end))) {
 			
 			HashSet<Vertex> visited = new HashSet<Vertex>();
@@ -43,7 +47,7 @@ public class DijkstraAlgorithm implements Pathfinding {
 				current = dStart;
 			} else {
 				System.out.println("Fehler im Dijkstra-Algorithmus, Startelement konnte in neuer Liste nicht gefunden werden.");
-				return new ArrayList<Vertex>();
+				return PathfindingResult.getEmptyResult();
 			}
 
 			while (visited.size() != g.vertexes.size()) {
@@ -85,7 +89,7 @@ public class DijkstraAlgorithm implements Pathfinding {
 				}
 				
 				if (tmp == null) { //Es existiert kein Weg
-					return new ArrayList<Vertex>();
+					return PathfindingResult.getEmptyResult();
 				}
 
 				//Markiere diesen als besucht:
@@ -95,6 +99,7 @@ public class DijkstraAlgorithm implements Pathfinding {
 				//Prüfen, ob Zielknoten als visited markiert wurde:
 				if (current == end) {
 					ArrayList<Vertex> back = new ArrayList<Vertex>();
+					float length = (Float) current.data.get("distance");
 					
 					Vertex c = current;
 					do {
@@ -106,15 +111,14 @@ public class DijkstraAlgorithm implements Pathfinding {
 						v.clearData();
 					}
 					Collections.reverse(back);
-					return back;
+					return new PathfindingResult(length, back);
 				}
 			}
 			System.out.println("Error in DijkstraAlgorithm");
-			return new ArrayList<Vertex>();
+			return PathfindingResult.getEmptyResult();
 		} else { //Start- oder Endknoten nicht im Graphen
 			System.out.println("Warnung, Startvertex und/oder Endvertex nicht im Graphen enthalten.");
-			return new ArrayList<Vertex>();
+			return PathfindingResult.getEmptyResult();
 		}
 	}
-
 }

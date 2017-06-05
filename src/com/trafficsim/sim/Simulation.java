@@ -56,7 +56,7 @@ public class Simulation {
 		float[][][] townList = new float[width][height][2];
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
-				if ( y == 3 || x == 3 || y == 0 || y == 5) { //Straße
+				if ( y == 3 || x == 3 || y == 0 || y == 5 || x == 5 || x == 1) { //Straße
 					townList[x][y][0] = 0;
 					townList[x][y][1] = 0.3f;
 				} else { //Haus
