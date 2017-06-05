@@ -1,6 +1,7 @@
 package com.trafficsim.sim;
 
 import java.util.Random;
+import java.util.logging.Logger;
 
 import com.trafficsim.town.TimeHelper;
 import com.trafficsim.town.Town;
@@ -13,6 +14,7 @@ public class Simulation {
 	
 	private Town town = null;
 	
+	public static Logger logger = Logger.getGlobal();
 	
 	public Simulation() {
 		this(null);

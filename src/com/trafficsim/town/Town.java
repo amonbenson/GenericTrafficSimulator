@@ -12,9 +12,6 @@ import com.trafficsim.generic.Chromosom;
 public class Town implements Updateable {
 	
 
-
-
-	public static Logger logger = Logger.getGlobal();
 	
 	
 	
