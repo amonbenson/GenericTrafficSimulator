@@ -31,7 +31,8 @@ public class FrameLauncher extends JComponent {
 	public FrameLauncher() {
 		// TOWN ERSTELLEN
 		simulation = new Simulation( new Town(7, 6));
-		simulation.getTown().generateTiles(Simulation.randomTown(7, 6));
+		simulation.getTown().generateTiles(Simulation.randomTown(7, 6)); //Landschaftskarte
+		
 		Chromosom c = new Chromosom();
 		ArrayList<Schedule> schedules = new ArrayList<Schedule>();
 		ArrayList<Waypoint> waypoints = new ArrayList<Waypoint>();
@@ -40,7 +41,7 @@ public class FrameLauncher extends JComponent {
 		waypoints.add(new Waypoint(3.5, 3.5));
 		waypoints.add(new Waypoint(3.5, 0.5));
 		ArrayList<BusStartTime> startTimes = new ArrayList<BusStartTime>();
-		startTimes.add(new BusStartTime(0, BusDirection.NORMAL));
+		startTimes.add(new BusStartTime(5, BusDirection.NORMAL));
 		schedules.add(new Schedule(waypoints, startTimes, 0, "187"));
 		
 		waypoints = new ArrayList<Waypoint>();

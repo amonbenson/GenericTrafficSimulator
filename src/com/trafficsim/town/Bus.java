@@ -99,7 +99,6 @@ public class Bus extends Entity {
 						if (!p.getRoute().isFinished()) {
 							st.addPerson(p);							
 						}
-
 						iterator.remove();
 					}
 				}

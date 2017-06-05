@@ -245,7 +245,6 @@ public class Town implements Updateable {
 			sortEvents();
 			
 			RoutingAlgorithm.init(tiles);
-			System.out.println("Qait");
 		}
 	}
 	
@@ -346,7 +345,6 @@ public class Town implements Updateable {
 		main:
 		while (true) {
 			if (warning_counter > 1000) {
-				System.out.println("Achtung, Schleife findet keine Lösung");
 				break main;
 			}
 			
