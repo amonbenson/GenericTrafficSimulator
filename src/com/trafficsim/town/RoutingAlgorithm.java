@@ -23,8 +23,20 @@ public class RoutingAlgorithm {
 	}
 	
 
-
-	public static void generateRoutingForPerson(Person p, ArrayList<Event> list) {
+	/**
+	 * 
+	 * Generiert das RoutingEvent für eine bestimmte Person
+	 *
+	 * @param p
+	 * @param tileStart
+	 * @param tileEnd
+	 */
+	public static void generateRoutingForPerson(Person p, Tile tileStart, Tile tileEnd) {
+		/*
+		 * Als erstes muss für jede im Einzugsbereich liegende Station die beste Route berechnet werden.
+		 * Daraus kann ermittelt werden, welche Station verwendet werden soll (die Route mit der geringsten Länge ist die beste).
+		 */
+		ArrayList<StreetTile> allStations = tileStart.getAllNextStations(tiles);
 		
 	}
 	
@@ -102,7 +114,6 @@ public class RoutingAlgorithm {
 			//Dieses Element schließlich zum stationGraph hinzufügen
 			stationGraph.vertexes.add(v);
 		}
-		System.out.println("Done");
 	}
 	
 	
