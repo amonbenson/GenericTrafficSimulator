@@ -8,6 +8,7 @@ import java.util.Random;
 import java.util.logging.Logger;
 
 import com.trafficsim.generic.Chromosom;
+import com.trafficsim.sim.Simulation;
 
 public class Town implements Updateable {
 	
@@ -68,7 +69,7 @@ public class Town implements Updateable {
 				} else if (list[x][y][0] == 1) { //Haus
 					tiles[x][y] = new HouseTile(x, y, (int) list[x][y][1]);
 				} else {
-					logger.warning("Liste["+x+"]["+y+"][0] ist kein gültiger Typ! ("+list[x][y][0]+")");
+					Simulation.logger.warning("Liste["+x+"]["+y+"][0] ist kein gültiger Typ! ("+list[x][y][0]+")");
 				}
 			}
 		}
@@ -212,7 +213,7 @@ public class Town implements Updateable {
 			//Bushaltestellen setzen:
 			for ( Point p : chromosom.getStations() ) {
 				if (! (tiles[p.x][p.y] instanceof StreetTile) ) {
-					logger.warning("Achtung, Station im Chromosom verweist nicht auf eine gültige Straßenkoordinate!"+" X: "+p.x+" Y: "+p.y);
+					Simulation.logger.warning("Achtung, Station im Chromosom verweist nicht auf eine gültige Straßenkoordinate!"+" X: "+p.x+" Y: "+p.y);
 				} else { //korrekte Koordinate
 					StreetTile street = (StreetTile) tiles[p.x][p.y];
 					street.setToStation();
@@ -225,7 +226,7 @@ public class Town implements Updateable {
 				//Jede Station muss wissen, dass hier diese Linie fährt:
 				for ( Waypoint w : schedule.getStations() ) {
 					if (!(tiles[(int) (w.getX())][(int) (w.getY())] instanceof StreetTile)) {
-						logger.warning("Busstation verweist nicht auf eine Straße");
+						Simulation.logger.warning("Busstation verweist nicht auf eine Straße");
 					} else {
 						StreetTile station = (StreetTile) tiles[(int) (w.getX())][(int) (w.getY())];
 						if (!station.hasSchedule(schedule)) { //Diese Linie nur hinzufügen, wenn diese noch nicht existiert

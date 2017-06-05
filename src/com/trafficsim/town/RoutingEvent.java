@@ -1,5 +1,7 @@
 package com.trafficsim.town;
 
+import com.trafficsim.sim.Simulation;
+
 /**
  * Repräsentiert ein RoutingEvent, welches eine Aktivierungszeitpunkt sowie eine Route hat.
  * 
@@ -36,14 +38,14 @@ public class RoutingEvent extends Event{
 					person.setRoute(route);
 					st.addPerson(person);
 				} else {
-					Town.logger.warning("Startfield isn't a station (but a street)");
+					Simulation.logger.warning("Startfield isn't a station (but a street)");
 				}
 			} else {
-				Town.logger.warning("Startfield isn't a street");
+				Simulation.logger.warning("Startfield isn't a street");
 			}
 			
 		} else {
-			Town.logger.warning("Route is null");
+			Simulation.logger.warning("Route is null");
 		}
 	}
 	
