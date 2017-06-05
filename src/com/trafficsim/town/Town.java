@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Random;
-import java.util.logging.Logger;
 
 import com.trafficsim.generic.Chromosom;
 import com.trafficsim.sim.Simulation;
@@ -335,7 +334,29 @@ public class Town implements Updateable {
 	 */
 	private void generateRoutingForPerson(Person p, ArrayList<Event> list) {
 		
+		if (random.nextBoolean()) {
+			StreetTile origin = (StreetTile) tiles[0][0];
+			Tile target = tiles[5][3];
+			ArrayList<ChangeStation> stations = new ArrayList<ChangeStation>();		
+			stations.add(new ChangeStation(new Waypoint(0,0), origin.getSchedules().get(0).getScheduleNormal()));
+			stations.add(new ChangeStation(new Waypoint(3,3), ((StreetTile) tiles[5][3]).getSchedules().get(0).getScheduleNormal()));
+			stations.add(new ChangeStation(new Waypoint(5,3), ((StreetTile) tiles[5][3]).getSchedules().get(0).getScheduleNormal()));
+			Route r = new Route(origin, target, stations);
+			RoutingEvent re = new RoutingEvent(15, p, r);
+			list.add(re);
+		} else {
+			StreetTile origin = (StreetTile) tiles[0][0];
+			Tile target = tiles[5][3];
+			ArrayList<ChangeStation> stations = new ArrayList<ChangeStation>();		
+			stations.add(new ChangeStation(new Waypoint(0,0), origin.getSchedules().get(0).getScheduleNormal()));
+			stations.add(new ChangeStation(new Waypoint(3,3), ((StreetTile) tiles[5][3]).getSchedules().get(0).getScheduleNormal()));
+			stations.add(new ChangeStation(new Waypoint(0,5), ((StreetTile) tiles[5][3]).getSchedules().get(0).getScheduleNormal()));
+			Route r = new Route(origin, target, stations);
+			RoutingEvent re = new RoutingEvent(15, p, r);
+			list.add(re);
+		}
 		
+		/*
 		int warning_counter = 0;
 		StreetTile origin = null;
 		Tile target = null;
@@ -350,8 +371,6 @@ public class Town implements Updateable {
 			
 			origin = p.getHouse().getAllNextStations(tiles).get(random.nextInt(p.getHouse().getAllNextStations(tiles).size()));
 			target = tiles[tiles.length-1][tiles[0].length-1];
-			RoutingAlgorithm.generateRoutingForPerson(p, origin, target);
-			if (true) return;
 			for ( Schedule s : origin.getSchedules() ) {
 				if (s.canGetToTarget(target)) {
 					stations = new ArrayList<ChangeStation>();
@@ -377,6 +396,7 @@ public class Town implements Updateable {
 		RoutingEvent event = new RoutingEvent(random.nextInt(10), p, route);
 		list.add(event);
 		} catch (Exception e) { }
+		*/
 	}
 	
 	/**

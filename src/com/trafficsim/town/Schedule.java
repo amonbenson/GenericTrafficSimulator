@@ -62,8 +62,8 @@ public class Schedule {
 		waypoints  = stations; //Momentan gibt es noch kein Wegfindungsalgorithmus, also müssen Stationen immer nebeneinander liegen
 	}
 	
-	public boolean hasSameName(String name) {
-		return name.equalsIgnoreCase(this.name);
+	public boolean hasSameName(String n) {
+		return this.name.equalsIgnoreCase(n);
 	}
 	
 	public long getMinDelay() {
@@ -83,6 +83,14 @@ public class Schedule {
 	 */
 	public int getWaypointSize() {
 		return waypoints.size();
+	}
+	
+	public SpecificSchedule getScheduleNormal() {
+		return scheduleNormal;
+	}
+	
+	public SpecificSchedule getScheduleReverse() {
+		return scheduleReverse;
 	}
 	
 	/**
@@ -113,6 +121,17 @@ public class Schedule {
 		} else {
 			return stations.get(index+1);
 		}
+	}
+	
+	/**
+	 * Gibt den Waypoint mit den Koordinaten zurück, falls dieser vorhanden ist.
+	 * Ansonsten wird <code>null</code> zurückgegeben.
+	 */
+	public Waypoint searchWaypoint(int x, int y) {
+		for ( Waypoint w : waypoints ) {
+			if (w.isSame(x, y)) return w;
+		}
+		return null;
 	}
 	
 	/**
@@ -198,22 +217,34 @@ public class Schedule {
 	/**
 	 * Gibt zurück, mit welcher Richtung der Bus schneller zur angegebenden Station kommt.
 	 */
-	public BusDirection whichDirectionIsFaster(Waypoint start, Waypoint end, Graph g) {
-		//Start- und Endvertex im Graphen finden:
-		Vertex vStart = null, vEnd = null;
-		for ( Vertex v : g.vertexes ) {
-			if ( v.equalTo(start)) {
-				vStart = v;
-			}
-			else if ( v.equalTo(end)) {
-				vEnd = v;
-			}
-			if ( vStart != null && vEnd != null ) {
-				break;
-			}
-		}
+	public BusDirection whichDirectionIsFaster(Waypoint start, Waypoint end) {
+		float timeNormal = 0, timeReverse = 0;
+		int indexStart = waypoints.indexOf(start);
+		int indexEnd = waypoints.indexOf(end);
 		
-		return null;
+		//Messe Zeit für BusDirection.NORMAL
+		int i = 0;
+		do {
+			int sizeOfWay = 0;
+			sizeOfWay = Math.max( 
+					Math.abs((int) (getWaypoint((indexStart+i)%waypoints.size()).getX()) - (int) (getWaypoint((indexStart+i+1)%waypoints.size()).getX())),
+					Math.abs((int) (getWaypoint((indexStart+i)%waypoints.size()).getY()) - (int) (getWaypoint((indexStart+i+1)%waypoints.size()).getY()))
+					);
+			timeNormal += sizeOfWay;
+			i++;
+		} while (indexEnd == (indexStart+i)%waypoints.size());
+		//Messe Zeit für BusDirection.REVERSE
+		i = 0;
+		do {
+			int sizeOfWay = 0;
+			sizeOfWay = Math.max( 
+					Math.abs((int) (getWaypointReverse((indexStart+i)%waypoints.size()).getX()) - (int) (getWaypointReverse((indexStart+i+1)%waypoints.size()).getX())),
+					Math.abs((int) (getWaypointReverse((indexStart+i)%waypoints.size()).getY()) - (int) (getWaypointReverse((indexStart+i+1)%waypoints.size()).getY()))
+					);
+			timeReverse += sizeOfWay;
+			i++;
+		} while (indexEnd == (indexStart+i)%waypoints.size());
+		return ( timeNormal <= timeReverse ? BusDirection.NORMAL : BusDirection.REVERSE );
 	}
 	
 	@Override

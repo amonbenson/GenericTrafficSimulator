@@ -84,8 +84,11 @@ public class RoutingAlgorithm {
 			System.out.println(tileStart);
 			System.out.println(tileEnd);
 			//Dieses Ergebnis muss nun noch in eine Route umgewandelt werden:
-			for ( Vertex station : bestResult.path ) {
-				
+			
+			for ( int i=0; i<bestResult.path.size()-1;i++ ) {
+				Schedule s = ((StreetTile)tiles[bestResult.path.get(i).x][bestResult.path.get(i).y]).getSchedules().get(0);
+				System.out.println(s.whichDirectionIsFaster(s.searchWaypoint(bestResult.path.get(i).x, bestResult.path.get(i).y), 
+						s.searchWaypoint(bestResult.path.get(i+1).x, bestResult.path.get(i+1).y)));
 			}
 		}
 		

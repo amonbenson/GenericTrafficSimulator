@@ -63,7 +63,7 @@ public class Waypoint {
 	 * Rundet die angegebenen Koordinaten auf Integerwerte.
 	 */
 	public boolean isSame(int x, int y) {
-		return ((int) getX() == (int) x && (int) getY() == y);		
+		return ((int) getX() == x && (int) getY() == y);		
 	}
 	
 	@Override
