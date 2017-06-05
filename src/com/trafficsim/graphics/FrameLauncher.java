@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.Toolkit;
 import java.util.ArrayList;
 
 import javax.swing.JComponent;
@@ -77,9 +78,11 @@ public class FrameLauncher {
 		gui.setSimulation(simulation);
 		frame.add(gui);
 
-		//frame.setSize(800, 800);
-		frame.setSize(1500, 1500);
-		gui.setFont(gui.getFont().deriveFont(40.0f));
+		frame.setSize(800, 800);
+		if (Toolkit.getDefaultToolkit().getScreenResolution() >= 240) { // High DPI
+			frame.setSize(frame.getWidth() * 2, frame.getHeight() * 2);
+			gui.setFont(gui.getFont().deriveFont(gui.getFont().getSize() * 4.0f));
+		}
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 		
