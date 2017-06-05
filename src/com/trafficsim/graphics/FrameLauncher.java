@@ -21,12 +21,12 @@ import com.trafficsim.town.Tile;
 import com.trafficsim.town.Town;
 import com.trafficsim.town.Waypoint;
 
-public class FrameLauncher extends JComponent {
+public class FrameLauncher {
 	
 	private JFrame frame;
-	public Simulation simulation;
+	private GUI gui;
 	
-	private int tileSize;
+	public Simulation simulation;
 	
 	public FrameLauncher() {
 		// TOWN ERSTELLEN
@@ -73,78 +73,21 @@ public class FrameLauncher extends JComponent {
 		frame = new JFrame("Generic Traffic Simulator");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		frame.add(this);
-		
-		frame.setSize(800, 800);
+		gui = new GUI();
+		gui.setSimulation(simulation);
+		frame.add(gui);
+
+		//frame.setSize(800, 800);
+		frame.setSize(1500, 1500);
+		gui.setFont(gui.getFont().deriveFont(40.0f));
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 		
-		tileSize = Math.min(getWidth() / simulation.getTown().getSizeX(), getHeight() / simulation.getTown().getSizeY());
+		gui.initListeners();
 	}
-	
-	public void paintComponent(Graphics graphics) {
-		Graphics2D g = (Graphics2D) graphics;
-		
-		Tile[][] tiles = simulation.getTown().getTiles();
-		
-		for (int x = 0; x < simulation.getTown().getSizeX(); x++) {
-			for (int y = 0; y < simulation.getTown().getSizeY(); y++) {
-				Tile tile = tiles[x][y];
-				int dx = (int) (x * tileSize);
-				int dy = (int) (y * tileSize);
-				int ds = (int) tileSize + 1;
-				
-				if (tile instanceof StreetTile) {
-					StreetTile s = (StreetTile) tile;
-					if (s.isStation()) {
-						g.setColor(Color.LIGHT_GRAY);
-					} else {
-						g.setColor(Color.gray);
-					}
-				}
-				if (tile instanceof HouseTile) {
-					g.setColor(Color.green);
-				}
-				g.fillRect(dx, dy, ds, ds);
-				if (tile instanceof HouseTile) {
-					g.setColor(Color.white);
-					g.drawString(String.valueOf(((HouseTile) tile).getNumberPersons()), dx+(int)(tileSize/2), dy+(int)(tileSize/2));
-				} else if (tile instanceof StreetTile) {
-					g.setColor(Color.white);
-					g.drawString(String.valueOf(((StreetTile) tile).getPersons().size()), dx+(int)(tileSize/2), dy+(int)(tileSize/2));
-				}
-				
-				g.setColor(Color.black);
-				g.drawRect(dx, dy, ds, ds);
-			}
-		}
-		
-		//Busse zeichnen:
-		for (Bus b : simulation.getTown().getBusses()) {
-			g.setColor(Color.black);
-			g.fillRect((int) (b.getX() * tileSize - tileSize / 10), (int) (b.getY() * tileSize - tileSize / 10), 
-					(int) (tileSize / 5), (int) (tileSize / 5) );
-			g.setColor(Color.white);
-			g.drawString("X:"+b.getX(), (int) (b.getX() * tileSize), (int) (b.getY() * tileSize));
-			g.drawString("Y:"+b.getY(), (int) (b.getX() * tileSize), (int) (b.getY() * tileSize)+20);
-			
-		}
-	
-		
-
-	}
-	
-	
 	
 	public static void main(String[] args) throws InterruptedException {
-		
-
-		
-		
-		FrameLauncher frame = new FrameLauncher();
-		frame.setFocusable(true);
-		frame.addKeyListener(new KListener(frame));
+		new FrameLauncher();
 	}
 	
-
 }

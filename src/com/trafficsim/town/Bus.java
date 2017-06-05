@@ -227,7 +227,7 @@ public class Bus extends Entity {
 	
 	
 	public static double getDefaultSpeed() {
-		return 0.3d;
+		return 0.05d;
 	}
 	
 	public static int getDefaultMaxPersons() {
