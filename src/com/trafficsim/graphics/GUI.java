@@ -11,12 +11,14 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.ListIterator;
 import java.util.logging.Level;
 
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 
 import com.trafficsim.sim.Simulation;
+import com.trafficsim.town.Bus;
 
 public class GUI extends JComponent implements KeyListener, MouseListener, MouseMotionListener {
 	
@@ -115,52 +117,52 @@ public class GUI extends JComponent implements KeyListener, MouseListener, Mouse
 
 	public void mouseClicked(MouseEvent e) {
 		// ui windows
-		Iterator<UIWindow> it = windows.iterator();
-		while (it.hasNext()) {
-			if (it.next().addMouseInputEvent(e, MouseEventType.CLICKED)) return;
+		ListIterator<UIWindow> it = windows.listIterator(windows.size());
+		while (it.hasPrevious()) {
+			if (it.previous().addMouseInputEvent(e, MouseEventType.CLICKED)) return;
 		}
 		
-		
+		townRenderer.addMouseInputEvent(e, MouseEventType.CLICKED);
 	}
 
 	public void mousePressed(MouseEvent e) {
 		// ui windows
-		Iterator<UIWindow> it = windows.iterator();
-		while (it.hasNext()) {
-			if (it.next().addMouseInputEvent(e, MouseEventType.PRESSED)) return;
+		ListIterator<UIWindow> it = windows.listIterator(windows.size());
+		while (it.hasPrevious()) {
+			if (it.previous().addMouseInputEvent(e, MouseEventType.PRESSED)) return;
 		}
-		
-		
+
+		townRenderer.addMouseInputEvent(e, MouseEventType.PRESSED);
 	}
 
 	public void mouseReleased(MouseEvent e) {
 		// ui windows
-		Iterator<UIWindow> it = windows.iterator();
-		while (it.hasNext()) {
-			if (it.next().addMouseInputEvent(e, MouseEventType.RELEASED)) return;
+		ListIterator<UIWindow> it = windows.listIterator(windows.size());
+		while (it.hasPrevious()) {
+			if (it.previous().addMouseInputEvent(e, MouseEventType.RELEASED)) return;
 		}
-		
-		
+
+		townRenderer.addMouseInputEvent(e, MouseEventType.RELEASED);
 	}
 
 	public void mouseDragged(MouseEvent e) {
 		// ui windows
-		Iterator<UIWindow> it = windows.iterator();
-		while (it.hasNext()) {
-			if (it.next().addMouseInputEvent(e, MouseEventType.DRAGGED)) return;
+		ListIterator<UIWindow> it = windows.listIterator(windows.size());
+		while (it.hasPrevious()) {
+			if (it.previous().addMouseInputEvent(e, MouseEventType.DRAGGED)) return;
 		}
-		
-		
+
+		townRenderer.addMouseInputEvent(e, MouseEventType.DRAGGED);
 	}
 
 	public void mouseMoved(MouseEvent e) {
 		// ui windows
-		Iterator<UIWindow> it = windows.iterator();
-		while (it.hasNext()) {
-			if (it.next().addMouseInputEvent(e, MouseEventType.MOVED)) return;
+		ListIterator<UIWindow> it = windows.listIterator(windows.size());
+		while (it.hasPrevious()) {
+			if (it.previous().addMouseInputEvent(e, MouseEventType.MOVED)) return;
 		}
-		
-		
+
+		townRenderer.addMouseInputEvent(e, MouseEventType.MOVED);
 	}
 
 	public void mouseEntered(MouseEvent e) {

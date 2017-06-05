@@ -208,6 +208,9 @@ public class Bus extends Entity {
 	public int getMaxPersons() {
 		return maxPersons;
 	}
+	public SpecificSchedule getSchedule() {
+		return schedule;
+	}
 	
 	
 	
@@ -222,6 +225,9 @@ public class Bus extends Entity {
 	}
 	public void setMaxPersons(int maxPersons) {
 		this.maxPersons = maxPersons;
+	}
+	public void setSchedule(SpecificSchedule schedule) {
+		this.schedule = schedule;
 	}
 	
 	

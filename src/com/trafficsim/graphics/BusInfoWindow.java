@@ -22,7 +22,8 @@ public class BusInfoWindow extends UIWindow {
 	@Override
 	public void repaintContent(int cw, int ch, Graphics2D g) {
 		g.setColor(Color.black);
-		g.drawString("Ich bin ein Bus.", 10, 40);
+		g.drawString("Bus Linie " + bus.getSchedule().getSchedule().getName(), 10, 40);
+		g.drawString("x: " + (Math.round(bus.getX() * 10) / 10.0) + ", y:" + (Math.round(bus.getY() * 10) / 10.0), 10, 80);
 	}
 
 	@Override

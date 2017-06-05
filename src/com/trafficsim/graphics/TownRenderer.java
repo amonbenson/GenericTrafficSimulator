@@ -2,8 +2,11 @@ package com.trafficsim.graphics;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.event.MouseEvent;
+import java.util.Iterator;
 
-import com.trafficsim.sim.Simulation;
+import com.trafficsim.graphics.GUI.MouseEventType;
 import com.trafficsim.town.Bus;
 import com.trafficsim.town.HouseTile;
 import com.trafficsim.town.StreetTile;
@@ -12,18 +15,24 @@ import com.trafficsim.town.Town;
 
 public class TownRenderer implements UIElement {
 
+	public static final double BUS_SIZE = 0.5;
+	
 	private GUI gui;
 	private Town town;
+	
+	private double tileSize;
 	
 	public TownRenderer(GUI gui, Town town) {
 		this.gui = gui;
 		this.town = town;
+		
+		tileSize = 1;
 	}
 
 	public void repaint(int screenW, int screenH, Graphics2D g) {
 		Tile[][] tiles = town.getTiles();
 		
-		int tileSize = Math.min(screenW / town.getSizeX(), screenH / town.getSizeY());
+		tileSize = Math.min(screenW / (double) town.getSizeX(), screenH / (double) town.getSizeY());
 		
 		for (int x = 0; x < town.getSizeX(); x++) {
 			for (int y = 0; y < town.getSizeY(); y++) {
@@ -60,8 +69,35 @@ public class TownRenderer implements UIElement {
 		//Busse zeichnen:
 		for (Bus b : town.getBusses()) {
 			g.setColor(Color.black);
-			g.fillRect((int) (b.getX() * tileSize - tileSize / 10), (int) (b.getY() * tileSize - tileSize / 10), 
-					(int) (tileSize / 5), (int) (tileSize / 5) );
+			g.fillRect((int) (b.getX() * tileSize - tileSize * BUS_SIZE / 2), (int) (b.getY() * tileSize - tileSize * BUS_SIZE / 2), 
+					(int) (tileSize * BUS_SIZE), (int) (tileSize * BUS_SIZE) );
 		}
+	}
+
+	public boolean addMouseInputEvent(MouseEvent e, MouseEventType type) {
+		if (type == GUI.MouseEventType.CLICKED) {
+			// Check if user clicked on bus
+			Iterator<Bus> busIt = town.getBusses().iterator();
+			while (busIt.hasNext()) {
+				Bus bus = busIt.next();
+				
+				int busMidX = (int) (bus.getX() * tileSize);
+				int busMidY = (int) (bus.getY() * tileSize);
+				int busSize = (int) (tileSize * BUS_SIZE);
+				
+				if (new Rectangle(busMidX - busSize / 2, busMidY - busSize / 2, busSize, busSize).contains(e.getPoint())) {
+					BusInfoWindow w = new BusInfoWindow(gui, town, bus);
+					w.setX(busMidX + busSize);
+					w.setY(busMidY + busSize);
+					w.setVisible(true);
+					gui.addUIWindow(w);
+					
+					gui.repaint();
+				}
+			}
+		}
+		
+		// Mouse events will always be processed by the town, so return "catched" every time
+		return true;
 	}
 }

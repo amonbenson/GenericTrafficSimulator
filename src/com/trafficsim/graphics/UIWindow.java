@@ -16,8 +16,10 @@ public abstract class UIWindow implements UIElement {
 	private GUI gui;
 	
 	private int x, y, width, height;
-	private Point lastMousePos;
 	private boolean visible;
+
+	private boolean moving;
+	private Point lastMousePos;
 	
 	public UIWindow(GUI gui) {
 		this.gui = gui;
@@ -26,8 +28,9 @@ public abstract class UIWindow implements UIElement {
 		y = 0;
 		width = DEFAULT_WIDTH;
 		height = DEFAULT_HEIGHT;
-		
-		lastMousePos = null;
+
+		lastMousePos = new Point();
+		moving = false;
 		
 		visible = false;
 	}
@@ -57,25 +60,41 @@ public abstract class UIWindow implements UIElement {
 	}
 	
 	public boolean addMouseInputEvent(MouseEvent e, GUI.MouseEventType type) {
+		// Reset moving
+		if (type == GUI.MouseEventType.RELEASED) moving = false;
+		
 		if (asRectangle().contains(e.getPoint())
-				|| (type == GUI.MouseEventType.DRAGGED && lastMousePos != null)) {
+				|| (type == GUI.MouseEventType.DRAGGED && moving)) {
 			int tx = e.getX() - getX(), ty = e.getY() - getY();
 			
+			// Move this window to the front (last index in list)
+			if (type == GUI.MouseEventType.PRESSED) {
+				gui.removeUIWindow(this);
+				gui.addUIWindow(this);
+			}
+			
 			// mouse event in upper border
-			if (ty < UPPER_BORDER) {
+			if (ty < UPPER_BORDER && type == GUI.MouseEventType.PRESSED) {
 				
 				// X-Button was pressed
 				if (tx > getWidth() - UPPER_BORDER) {
-					if (type == GUI.MouseEventType.CLICKED) gui.removeUIWindow(this);
+					gui.removeUIWindow(this);
+				}
+				
+				// Start moving
+				else {
+					moving = true;
+					lastMousePos = e.getPoint();
 				}
 				
 			} else mouseInputEvent(e, tx - BORDER, ty - UPPER_BORDER, type);
 			
 			// UIWindow was moved
-			/*if (type == GUI.MouseEventType.DRAGGED) {
+			if (moving && type == GUI.MouseEventType.DRAGGED) {
 				setX(getX() + e.getX() - lastMousePos.x);
 				setY(getY() + e.getY() - lastMousePos.y);
-			}*/
+				lastMousePos = e.getPoint();
+			}
 			
 			// repaint gui
 			gui.repaint();
