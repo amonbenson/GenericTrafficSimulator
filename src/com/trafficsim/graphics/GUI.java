@@ -6,21 +6,29 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.logging.Level;
 
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 
 import com.trafficsim.sim.Simulation;
 
-public class GUI extends JComponent implements KeyListener {
+public class GUI extends JComponent implements KeyListener, MouseListener, MouseMotionListener {
 	
 	private Simulation simulation;
 	private TownRenderer townRenderer;
 	
 	private AutoUpdater autoUpdater;
 	
+	private ArrayList<UIWindow> windows;
+	
 	public GUI() {
-		
+		windows = new ArrayList<UIWindow>();
 	}
 	
 	public void initListeners() {
@@ -28,13 +36,17 @@ public class GUI extends JComponent implements KeyListener {
 		if (rootFrame == null) throw new NullPointerException("GUI must be added to a frame");
 		
 		rootFrame.addKeyListener(this);
+		addMouseListener(this);
+		addMouseMotionListener(this);
 	}
 	
 	public void setSimulation(Simulation simulation) {
+		if (simulation == null) return; // Simulation may also be null
+		
 		this.simulation = simulation;
 		
-		autoUpdater = new AutoUpdater(simulation.getTown());
-		townRenderer = new TownRenderer(simulation.getTown());
+		autoUpdater = new AutoUpdater(this, simulation.getTown());
+		townRenderer = new TownRenderer(this, simulation.getTown());
 	}
 	
 	public void paintComponent(Graphics graphics) {
@@ -42,14 +54,34 @@ public class GUI extends JComponent implements KeyListener {
 		g.setColor(Color.white);
 		g.fillRect(0, 0, getWidth(), getHeight());
 		
+		// Render the town
 		if (townRenderer == null) {
 			g.setColor(Color.gray);
 			g.drawString("No town to display.", 40, 60);
 			
 			
 		} else {
-			townRenderer.render(getWidth(), getHeight(), g);
+			townRenderer.repaint(getWidth(), getHeight(), g);
 		}
+		
+		// Draw all UI Windows
+		Iterator<UIWindow> it = windows.iterator();
+		while (it.hasNext()) {
+			UIWindow window = it.next();
+			window.repaint(getWidth(), getHeight(), g);
+		}
+	}
+	
+	public void addUIWindow(UIWindow window) {
+		windows.add(window);
+	}
+	
+	public void removeUIWindow(UIWindow window) {
+		windows.remove(window);
+	}
+	
+	public int getUIWindowCount() {
+		return windows.size();
 	}
 
 	public void keyTyped(KeyEvent e) {
@@ -57,16 +89,89 @@ public class GUI extends JComponent implements KeyListener {
 	}
 
 	public void keyPressed(KeyEvent e) {
+		// Move one tick
 		if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-			// Update the town
-			simulation.getTown().update();
-			
-			// Render
-			repaint();
+			try {
+				// Update the town
+				simulation.getTown().update();
+				
+				// Render
+				repaint();
+			} catch (Exception ex) {
+				Simulation.logger.log(Level.SEVERE, "Error while auto updating simulation!", ex);
+			}
+		}
+		
+		// Toggle auto update
+		if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+			if (autoUpdater.isRunning()) autoUpdater.stop();
+			else autoUpdater.start();
 		}
 	}
 
 	public void keyReleased(KeyEvent e) {
 		
+	}
+
+	public void mouseClicked(MouseEvent e) {
+		// ui windows
+		Iterator<UIWindow> it = windows.iterator();
+		while (it.hasNext()) {
+			if (it.next().addMouseInputEvent(e, MouseEventType.CLICKED)) return;
+		}
+		
+		
+	}
+
+	public void mousePressed(MouseEvent e) {
+		// ui windows
+		Iterator<UIWindow> it = windows.iterator();
+		while (it.hasNext()) {
+			if (it.next().addMouseInputEvent(e, MouseEventType.PRESSED)) return;
+		}
+		
+		
+	}
+
+	public void mouseReleased(MouseEvent e) {
+		// ui windows
+		Iterator<UIWindow> it = windows.iterator();
+		while (it.hasNext()) {
+			if (it.next().addMouseInputEvent(e, MouseEventType.RELEASED)) return;
+		}
+		
+		
+	}
+
+	public void mouseDragged(MouseEvent e) {
+		// ui windows
+		Iterator<UIWindow> it = windows.iterator();
+		while (it.hasNext()) {
+			if (it.next().addMouseInputEvent(e, MouseEventType.DRAGGED)) return;
+		}
+		
+		
+	}
+
+	public void mouseMoved(MouseEvent e) {
+		// ui windows
+		Iterator<UIWindow> it = windows.iterator();
+		while (it.hasNext()) {
+			if (it.next().addMouseInputEvent(e, MouseEventType.MOVED)) return;
+		}
+		
+		
+	}
+
+	public void mouseEntered(MouseEvent e) {
+		
+	}
+
+	public void mouseExited(MouseEvent e) {
+		
+	}
+	
+	public enum MouseEventType {
+		CLICKED, PRESSED, RELEASED, DRAGGED, MOVED;
 	}
 }

@@ -87,6 +87,10 @@ public class FrameLauncher {
 		frame.setVisible(true);
 		
 		gui.initListeners();
+		
+		BusInfoWindow w = new BusInfoWindow(gui, simulation.getTown(), null);
+		w.setVisible(true);
+		gui.addUIWindow(w);
 	}
 	
 	public static void main(String[] args) throws InterruptedException {

@@ -12,17 +12,15 @@ import com.trafficsim.town.Town;
 
 public class TownRenderer implements UIElement {
 
+	private GUI gui;
 	private Town town;
 	
-	public TownRenderer(Town town) {
+	public TownRenderer(GUI gui, Town town) {
+		this.gui = gui;
 		this.town = town;
 	}
-	
-	public void update(int screenW, int screenH, int delta) {
-		
-	}
 
-	public void render(int screenW, int screenH, Graphics2D g) {
+	public void repaint(int screenW, int screenH, Graphics2D g) {
 		Tile[][] tiles = town.getTiles();
 		
 		int tileSize = Math.min(screenW / town.getSizeX(), screenH / town.getSizeY());
@@ -64,10 +62,6 @@ public class TownRenderer implements UIElement {
 			g.setColor(Color.black);
 			g.fillRect((int) (b.getX() * tileSize - tileSize / 10), (int) (b.getY() * tileSize - tileSize / 10), 
 					(int) (tileSize / 5), (int) (tileSize / 5) );
-			g.setColor(Color.white);
-			g.drawString("X:"+b.getX(), (int) (b.getX() * tileSize), (int) (b.getY() * tileSize));
-			g.drawString("Y:"+b.getY(), (int) (b.getX() * tileSize), (int) (b.getY() * tileSize)+20);
-			
 		}
 	}
 }
