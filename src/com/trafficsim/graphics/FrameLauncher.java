@@ -1,24 +1,17 @@
 package com.trafficsim.graphics;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.util.ArrayList;
 
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 
 import com.trafficsim.generic.Chromosom;
 import com.trafficsim.sim.Simulation;
-import com.trafficsim.town.Bus;
 import com.trafficsim.town.BusDirection;
 import com.trafficsim.town.BusStartTime;
 import com.trafficsim.town.HouseTile;
 import com.trafficsim.town.Schedule;
-import com.trafficsim.town.StreetTile;
-import com.trafficsim.town.Tile;
 import com.trafficsim.town.Town;
 import com.trafficsim.town.Waypoint;
 
@@ -34,6 +27,7 @@ public class FrameLauncher {
 		simulation = new Simulation( new Town(7, 6));
 		simulation.getTown().generateTiles(Simulation.randomTown(7, 6)); //Landschaftskarte
 		
+		// BUS SCHEDULES ERSTELLEN
 		Chromosom c = new Chromosom();
 		ArrayList<Schedule> schedules = new ArrayList<Schedule>();
 		ArrayList<Waypoint> waypoints = new ArrayList<Waypoint>();
@@ -51,7 +45,7 @@ public class FrameLauncher {
 		waypoints.add(new Waypoint(3.5, 3.5));
 		waypoints.add(new Waypoint(5.5, 3.5));
 		waypoints.add(new Waypoint(3.5, 3.5));
-		waypoints.add(new Waypoint(3.5, 5.5));		
+		waypoints.add(new Waypoint(3.5, 5.5));
 		
 		startTimes = new ArrayList<BusStartTime>();
 		startTimes.add(new BusStartTime(0, BusDirection.NORMAL));
@@ -66,6 +60,10 @@ public class FrameLauncher {
 		stations.add(new Point(5, 3));
 		stations.add(new Point(0, 5));
 		c.setStations(stations);
+		
+		/*for (HouseTile ht : simulation.getTown().getHouseTiles()) {
+			ht.setNumberPersons(3);
+		}*/
 		
 		simulation.getTown().setChromosom(c);
 		simulation.getTown().applyChromosom();

@@ -1,8 +1,10 @@
 package com.trafficsim.town;
 
+import java.util.Random;
+
 public class Person {
 	
-
+	public static long currentIDTracker = 0; // Tracker for the current id, will be incremented to generate a unque id for every new Person.
 	
 	private double x, y; //Position des Person
 
@@ -10,6 +12,9 @@ public class Person {
 	private boolean floating; // when a person "floats" it won't be drawn to the town
 	private Route route; //aktuelle Route
 	private HouseTile house;
+	
+	private long id; // A unique id that every Person has
+	private String name; // A name to identify persons in the person list;
 	
 	/**
 	 * Setzt die aktuelle Position auf -1, -1
@@ -26,6 +31,11 @@ public class Person {
 	 * 		@param house das Haus der Person
 	 */
 	public Person(double x, double y, HouseTile house) {
+		if (house == null) throw new NullPointerException("House tile cannot be null (we don't have homeless people yet).");
+		
+		id = createID();
+		name = createName(id);
+		
 		this.house = house;
 		floating = false;
 		
@@ -90,11 +100,52 @@ public class Person {
 		this.y = y;
 	}
 	
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public long getID() {
+		return id;
+	}
+
 	@Override
 	public String toString() {
 		return "X: "+x+"\n"
 				+ "Y: "+y+"\n"
 				+ "Route wird ausgelassen..\n"
 				+ house;
+	}
+	
+	
+	/**
+	 * Creates an id for a new person.
+	 * 
+	 * @return		the newly generated id.
+	 */
+	private static long createID() {
+		long id = currentIDTracker;
+		currentIDTracker++;
+		return id;
+	}
+	
+	/**
+	 * A static name generator that creates a random name String from a specific seed.
+	 * 
+	 * @param seed	The seed that will be used to generate a name (propably the person's id.
+	 * 
+	 * @return		The name string that was generated.
+	 */
+	private static String createName(long seed) {
+		Random r = new Random(seed);
+		int nameLength = 4 + r.nextInt(5);
+		
+		String name = "";
+		for (int i = 0; i < nameLength; i++) name += Character.toString((char) (97 + r.nextInt(26))); // Create random letter
+		name = name.substring(0, 1).toUpperCase() + name.substring(1); // Make first character an upper case
+		return name;
 	}
 }

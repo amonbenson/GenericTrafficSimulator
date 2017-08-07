@@ -9,6 +9,7 @@ import java.util.Iterator;
 import com.trafficsim.graphics.GUI.MouseEventType;
 import com.trafficsim.town.Bus;
 import com.trafficsim.town.HouseTile;
+import com.trafficsim.town.Person;
 import com.trafficsim.town.StreetTile;
 import com.trafficsim.town.Tile;
 import com.trafficsim.town.Town;

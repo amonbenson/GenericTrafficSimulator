@@ -3,6 +3,7 @@ package com.trafficsim.graphics;
 import java.util.logging.Level;
 
 import com.trafficsim.sim.Simulation;
+import com.trafficsim.town.Person;
 import com.trafficsim.town.Town;
 
 public class AutoUpdater implements Runnable {

@@ -22,6 +22,7 @@ public class Town implements Updateable {
 
 	private int events_index; //aktuelle Position der Events
 	private ArrayList<Bus> busses; //alle Busse der Stadt
+	private ArrayList<Person> persons; //alle Personen der Stadt
 	private long time; //aktuelle Zeit der Stadt
 	private Random random; //jede Stadt besitzt einen eigenen Randomgenerator (so können bestimmte Szenarien erneut simuliert werden)
 	
@@ -38,6 +39,7 @@ public class Town implements Updateable {
 		
 		events = new ArrayList<Event>();
 		busses = new ArrayList<Bus>();
+		persons = new ArrayList<Person>();
 		time = 0;
 	}
 	
@@ -76,6 +78,10 @@ public class Town implements Updateable {
 
 	public ArrayList<Bus> getBusses() {
 		return busses;
+	}
+	
+	public ArrayList<Person> getPersons() {
+		return persons;
 	}
 	
 	public long getTime() {
