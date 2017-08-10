@@ -2,15 +2,21 @@ package com.trafficsim.graphics;
 
 import java.awt.Point;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.ArrayList;
 
+import javax.swing.AbstractAction;
 import javax.swing.JFrame;
+import javax.swing.KeyStroke;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import com.trafficsim.generic.Chromosom;
 import com.trafficsim.sim.Simulation;
 import com.trafficsim.town.BusDirection;
 import com.trafficsim.town.BusStartTime;
-import com.trafficsim.town.HouseTile;
 import com.trafficsim.town.Schedule;
 import com.trafficsim.town.Town;
 import com.trafficsim.town.Waypoint;
@@ -18,7 +24,12 @@ import com.trafficsim.town.Waypoint;
 public class FrameLauncher {
 	
 	private JFrame frame;
-	private GUI gui;
+	
+	// Town auto updater
+	private AutoUpdater updater;
+	
+	// Town rendering
+	private TownDesktopPane townDesktopPane;
 	
 	public Simulation simulation;
 	
@@ -68,23 +79,58 @@ public class FrameLauncher {
 		simulation.getTown().setChromosom(c);
 		simulation.getTown().applyChromosom();
 		
-		// FRAME GEDÖNSE
+		// Set laf
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (Exception e) {
+			System.err.println("Couldn't set LookAndFeel.");
+			e.printStackTrace();
+		}
+		
+		// Create all components
 		frame = new JFrame("Generic Traffic Simulator");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		gui = new GUI();
-		gui.setSimulation(simulation);
-		frame.add(gui);
+		townDesktopPane = new TownDesktopPane(this, simulation.getTown());
+		frame.add(townDesktopPane);
 
 		frame.setSize(800, 800);
 		if (Toolkit.getDefaultToolkit().getScreenResolution() >= 240) { // High DPI
 			frame.setSize(frame.getWidth() * 2, frame.getHeight() * 2);
-			gui.setFont(gui.getFont().deriveFont(gui.getFont().getSize() * 4.0f));
 		}
 		frame.setLocationRelativeTo(null);
-		frame.setVisible(true);
 		
-		gui.initListeners();
+		// Init the auto updater
+		updater = new AutoUpdater(frame, simulation.getTown());
+		
+		// Key bindings
+		townDesktopPane.getInputMap().put(KeyStroke.getKeyStroke("SPACE"), "town update");
+		townDesktopPane.getInputMap().put(KeyStroke.getKeyStroke("BACK_SPACE"), "town revert");
+		townDesktopPane.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "town autoupdate");
+
+		townDesktopPane.getActionMap().put("town update", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				updater.stop();
+				simulation.getTown().update();
+				townDesktopPane.repaint();
+			}
+		});
+		townDesktopPane.getActionMap().put("town revert", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				updater.stop();
+				simulation.getTown().revert();
+				townDesktopPane.repaint();
+			}
+		});
+		townDesktopPane.getActionMap().put("town autoupdate", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				if (updater.isRunning()) updater.stop();
+				else updater.start();
+			}
+		});
+		
+		// Make visible
+		frame.setVisible(true);
 	}
 	
 	public static void main(String[] args) throws InterruptedException {

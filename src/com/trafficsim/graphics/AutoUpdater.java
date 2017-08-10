@@ -2,21 +2,22 @@ package com.trafficsim.graphics;
 
 import java.util.logging.Level;
 
+import javax.swing.JFrame;
+
 import com.trafficsim.sim.Simulation;
-import com.trafficsim.town.Person;
 import com.trafficsim.town.Town;
 
 public class AutoUpdater implements Runnable {
 	
-	public static final long TICK_SPEED = 10; // Tick speed in ms
+	public static final long TICK_SPEED = 15; // Tick speed in ms
 	
-	private GUI gui;
+	private JFrame frame;
 	private Town town;
 	
 	private boolean running;
 	
-	public AutoUpdater(GUI gui, Town town) {
-		this.gui = gui;
+	public AutoUpdater(JFrame frame, Town town) {
+		this.frame = frame;
 		this.town = town;
 		
 		running = false;
@@ -38,7 +39,7 @@ public class AutoUpdater implements Runnable {
 				town.update();
 				
 				// Render
-				gui.repaint();
+				frame.repaint();
 				
 				// Wait a tick
 				Thread.sleep(TICK_SPEED);
