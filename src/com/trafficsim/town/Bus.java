@@ -201,19 +201,6 @@ public class Bus extends Entity {
 	public double getSpeedY() {
 		return speedY;
 	}
-
-	public void addPerson(Person person) {
-		if (persons.size() >= maxPersons) throw new BusFullException("Maximale Personenzahl (" + maxPersons + ") wurde bereits erreicht.");
-	}
-	public void removePerson(Person person) {
-		persons.remove(person);
-	}
-	public void removePerson(int index) {
-		persons.remove(index);
-	}
-	public int getNumPersons() {
-		return persons.size();
-	}
 	public ArrayList<Person> getPersons() {
 		return persons;
 	}
