@@ -50,10 +50,10 @@ public class Bus extends Entity {
 		//Fahre zum nächsten Wegpunkt:
 		setX(getX()+speedX);
 		setY(getY()+speedY);
+		
 		checkIfWaypointIsReached();
 	}
 	
-	//TODO revert implementieren
 	public void revert() {
 		checkIfWaypointIsReached();
 		
@@ -68,6 +68,14 @@ public class Bus extends Entity {
 	 * @param t gibt den Stadtkontext an. Kann auch <code>null</code> sein, dann kann der Bus aber keine Personen einladen
 	 */
 	private void checkIfWaypointIsReached() {
+		// x y  Position aller Personen updaten
+		for (Person person : persons) {
+			if (person != null) {
+				person.setX(getX());
+				person.setY(getY());
+			}
+		}
+		
 		if (isNextWaypointReached()) {
 			//Genaue Position setzen:
 			if (schedule.isNormal()) {
@@ -117,8 +125,6 @@ public class Bus extends Entity {
 					}
 				}
 			}
-		
-			
 			
 			calcSpeed();
 		}

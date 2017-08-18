@@ -72,10 +72,6 @@ public class FrameLauncher {
 		stations.add(new Point(0, 5));
 		c.setStations(stations);
 		
-		/*for (HouseTile ht : simulation.getTown().getHouseTiles()) {
-			ht.setNumberPersons(3);
-		}*/
-		
 		simulation.getTown().setChromosom(c);
 		simulation.getTown().applyChromosom();
 		
@@ -104,8 +100,8 @@ public class FrameLauncher {
 		updater = new AutoUpdater(frame, simulation.getTown());
 		
 		// Key bindings
-		townDesktopPane.getInputMap().put(KeyStroke.getKeyStroke("SPACE"), "town update");
-		townDesktopPane.getInputMap().put(KeyStroke.getKeyStroke("BACK_SPACE"), "town revert");
+		townDesktopPane.getInputMap().put(KeyStroke.getKeyStroke("U"), "town update");
+		townDesktopPane.getInputMap().put(KeyStroke.getKeyStroke("R"), "town revert");
 		townDesktopPane.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "town autoupdate");
 
 		townDesktopPane.getActionMap().put("town update", new AbstractAction() {
@@ -133,6 +129,10 @@ public class FrameLauncher {
 		frame.setVisible(true);
 	}
 	
+	public JFrame getFrame() {
+		return frame;
+	}
+
 	public static void main(String[] args) throws InterruptedException {
 		new FrameLauncher();
 	}

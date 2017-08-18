@@ -352,7 +352,7 @@ public class Town implements Updateable {
 			list.add(re);
 		} else {
 			StreetTile origin = (StreetTile) tiles[0][0];
-			Tile target = tiles[5][3];
+			Tile target = tiles[0][5];
 			ArrayList<ChangeStation> stations = new ArrayList<ChangeStation>();		
 			stations.add(new ChangeStation(new Waypoint(0,0), origin.getSchedules().get(0).getScheduleNormal()));
 			stations.add(new ChangeStation(new Waypoint(3,3), ((StreetTile) tiles[5][3]).getSchedules().get(0).getScheduleNormal()));

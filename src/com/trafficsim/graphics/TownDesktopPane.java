@@ -1,30 +1,38 @@
 package com.trafficsim.graphics;
 
 import java.awt.BasicStroke;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
+import javax.swing.JToggleButton;
+import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import com.trafficsim.town.Bus;
+import com.trafficsim.town.ChangeStation;
 import com.trafficsim.town.HouseTile;
 import com.trafficsim.town.Person;
+import com.trafficsim.town.Schedule;
 import com.trafficsim.town.StreetTile;
 import com.trafficsim.town.Tile;
 import com.trafficsim.town.Town;
 import com.trafficsim.town.Waypoint;
 
-public class TownDesktopPane extends JDesktopPane implements MouseListener, ListSelectionListener {
+public class TownDesktopPane extends JDesktopPane implements MouseListener, ListSelectionListener, ActionListener {
 
 	public static final double BUS_SIZE = 0.5;
 	public static final int FRAME_LAYER_SPACE = 70;
@@ -36,6 +44,10 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, List
 
 	private Bus focusBus;
 	private Person focusPerson;
+	private Tile focusTile;
+	
+	private JToolBar toolBar;
+	private JToggleButton showRoutesButton, showRelationLinesButton;
 	
 	public TownDesktopPane(FrameLauncher frameLauncherContext, Town town) {
 		super();
@@ -45,6 +57,20 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, List
 		tileSize = 1.0;
 		
 		addMouseListener(this);
+		
+		toolBar = new JToolBar();
+		toolBar.setFloatable(true);
+		frameLauncherContext.getFrame().add(BorderLayout.NORTH, toolBar);
+		
+		showRoutesButton = new JToggleButton("show routes", true);
+		showRoutesButton.setFocusable(false);
+		showRoutesButton.addActionListener(this);
+		toolBar.add(showRoutesButton);
+		
+		showRelationLinesButton = new JToggleButton("show relation lines", true);
+		showRelationLinesButton.setFocusable(false);
+		showRelationLinesButton.addActionListener(this);
+		toolBar.add(showRelationLinesButton);
 	}
 
 	@Override
@@ -72,7 +98,7 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, List
 					}
 				}
 				if (tile instanceof HouseTile) {
-					g.setColor(Color.green);
+					g.setColor(new Color(0, 128, 0));
 				}
 				g.fillRect(dx, dy, ds, ds);
 				if (tile instanceof HouseTile) {
@@ -88,18 +114,37 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, List
 			}
 		}
 		
-		// Draw route of focus bus
-		if (focusBus != null) {
-			g.setColor(new Color(0, 255, 0, 128));
-			g.setStroke(new BasicStroke((int) (0.1 * tileSize)));
-			for (int i = 0; i < focusBus.getSchedule().getSchedule().getWaypointSize() - 1; i++) {
-				Waypoint w1 = focusBus.getSchedule().getSchedule().getWaypoint(i);
-				Waypoint w2 = focusBus.getSchedule().getSchedule().getWaypoint(i + 1);
+		if (showRoutesButton.isSelected()) {
+			g.setStroke(new BasicStroke((int) (0.1 * tileSize), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0));
+			
+			// Draw route of focus bus
+			if (focusBus != null) {
+				g.setColor(new Color(0, 255, 0, 128));
+				
+				Schedule schedule = focusBus.getSchedule().getSchedule();
+				for (int i = 0; i < schedule.getWaypointSize() - 1; i++) {
+					Waypoint w1 = schedule.getWaypoint(i);
+					Waypoint w2 = schedule.getWaypoint(i + 1);
+					g.drawLine(
+							(int) (w1.getX() * tileSize), 
+							(int) (w1.getY() * tileSize), 
+							(int) (w2.getX() * tileSize), 
+							(int) (w2.getY() * tileSize)
+					);
+				}
+			}
+			
+			// Draw route of focus person (draw a strait line from origin to target station)
+			if (focusPerson != null) {
+				g.setColor(new Color(255, 0, 0, 128));
+			
+				Waypoint w1 = focusPerson.getRoute().getOrigin().toWaypoint();
+				Waypoint w2 = focusPerson.getRoute().getTarget().toWaypoint();
 				g.drawLine(
-						(int) (w1.getX() * tileSize), 
-						(int) (w1.getY() * tileSize), 
-						(int) (w2.getX() * tileSize), 
-						(int) (w2.getY() * tileSize)
+						(int) ((w1.getX() + 0.5) * tileSize), 
+						(int) ((w1.getY() + 0.5) * tileSize), 
+						(int) ((w2.getX() + 0.5) * tileSize), 
+						(int) ((w2.getY() + 0.5) * tileSize)
 				);
 			}
 		}
@@ -112,20 +157,66 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, List
 					(int) (tileSize * BUS_SIZE), (int) (tileSize * BUS_SIZE) );
 		}
 		
-		// Draw lines to the internal frames
-		g.setColor(Color.white);
-		g.setStroke(new BasicStroke(3));
-		for (JInternalFrame iFrame : getAllFrames()) {
-			if (iFrame instanceof BusInfoFrame) {
-				BusInfoFrame frame = (BusInfoFrame) iFrame;
-				frame.updatePersonList(); // Update the person list
+		// Draw lines to the internal frames ("relation lines")
+		if (showRelationLinesButton.isSelected()) {
+			g.setStroke(new BasicStroke((int) (0.01 * tileSize), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0));
+			
+			for (JInternalFrame iFrame : getAllFrames()) {
+				if (iFrame instanceof StreetTileInfoFrame) { // STREET TILE INFO
+					StreetTileInfoFrame frame = (StreetTileInfoFrame) iFrame;
+					frame.updatePersonList(); // Update the person list
+					
+					g.setColor(Color.white);
+					
+					int sx = (int) ((frame.getTile().getX() + 0.5) * tileSize);
+					int sy = (int) ((frame.getTile().getY() + 0.5) * tileSize);
+					int ex = frame.getX() + frame.getWidth() / 2;
+					int ey = frame.getY() + frame.getHeight() / 2;
+					
+					g.drawLine(sx, sy, ex, ey);
+				}
 				
-				int sx = (int) (frame.getBus().getX() * tileSize);
-				int sy = (int) (frame.getBus().getY() * tileSize);
-				int ex = frame.getX() + frame.getWidth() / 2;
-				int ey = frame.getY() + frame.getHeight() / 2;
+				if (iFrame instanceof HouseTileInfoFrame) { // HOUSE TILE INFO
+					HouseTileInfoFrame frame = (HouseTileInfoFrame) iFrame;
+					
+					g.setColor(Color.white);
+					
+					int sx = (int) ((frame.getTile().getX() + 0.5) * tileSize);
+					int sy = (int) ((frame.getTile().getY() + 0.5) * tileSize);
+					int ex = frame.getX() + frame.getWidth() / 2;
+					int ey = frame.getY() + frame.getHeight() / 2;
+					
+					g.drawLine(sx, sy, ex, ey);
+				}
 				
-				g.drawLine(sx, sy, ex, ey);
+				if (iFrame instanceof BusInfoFrame) { // BUS INFO
+					BusInfoFrame frame = (BusInfoFrame) iFrame;
+					frame.updatePersonList(); // Update the person list
+	
+					g.setColor(Color.white);
+					if (frame.getBus() == focusBus) g.setColor(Color.green);
+					
+					int sx = (int) (frame.getBus().getX() * tileSize);
+					int sy = (int) (frame.getBus().getY() * tileSize);
+					int ex = frame.getX() + frame.getWidth() / 2;
+					int ey = frame.getY() + frame.getHeight() / 2;
+					
+					g.drawLine(sx, sy, ex, ey);
+				}
+				
+				if (iFrame instanceof PersonInfoFrame) { // PERSON INFO
+					PersonInfoFrame frame = (PersonInfoFrame) iFrame;
+	
+					g.setColor(Color.white);
+					if (frame.getPerson() == focusPerson) g.setColor(Color.red);
+					
+					int sx = (int) (frame.getPerson().getX() * tileSize); // TODO: Person.getXY() funktioniert noch nicht?
+					int sy = (int) (frame.getPerson().getY() * tileSize);
+					int ex = frame.getX() + frame.getWidth() / 2;
+					int ey = frame.getY() + frame.getHeight() / 2;
+					
+					g.drawLine(sx, sy, ex, ey);
+				}
 			}
 		}
 	}
@@ -149,7 +240,7 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, List
 	}
 
 	private void createBusInfoFrame(Bus bus, int dx, int dy) {
-		if (containsBusInfoFrame(bus)) return;
+		if (containsInfoFrame(bus)) return;
 		
 		// Create a bus info frame, add a person list selection listener
 		BusInfoFrame frame = new BusInfoFrame(this, bus, dx, dy);
@@ -158,33 +249,52 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, List
 	}
 	
 	private void createPersonInfoFrame(Person person, int dx, int dy) {
-		if (containsPersonInfoFrame(person)) return;
+		if (containsInfoFrame(person)) return;
 		
 		// Create a person info frame
 		PersonInfoFrame frame = new PersonInfoFrame(this, person, dx, dy);
 		frame.setVisible(true);
 	}
+	
+	private void createStreetTileInfoFrame(StreetTile tile, int dx, int dy) {
+		if (containsInfoFrame(tile)) return;
+		
+		// Create a tile info frame
+		StreetTileInfoFrame frame = new StreetTileInfoFrame(this, tile, dx, dy);
+		frame.addNextStationActionListener(this);
+		frame.addListSelectionListener(this);
+		frame.setVisible(true);
+	}
+	
+	private void createHouseTileInfoFrame(HouseTile tile, int dx, int dy) {
+		if (containsInfoFrame(tile)) return;
+		
+		// Create a tile info frame
+		HouseTileInfoFrame frame = new HouseTileInfoFrame(this, tile, dx, dy);
+		frame.addNextStationActionListener(this);
+		frame.setVisible(true);
+	}
 
-	private boolean containsBusInfoFrame(Bus bus) {
+	private boolean containsInfoFrame(Object object) {
 		for (JInternalFrame frame : getAllFrames()) {
-			if (frame instanceof BusInfoFrame) {
-				// Return true if the frame's bus matches the bus argument (then we already have
-				// a bus info frame that matches this bus).
-				if (((BusInfoFrame) frame).getBus() == bus) return true;
+			if (frame instanceof BusInfoFrame && object instanceof Bus) {
+				if (((BusInfoFrame) frame).getBus() == (Bus) object) return true;
+			}
+			if (frame instanceof PersonInfoFrame && object instanceof Person) {
+				if (((PersonInfoFrame) frame).getPerson() == (Person) object) return true;
+			}
+			if (frame instanceof StreetTileInfoFrame && object instanceof StreetTile) {
+				if (((StreetTileInfoFrame) frame).getTile() == (Tile) object) return true;
+			}
+			if (frame instanceof HouseTileInfoFrame && object instanceof HouseTile) {
+				if (((HouseTileInfoFrame) frame).getTile() == (Tile) object) return true;
 			}
 		}
 		return false;
 	}
 
-	private boolean containsPersonInfoFrame(Person person) {
-		for (JInternalFrame frame : getAllFrames()) {
-			if (frame instanceof PersonInfoFrame) {
-				// Return true if the frame's person matches the person argument (then we already have
-				// a person info frame that matches this person).
-				if (((PersonInfoFrame) frame).getPerson() == person) return true;
-			}
-		}
-		return false;
+	public Town getTown() {
+		return town;
 	}
 
 	public void mouseClicked(MouseEvent e) {
@@ -200,7 +310,19 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, List
 			// Check if user clicked on bus
 			if (new Rectangle(busMidX - busSize / 2, busMidY - busSize / 2, busSize, busSize).contains(e.getPoint())) {
 				createBusInfoFrame(bus, busMidX + FRAME_LAYER_SPACE, busMidY + FRAME_LAYER_SPACE);
+				return; // Return to avoid doubled mouse input events
 			}
+		}
+		
+		// CLICK EVENT ON TILE
+		int tileX = (int) (e.getX() / tileSize);
+		int tileY = (int) (e.getY() / tileSize);
+		if (tileX >= 0 && tileX < town.getSizeX() && tileY >= 0 && tileY < town.getSizeY()) {
+			Tile tile = town.getTiles()[tileX][tileY];
+			if (tile instanceof StreetTile)
+				createStreetTileInfoFrame((StreetTile) tile, e.getX() + FRAME_LAYER_SPACE, e.getY() + FRAME_LAYER_SPACE);
+			if (tile instanceof HouseTile)
+				createHouseTileInfoFrame((HouseTile) tile, e.getX() + FRAME_LAYER_SPACE, e.getY() + FRAME_LAYER_SPACE);
 		}
 	}
 
@@ -233,6 +355,50 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, List
 					// We now have a person, create an info frame
 					createPersonInfoFrame(person, source.getX() + FRAME_LAYER_SPACE, source.getY() + FRAME_LAYER_SPACE);
 				}
+			}
+			
+			// This will be called if someone in a street tile info frame's person list was selected
+			if (rootFrame instanceof StreetTileInfoFrame) {
+				StreetTileInfoFrame source = (StreetTileInfoFrame) rootFrame;
+				Person person = source.getSelectedPerson();
+				if (person != null) {
+					// We now have a person, create an info frame
+					createPersonInfoFrame(person, source.getX() + FRAME_LAYER_SPACE, source.getY() + FRAME_LAYER_SPACE);
+				}
+			}
+		}
+	}
+
+	public void actionPerformed(ActionEvent e) {
+		// Events on tool bar toggles will cause a repaint
+		if (e.getSource() == showRoutesButton) repaint();
+		else if (e.getSource() == showRelationLinesButton) repaint();
+		
+		// The action event may be caused by an info frame
+		else if (e.getSource() instanceof Component) {
+			// Get the root internal frame for the current jlist
+			Component rootFrame = SwingUtilities.getAncestorOfClass(JInternalFrame.class, (Component) e.getSource());
+			
+			// This will be called if the "open next station" button was pressed
+			if (rootFrame instanceof StreetTileInfoFrame) {
+				StreetTileInfoFrame source = (StreetTileInfoFrame) rootFrame;
+				
+				StreetTile nextStation = source.getNextStation();
+				createStreetTileInfoFrame(
+						nextStation,
+						(int) ((nextStation.getX() + 0.5) * tileSize + FRAME_LAYER_SPACE),
+						(int) ((nextStation.getY() + 0.5) * tileSize + FRAME_LAYER_SPACE)
+				);
+			}
+			if (rootFrame instanceof HouseTileInfoFrame) {
+				HouseTileInfoFrame source = (HouseTileInfoFrame) rootFrame;
+				
+				StreetTile nextStation = source.getNextStation();
+				createStreetTileInfoFrame(
+						nextStation,
+						(int) ((nextStation.getX() + 0.5) * tileSize + FRAME_LAYER_SPACE),
+						(int) ((nextStation.getY() + 0.5) * tileSize + FRAME_LAYER_SPACE)
+				);
 			}
 		}
 	}

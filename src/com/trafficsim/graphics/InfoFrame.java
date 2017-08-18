@@ -13,7 +13,7 @@ import javax.swing.event.InternalFrameListener;
 public class InfoFrame extends JInternalFrame implements AncestorListener, InternalFrameListener {
 
 	public static final int WIDTH = 300;
-	public static final int MIN_HEIGHT = 200;
+	public static final int MIN_HEIGHT = 400;
 	
 	private TownDesktopPane rootDesktop;
 	
