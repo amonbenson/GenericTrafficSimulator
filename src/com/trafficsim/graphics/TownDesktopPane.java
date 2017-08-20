@@ -16,6 +16,7 @@ import java.util.Iterator;
 
 import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
+import javax.swing.JLabel;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
@@ -23,7 +24,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import com.trafficsim.town.Bus;
-import com.trafficsim.town.ChangeStation;
+import com.trafficsim.town.Event;
 import com.trafficsim.town.HouseTile;
 import com.trafficsim.town.Person;
 import com.trafficsim.town.Schedule;
@@ -35,7 +36,7 @@ import com.trafficsim.town.Waypoint;
 public class TownDesktopPane extends JDesktopPane implements MouseListener, ListSelectionListener, ActionListener {
 
 	public static final double BUS_SIZE = 0.5;
-	public static final int FRAME_LAYER_SPACE = 70;
+	public static final int FRAME_LAYER_SPACE = 35;
 	
 	private FrameLauncher frameLauncherContext;
 	private Town town;
@@ -47,6 +48,7 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, List
 	private Tile focusTile;
 	
 	private JToolBar toolBar;
+	private JLabel timeLabel;
 	private JToggleButton showRoutesButton, showRelationLinesButton;
 	
 	public TownDesktopPane(FrameLauncher frameLauncherContext, Town town) {
@@ -61,6 +63,10 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, List
 		toolBar = new JToolBar();
 		toolBar.setFloatable(true);
 		frameLauncherContext.getFrame().add(BorderLayout.NORTH, toolBar);
+		
+		timeLabel = new JLabel("Time");
+		toolBar.add(timeLabel);
+		toolBar.addSeparator();
 		
 		showRoutesButton = new JToggleButton("show routes", true);
 		showRoutesButton.setFocusable(false);
@@ -115,7 +121,7 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, List
 		}
 		
 		if (showRoutesButton.isSelected()) {
-			g.setStroke(new BasicStroke((int) (0.1 * tileSize), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0));
+			g.setStroke(new BasicStroke(FrameLauncher.highDPI((int) (0.06 * tileSize)), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0));
 			
 			// Draw route of focus bus
 			if (focusBus != null) {
@@ -159,7 +165,7 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, List
 		
 		// Draw lines to the internal frames ("relation lines")
 		if (showRelationLinesButton.isSelected()) {
-			g.setStroke(new BasicStroke((int) (0.01 * tileSize), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0));
+			g.setStroke(new BasicStroke(FrameLauncher.highDPI((int) (0.01 * tileSize)), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0));
 			
 			for (JInternalFrame iFrame : getAllFrames()) {
 				if (iFrame instanceof StreetTileInfoFrame) { // STREET TILE INFO
@@ -219,6 +225,12 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, List
 				}
 			}
 		}
+		
+		// Draw the current time
+		timeLabel.setText("Time: " + town.getTime());
+		
+		// Repaint the event console
+		frameLauncherContext.getEventConsolePane().repaint();
 	}
 	
 	public void updateFocusElement() {
@@ -309,7 +321,7 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, List
 
 			// Check if user clicked on bus
 			if (new Rectangle(busMidX - busSize / 2, busMidY - busSize / 2, busSize, busSize).contains(e.getPoint())) {
-				createBusInfoFrame(bus, busMidX + FRAME_LAYER_SPACE, busMidY + FRAME_LAYER_SPACE);
+				createBusInfoFrame(bus, busMidX + FrameLauncher.highDPI(FRAME_LAYER_SPACE), busMidY + FrameLauncher.highDPI(FRAME_LAYER_SPACE));
 				return; // Return to avoid doubled mouse input events
 			}
 		}
@@ -320,9 +332,17 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, List
 		if (tileX >= 0 && tileX < town.getSizeX() && tileY >= 0 && tileY < town.getSizeY()) {
 			Tile tile = town.getTiles()[tileX][tileY];
 			if (tile instanceof StreetTile)
-				createStreetTileInfoFrame((StreetTile) tile, e.getX() + FRAME_LAYER_SPACE, e.getY() + FRAME_LAYER_SPACE);
+				createStreetTileInfoFrame(
+						(StreetTile) tile,
+						e.getX() + FrameLauncher.highDPI(FRAME_LAYER_SPACE),
+						e.getY() + FrameLauncher.highDPI(FRAME_LAYER_SPACE)
+				);
 			if (tile instanceof HouseTile)
-				createHouseTileInfoFrame((HouseTile) tile, e.getX() + FRAME_LAYER_SPACE, e.getY() + FRAME_LAYER_SPACE);
+				createHouseTileInfoFrame(
+						(HouseTile) tile,
+						e.getX() + FrameLauncher.highDPI(FRAME_LAYER_SPACE),
+						e.getY() + FrameLauncher.highDPI(FRAME_LAYER_SPACE)
+				);
 		}
 	}
 

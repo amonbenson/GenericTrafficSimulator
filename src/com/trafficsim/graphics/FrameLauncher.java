@@ -1,17 +1,15 @@
 package com.trafficsim.graphics;
 
+import java.awt.BorderLayout;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.util.ArrayList;
 
 import javax.swing.AbstractAction;
 import javax.swing.JFrame;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 
 import com.trafficsim.generic.Chromosom;
 import com.trafficsim.sim.Simulation;
@@ -23,6 +21,9 @@ import com.trafficsim.town.Waypoint;
 
 public class FrameLauncher {
 	
+	// low dpi
+	public static final boolean IS_HIGH_DPI = Toolkit.getDefaultToolkit().getScreenResolution() >= 240;
+	
 	private JFrame frame;
 	
 	// Town auto updater
@@ -30,6 +31,9 @@ public class FrameLauncher {
 	
 	// Town rendering
 	private TownDesktopPane townDesktopPane;
+	
+	// Event displaying
+	private EventConsolePane eventConsolePane;
 	
 	public Simulation simulation;
 	
@@ -89,11 +93,11 @@ public class FrameLauncher {
 		
 		townDesktopPane = new TownDesktopPane(this, simulation.getTown());
 		frame.add(townDesktopPane);
+		
+		eventConsolePane = new EventConsolePane(this, simulation.getTown());
+		frame.add(BorderLayout.EAST, eventConsolePane);
 
-		frame.setSize(800, 800);
-		if (Toolkit.getDefaultToolkit().getScreenResolution() >= 240) { // High DPI
-			frame.setSize(frame.getWidth() * 2, frame.getHeight() * 2);
-		}
+		frame.setSize(highDPI(800), highDPI(600));
 		frame.setLocationRelativeTo(null);
 		
 		// Init the auto updater
@@ -131,6 +135,20 @@ public class FrameLauncher {
 	
 	public JFrame getFrame() {
 		return frame;
+	}
+
+	public TownDesktopPane getTownDesktopPane() {
+		return townDesktopPane;
+	}
+
+	public EventConsolePane getEventConsolePane() {
+		return eventConsolePane;
+	}
+	
+	
+	public static int highDPI(int value) {
+		if (IS_HIGH_DPI) return value * 2;
+		return value;
 	}
 
 	public static void main(String[] args) throws InterruptedException {

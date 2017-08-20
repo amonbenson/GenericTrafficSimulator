@@ -12,8 +12,8 @@ import javax.swing.event.InternalFrameListener;
 
 public class InfoFrame extends JInternalFrame implements AncestorListener, InternalFrameListener {
 
-	public static final int WIDTH = 300;
-	public static final int MIN_HEIGHT = 400;
+	public static final int WIDTH = 150;
+	public static final int MIN_HEIGHT = 200;
 	
 	private TownDesktopPane rootDesktop;
 	
@@ -31,7 +31,7 @@ public class InfoFrame extends JInternalFrame implements AncestorListener, Inter
 		// Tweak some settings
 		setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 		setLocation(dx, dy);
-		setSize(WIDTH, MIN_HEIGHT);
+		setSize(FrameLauncher.highDPI(WIDTH), FrameLauncher.highDPI(MIN_HEIGHT));
 		setMinimumSize(getSize());
 		setClosable(true);
 		setMaximizable(false);
@@ -52,7 +52,7 @@ public class InfoFrame extends JInternalFrame implements AncestorListener, Inter
 	
 	public void packFrame() {
 		pack();
-		setSize(WIDTH, Math.max(getHeight(), MIN_HEIGHT));
+		setSize(FrameLauncher.highDPI(WIDTH), Math.max(getHeight(), FrameLauncher.highDPI(MIN_HEIGHT)));
 	}
 
 	public void ancestorAdded(AncestorEvent event) {
