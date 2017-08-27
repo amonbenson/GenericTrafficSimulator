@@ -21,7 +21,7 @@ import com.trafficsim.town.Waypoint;
 
 public class FrameLauncher {
 	
-	// low dpi
+	// high dpi
 	public static final boolean IS_HIGH_DPI = Toolkit.getDefaultToolkit().getScreenResolution() >= 240;
 	
 	private JFrame frame;

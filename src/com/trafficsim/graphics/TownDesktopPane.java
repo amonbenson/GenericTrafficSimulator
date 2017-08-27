@@ -4,16 +4,22 @@ import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.ArrayList;
 import java.util.Iterator;
 
+import javax.swing.DefaultDesktopManager;
+import javax.swing.DesktopManager;
+import javax.swing.JComponent;
 import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
@@ -24,7 +30,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import com.trafficsim.town.Bus;
-import com.trafficsim.town.Event;
 import com.trafficsim.town.HouseTile;
 import com.trafficsim.town.Person;
 import com.trafficsim.town.Schedule;
@@ -33,7 +38,7 @@ import com.trafficsim.town.Tile;
 import com.trafficsim.town.Town;
 import com.trafficsim.town.Waypoint;
 
-public class TownDesktopPane extends JDesktopPane implements MouseListener, ListSelectionListener, ActionListener {
+public class TownDesktopPane extends JDesktopPane implements MouseListener, ListSelectionListener, ActionListener, ComponentListener {
 
 	public static final double BUS_SIZE = 0.5;
 	public static final int FRAME_LAYER_SPACE = 35;
@@ -58,8 +63,41 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, List
 		this.town = town;
 		tileSize = 1.0;
 		
+		addComponentListener(this);
 		addMouseListener(this);
 		
+		// Create a custom desktop manager to prevent frames from beeing moved out of the desktop pane.
+		DesktopManager manager = new DefaultDesktopManager() {
+			@Override
+			public void setBoundsForFrame(JComponent f, int newX, int newY, int newWidth, int newHeight) {
+				boolean didResize = (f.getWidth() != newWidth || f.getHeight() != newHeight);
+				if (!inBounds((JInternalFrame) f, newX, newY, newWidth, newHeight)) {
+					Container parent = f.getParent();
+					Dimension parentSize = parent.getSize();
+					int boundedX = (int) Math.min(Math.max(0, newX), parentSize.getWidth() - newWidth);
+					int boundedY = (int) Math.min(Math.max(0, newY), parentSize.getHeight() - newHeight);
+					f.setBounds(boundedX, boundedY, newWidth, newHeight);
+				} else {
+					f.setBounds(newX, newY, newWidth, newHeight);
+				}
+				if (didResize) {
+					f.validate();
+				}
+			}
+
+			protected boolean inBounds(JInternalFrame f, int newX, int newY, int newWidth, int newHeight) {
+				if (newX < 0 || newY < 0)
+					return false;
+				if (newX + newWidth > f.getDesktopPane().getWidth())
+					return false;
+				if (newY + newHeight > f.getDesktopPane().getHeight())
+					return false;
+				return true;
+			}
+		};
+		setDesktopManager(manager);
+		
+		// Create a toolbar and add its components
 		toolBar = new JToolBar();
 		toolBar.setFloatable(true);
 		frameLauncherContext.getFrame().add(BorderLayout.NORTH, toolBar);
@@ -421,5 +459,24 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, List
 				);
 			}
 		}
+	}
+
+	public void componentResized(ComponentEvent e) {
+		// When this desktop pane resizes, we have to keep all internal frames inside the bounds
+		// (there may be a better way, but this one works quite nicely)
+		for (JInternalFrame frame : getAllFrames())
+			getDesktopManager().setBoundsForFrame(frame, frame.getX(), frame.getY(), frame.getWidth(), frame.getHeight());
+	}
+
+	public void componentMoved(ComponentEvent e) {
+		
+	}
+
+	public void componentShown(ComponentEvent e) {
+		
+	}
+
+	public void componentHidden(ComponentEvent e) {
+		
 	}
 }
