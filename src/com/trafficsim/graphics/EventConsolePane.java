@@ -18,12 +18,26 @@ public class EventConsolePane extends ConsolePane {
 	
 	@Override
 	public void paintComponent(Graphics g) {
-		// Get all events and write them into the lines array
 		ArrayList<String> lines = new ArrayList<String>();
-		lines.add("Start\tEvent Type");
+		
+		// Write the global time
+		lines.add("%A0A0A0Info");
+		lines.add("Global time (ticks): " + town.getTime());
+		lines.add("");
+		
+		// Write all the key actions
+		lines.add("%A0A0A0Key Actions");
+		lines.add("Enter\tStart / Pause simulation");
+		lines.add("U\tUpdate by one tick");
+		lines.add("R\tReverse update by one tick");
+		lines.add("");
+
+		// Get all events and write them into the lines array
+		lines.add("%A0A0A0Event List");
+		lines.add("Time\tType");
 		for (Event event : town.getEvents()) {
-			String line = "%FFFFFF";
-			if (town.getTime() > event.getStartTime()) line = "%FF0000";
+			String line = "";
+			if (town.getTime() > event.getStartTime()) line = "%606060";
 			line += event.getStartTime() + "\t" + event.getClass().getSimpleName();
 			lines.add(line);
 		}

@@ -22,7 +22,7 @@ import com.trafficsim.town.Waypoint;
 public class FrameLauncher {
 	
 	// high dpi
-	public static final boolean IS_HIGH_DPI = Toolkit.getDefaultToolkit().getScreenResolution() >= 240;
+	public static final boolean IS_HIGH_DPI = Toolkit.getDefaultToolkit().getScreenResolution() >= 216;
 	
 	private JFrame frame;
 	
@@ -32,8 +32,9 @@ public class FrameLauncher {
 	// Town rendering
 	private TownDesktopPane townDesktopPane;
 	
-	// Event displaying
+	// Person list and event displaying consoles
 	private EventConsolePane eventConsolePane;
+	private PersonConsolePane personConsolePane;
 	
 	public Simulation simulation;
 	
@@ -94,11 +95,15 @@ public class FrameLauncher {
 		townDesktopPane = new TownDesktopPane(this, simulation.getTown());
 		frame.add(townDesktopPane);
 		
+		personConsolePane = new PersonConsolePane(this, simulation.getTown());
+		frame.add(BorderLayout.EAST, personConsolePane);
+		
 		eventConsolePane = new EventConsolePane(this, simulation.getTown());
-		frame.add(BorderLayout.EAST, eventConsolePane);
+		frame.add(BorderLayout.WEST, eventConsolePane);
 
-		frame.setSize(highDPI(800), highDPI(600));
+		frame.setSize(highDPI(1300), highDPI(800));
 		frame.setLocationRelativeTo(null);
+		//frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		
 		// Init the auto updater
 		updater = new AutoUpdater(frame, simulation.getTown());
@@ -139,6 +144,10 @@ public class FrameLauncher {
 
 	public TownDesktopPane getTownDesktopPane() {
 		return townDesktopPane;
+	}
+
+	public PersonConsolePane getPersonConsolePane() {
+		return personConsolePane;
 	}
 
 	public EventConsolePane getEventConsolePane() {

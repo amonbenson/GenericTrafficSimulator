@@ -40,7 +40,9 @@ import com.trafficsim.town.Waypoint;
 
 public class TownDesktopPane extends JDesktopPane implements MouseListener, ListSelectionListener, ActionListener, ComponentListener {
 
-	public static final double BUS_SIZE = 0.5;
+	public static final double BUS_DRAW_SIZE = 0.5;
+	public static final double PERSON_DRAW_SIZE = 0.2;
+	
 	public static final int FRAME_LAYER_SPACE = 35;
 	
 	private FrameLauncher frameLauncherContext;
@@ -53,7 +55,6 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, List
 	private Tile focusTile;
 	
 	private JToolBar toolBar;
-	private JLabel timeLabel;
 	private JToggleButton showRoutesButton, showRelationLinesButton;
 	
 	public TownDesktopPane(FrameLauncher frameLauncherContext, Town town) {
@@ -65,6 +66,8 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, List
 		
 		addComponentListener(this);
 		addMouseListener(this);
+		
+		setBackground(Color.white);
 		
 		// Create a custom desktop manager to prevent frames from beeing moved out of the desktop pane.
 		DesktopManager manager = new DefaultDesktopManager() {
@@ -99,12 +102,8 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, List
 		
 		// Create a toolbar and add its components
 		toolBar = new JToolBar();
-		toolBar.setFloatable(true);
+		toolBar.setFloatable(false);
 		frameLauncherContext.getFrame().add(BorderLayout.NORTH, toolBar);
-		
-		timeLabel = new JLabel("Time");
-		toolBar.add(timeLabel);
-		toolBar.addSeparator();
 		
 		showRoutesButton = new JToggleButton("show routes", true);
 		showRoutesButton.setFocusable(false);
@@ -133,10 +132,11 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, List
 				int dy = (int) (y * tileSize);
 				int ds = (int) tileSize + 1;
 				
+				// Draw the tile background
 				if (tile instanceof StreetTile) {
 					StreetTile s = (StreetTile) tile;
 					if (s.isStation()) {
-						g.setColor(Color.LIGHT_GRAY);
+						g.setColor(Color.lightGray);
 					} else {
 						g.setColor(Color.gray);
 					}
@@ -145,13 +145,10 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, List
 					g.setColor(new Color(0, 128, 0));
 				}
 				g.fillRect(dx, dy, ds, ds);
-				if (tile instanceof HouseTile) {
-					g.setColor(Color.white);
-					g.drawString(String.valueOf(((HouseTile) tile).getNumberPersons()), dx+(int)(tileSize/2), dy+(int)(tileSize/2));
-				} else if (tile instanceof StreetTile) {
-					g.setColor(Color.white);
-					g.drawString(String.valueOf(((StreetTile) tile).getPersons().size()), dx+(int)(tileSize/2), dy+(int)(tileSize/2));
-				}
+				
+				// Draw the persons waiting on street tiles
+				if (tile instanceof StreetTile)
+					drawPersons(g, x + 0.15, x + 0.15, ((StreetTile) tile).getPersons().size());
 				
 				g.setColor(Color.black);
 				g.drawRect(dx, dy, ds, ds);
@@ -197,8 +194,11 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, List
 		for (Bus b : town.getBusses()) {
 			g.setColor(Color.black);
 			if (b == focusBus) g.setColor(Color.green);
-			g.fillRect((int) (b.getX() * tileSize - tileSize * BUS_SIZE / 2), (int) (b.getY() * tileSize - tileSize * BUS_SIZE / 2), 
-					(int) (tileSize * BUS_SIZE), (int) (tileSize * BUS_SIZE) );
+			g.fillRect((int) (b.getX() * tileSize - tileSize * BUS_DRAW_SIZE / 2), (int) (b.getY() * tileSize - tileSize * BUS_DRAW_SIZE / 2), 
+					(int) (tileSize * BUS_DRAW_SIZE), (int) (tileSize * BUS_DRAW_SIZE) );
+
+			// Draw the persons inside the bus
+			drawPersons(g, b.getX() - 0.1, b.getY() - 0.1, b.getPersons().size());
 		}
 		
 		// Draw lines to the internal frames ("relation lines")
@@ -264,11 +264,17 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, List
 			}
 		}
 		
-		// Draw the current time
-		timeLabel.setText("Time: " + town.getTime());
-		
-		// Repaint the event console
+		// Repaint the person and event console
 		frameLauncherContext.getEventConsolePane().repaint();
+		frameLauncherContext.getPersonConsolePane().repaint();
+	}
+	
+	private void drawPersons(Graphics2D g, double x, double y, int numPersons) {
+		if (numPersons <= 0) return;
+		
+		g.setColor(new Color(255, 200, 0));
+		g.fillRect((int) (x * tileSize - tileSize * PERSON_DRAW_SIZE / 2), (int) (y * tileSize - tileSize * PERSON_DRAW_SIZE / 2), 
+				(int) (tileSize * PERSON_DRAW_SIZE), (int) (tileSize * PERSON_DRAW_SIZE) );
 	}
 	
 	public void updateFocusElement() {
@@ -355,7 +361,7 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, List
 			
 			int busMidX = (int) (bus.getX() * tileSize);
 			int busMidY = (int) (bus.getY() * tileSize);
-			int busSize = (int) (tileSize * BUS_SIZE);
+			int busSize = (int) (tileSize * BUS_DRAW_SIZE);
 
 			// Check if user clicked on bus
 			if (new Rectangle(busMidX - busSize / 2, busMidY - busSize / 2, busSize, busSize).contains(e.getPoint())) {

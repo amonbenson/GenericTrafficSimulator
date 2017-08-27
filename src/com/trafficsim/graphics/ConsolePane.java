@@ -11,9 +11,9 @@ import javax.swing.JPanel;
 
 public class ConsolePane extends JPanel {
 	
-	public static final int DEFAULT_WIDTH = 200;
+	public static final int DEFAULT_WIDTH = 250;
 	
-	public static final int DEFAULT_X = 10, DEFAULT_Y = 20, DEFAULT_PART_SIZE = 50;
+	public static final int DEFAULT_X = 10, DEFAULT_Y = 20, DEFAULT_TAB_SIZE = 60;
 	
 	private ArrayList<String> lines;
 	
@@ -31,11 +31,12 @@ public class ConsolePane extends JPanel {
 
 		int sx = FrameLauncher.highDPI(DEFAULT_X);
 		int sy = FrameLauncher.highDPI(DEFAULT_Y);
-		int dx = FrameLauncher.highDPI(DEFAULT_PART_SIZE);
+		int dx = FrameLauncher.highDPI(DEFAULT_TAB_SIZE);
 		int dy = getFontMetrics(getFont()).getHeight();
 		
-		g.setColor(Color.white);
 		for (String line : lines) {
+			g.setColor(Color.white);
+			
 			String[] parts = line.split("\t");
 			sx = DEFAULT_X;
 			for (String part : parts) {
