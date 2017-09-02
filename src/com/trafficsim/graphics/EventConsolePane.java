@@ -47,4 +47,9 @@ public class EventConsolePane extends ConsolePane {
 		// Repaint the super class
 		super.paintComponent(g);
 	}
+
+	@Override
+	public void lineClicked(int line, String content) {
+		
+	}
 }

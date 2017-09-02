@@ -3,23 +3,33 @@ package com.trafficsim.graphics;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-public class ConsolePane extends JPanel {
+public abstract class ConsolePane extends JPanel implements MouseListener {
 	
 	public static final int DEFAULT_WIDTH = 250;
 	
-	public static final int DEFAULT_X = 10, DEFAULT_Y = 20, DEFAULT_TAB_SIZE = 60;
+	public static final int BORDER_X = 10, BORDER_Y = 20, TAB_SIZE = 60;
 	
 	private ArrayList<String> lines;
+	private int sx, sy, dx, dy;
 	
 	public ConsolePane() {
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		setPreferredSize(new Dimension(FrameLauncher.highDPI(DEFAULT_WIDTH), 1));
+		
+		addMouseListener(this);
+
+		sx = FrameLauncher.highDPI(BORDER_X);
+		sy = FrameLauncher.highDPI(BORDER_Y);
+		dx = FrameLauncher.highDPI(TAB_SIZE);
+		dy = getFontMetrics(getFont()).getHeight();
 		
 		clear();
 	}
@@ -28,17 +38,16 @@ public class ConsolePane extends JPanel {
 	public void paintComponent(Graphics g) {
 		g.setColor(Color.black);
 		g.fillRect(0, 0, getWidth(), getHeight());
-
-		int sx = FrameLauncher.highDPI(DEFAULT_X);
-		int sy = FrameLauncher.highDPI(DEFAULT_Y);
-		int dx = FrameLauncher.highDPI(DEFAULT_TAB_SIZE);
-		int dy = getFontMetrics(getFont()).getHeight();
+		
+		// Temporary coordinates, to draw each line
+		int x = sx;
+		int y = sy;
 		
 		for (String line : lines) {
 			g.setColor(Color.white);
 			
 			String[] parts = line.split("\t");
-			sx = DEFAULT_X;
+			x = BORDER_X;
 			for (String part : parts) {
 				if (part.startsWith("%%")) part.replace("%%", "%");
 				else if (part.startsWith("%")) {
@@ -54,12 +63,14 @@ public class ConsolePane extends JPanel {
 					));
 
 				}
-				g.drawString(part, sx, sy);
-				sx += dx;
+				g.drawString(part, x, y);
+				x += dx;
 			}
-			sy += dy;
+			y += dy;
 		}
 	}
+	
+	public abstract void lineClicked(int line, String content);
 	
 	public ArrayList<String> getLines() {
 		return lines;
@@ -73,7 +84,33 @@ public class ConsolePane extends JPanel {
 		lines.add(line);
 	}
 	
+	public int getNumLines() {
+		return lines.size();
+	}
+	
 	public void clear() {
 		lines = new ArrayList<String>();
+	}
+
+	public void mouseClicked(MouseEvent e) {
+	}
+
+	public void mousePressed(MouseEvent e) {
+		int line = (int) ((double) (e.getY() - sy) / dy + 0.8);
+		if (line < 0 || line >= getNumLines()) return;
+		
+		lineClicked(line, lines.get(line));
+	}
+
+	public void mouseReleased(MouseEvent e) {
+		
+	}
+
+	public void mouseEntered(MouseEvent e) {
+		
+	}
+
+	public void mouseExited(MouseEvent e) {
+		
 	}
 }

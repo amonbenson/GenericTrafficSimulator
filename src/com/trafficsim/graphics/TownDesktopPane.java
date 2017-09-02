@@ -300,7 +300,7 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, List
 		}
 	}
 
-	private void createBusInfoFrame(Bus bus, int dx, int dy) {
+	public void createBusInfoFrame(Bus bus, int dx, int dy) {
 		if (containsInfoFrame(bus)) return;
 		
 		// Create a bus info frame, add a person list selection listener
@@ -311,7 +311,7 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, List
 		updateInternalFramePositions();
 	}
 	
-	private void createPersonInfoFrame(Person person, int dx, int dy) {
+	public void createPersonInfoFrame(Person person, int dx, int dy) {
 		if (containsInfoFrame(person)) return;
 		
 		// Create a person info frame
@@ -321,7 +321,7 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, List
 		updateInternalFramePositions();
 	}
 	
-	private void createStreetTileInfoFrame(StreetTile tile, int dx, int dy) {
+	public void createStreetTileInfoFrame(StreetTile tile, int dx, int dy) {
 		if (containsInfoFrame(tile)) return;
 		
 		// Create a tile info frame
@@ -333,7 +333,7 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, List
 		updateInternalFramePositions();
 	}
 	
-	private void createHouseTileInfoFrame(HouseTile tile, int dx, int dy) {
+	public void createHouseTileInfoFrame(HouseTile tile, int dx, int dy) {
 		if (containsInfoFrame(tile)) return;
 		
 		// Create a tile info frame
