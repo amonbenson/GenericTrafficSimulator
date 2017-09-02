@@ -48,9 +48,8 @@ public class FrameLauncher {
 		ArrayList<Schedule> schedules = new ArrayList<Schedule>();
 		ArrayList<Waypoint> waypoints = new ArrayList<Waypoint>();
 		waypoints.add(new Waypoint(0.5, 0.5));
-		waypoints.add(new Waypoint(3.5, 0.5));
 		waypoints.add(new Waypoint(3.5, 3.5));
-		waypoints.add(new Waypoint(3.5, 0.5));
+		waypoints.add(new Waypoint(0.5, 0.5));
 		ArrayList<BusStartTime> startTimes = new ArrayList<BusStartTime>();
 		startTimes.add(new BusStartTime(5, BusDirection.NORMAL));
 		schedules.add(new Schedule(waypoints, startTimes, 0, "187"));

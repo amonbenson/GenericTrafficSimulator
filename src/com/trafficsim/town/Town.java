@@ -4,7 +4,13 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Random;
+
+import org.xguzm.pathfinding.grid.GridCell;
+import org.xguzm.pathfinding.grid.NavigationGrid;
+import org.xguzm.pathfinding.grid.finders.AStarGridFinder;
+import org.xguzm.pathfinding.grid.finders.GridFinderOptions;
 
 import com.trafficsim.generic.Chromosom;
 import com.trafficsim.sim.Simulation;
@@ -25,6 +31,15 @@ public class Town implements Updateable {
 	private ArrayList<Person> persons; //alle Personen der Stadt
 	private long time; //aktuelle Zeit der Stadt
 	private Random random; //jede Stadt besitzt einen eigenen Randomgenerator (so können bestimmte Szenarien erneut simuliert werden)
+	
+	private GridCell[][] pathfindingMap = null; //die aktuelle Pathfindingkarte, wird bei applyChromosom erzeugt
+	//create a navigation grid with the cells you just created
+	private NavigationGrid<GridCell> navGrid = null;
+	
+	//or create your own pathfinder options:
+	private GridFinderOptions opt = null;
+	
+	AStarGridFinder<GridCell> finder = null;
 	
 	public Town(int sizeX, int sizeY) {
 		this(sizeX, sizeY, null, null, new Random());
@@ -215,6 +230,23 @@ public class Town implements Updateable {
 	public void applyChromosom() {
 		if (chromosom != null) {
 			toNormal(); //Alles auf Anfang setzen
+			//Pathfindingkarte erzeugen:
+			pathfindingMap = new GridCell[sizeX][sizeY];
+
+			for (int x=0;x<sizeX;x++) {
+				for (int y=0;y<sizeY;y++) {
+					boolean walkable = false;
+					if (tiles[x][y] instanceof StreetTile) {
+						walkable = true;
+					}
+					pathfindingMap[x][y] = new GridCell(x, y, walkable);
+				}
+			}
+			navGrid = new NavigationGrid(pathfindingMap);
+			opt = new GridFinderOptions();
+			opt.allowDiagonal = false;
+			finder = new AStarGridFinder(GridCell.class, opt);
+			
 			//Bushaltestellen setzen:
 			for ( Point p : chromosom.getStations() ) {
 				if (! (tiles[p.x][p.y] instanceof StreetTile) ) {
@@ -226,7 +258,7 @@ public class Town implements Updateable {
 			}
 			//Buslinien einfügen:
 			for ( Schedule schedule : chromosom.getSchedules()) {
-				schedule.calcWaypoints(tiles); //kreiert die internen Wegpunkte TODO eventuell muss auf eine Kopie zugegriffen werden
+				schedule.calcWaypoints(this); //kreiert die internen Wegpunkte TODO eventuell muss auf eine Kopie zugegriffen werden
 				events.addAll(schedule.getBusCreationEvents(this));
 				//Jede Station muss wissen, dass hier diese Linie fährt:
 				for ( Waypoint w : schedule.getStations() ) {
@@ -306,6 +338,7 @@ public class Town implements Updateable {
 			}
 		}
 		events.clear();
+		pathfindingMap = null;
 	}
 	
 	
@@ -416,5 +449,11 @@ public class Town implements Updateable {
 	    });
 	}
 	
+	public GridCell[][] getPathfindingMap() {
+		return pathfindingMap;
+	}
 	
+	public List<GridCell> findPath(int x1, int y1, int x2, int y2) {
+		return finder.findPath(x1, y1, x2, y2, navGrid);
+	}
 }

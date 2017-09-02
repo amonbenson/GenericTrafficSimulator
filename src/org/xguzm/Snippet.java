@@ -23,16 +23,9 @@ public class Snippet {
 		cells[2][2].setWalkable(false);
 		cells[2][3].setWalkable(false);
 		
-		//create a navigation grid with the cells you just created
-		NavigationGrid<GridCell> navGrid = new NavigationGrid(cells);
+
 		
-		//or create your own pathfinder options:
-		GridFinderOptions opt = new GridFinderOptions();
-		opt.allowDiagonal = false;
-			
-		AStarGridFinder<GridCell> finder = new AStarGridFinder(GridCell.class, opt);
-		
-		List<GridCell> pathToEnd = finder.findPath(0, 0, 4, 4, navGrid);
+		List<GridCell> pathToEnd = finder.findPath(4, 4, 0, 0, navGrid);
 		for (GridCell c : pathToEnd) {
 			System.out.println(c.x+":"+c.y);
 		}

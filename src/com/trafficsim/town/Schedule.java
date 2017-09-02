@@ -2,9 +2,11 @@ package com.trafficsim.town;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
-import com.trafficsim.pathfinding.Graph;
-import com.trafficsim.pathfinding.Vertex;
+import org.xguzm.pathfinding.grid.GridCell;
+
+import com.trafficsim.sim.Simulation;
 
 /**
  * Repräsentiert eine Buslinie
@@ -58,8 +60,28 @@ public class Schedule {
 	 * @param map Karte der Stadt
 	 */
 	//TODO A*-Algorithmus einbauen
-	public void calcWaypoints(Tile[][] map) {
-		waypoints  = stations; //Momentan gibt es noch kein Wegfindungsalgorithmus, also müssen Stationen immer nebeneinander liegen
+	public void calcWaypoints(Town t) {
+		if (stations.size() != 0) {
+			waypoints = new ArrayList<Waypoint>();
+			Waypoint start = stations.get(0);
+			Waypoint end;
+			for (int i=1;i<stations.size();i++) {
+				System.out.println(name);
+				end = stations.get(i);
+				List<GridCell> result = t.findPath((int)start.getX(), (int)start.getY(), (int)end.getX(), (int)end.getY());
+				
+				waypoints.add(start);
+				for (GridCell c : result) {
+					waypoints.add(new Waypoint(c.x+0.5, c.y+0.5));
+				}
+				waypoints.add(end);
+				
+				start = stations.get(i);
+			}
+			//waypoints  = stations; //Momentan gibt es noch kein Wegfindungsalgorithmus, also müssen Stationen immer nebeneinander liegen
+		} else {
+			Simulation.logger.warning("Der Fahrplan beinhaltet keine Stationen!");
+		}
 	}
 	
 	public boolean hasSameName(String n) {
