@@ -45,9 +45,12 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, List
 	
 	public static final int FRAME_LAYER_SPACE = 35;
 	
+	public static final int DEFAULT_TRANSPARENCY = 60;
+	
 	private FrameLauncher frameLauncherContext;
 	private Town town;
-	
+
+	private int tileX, tileY;
 	private double tileSize;
 
 	private Bus focusBus;
@@ -62,12 +65,15 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, List
 		
 		this.frameLauncherContext = frameLauncherContext;
 		this.town = town;
+		
+		tileX = 10;
+		tileY = 100;
 		tileSize = 1.0;
 		
 		addComponentListener(this);
 		addMouseListener(this);
 		
-		setBackground(Color.white);
+		setBackground(Color.black);
 		
 		// Create a custom desktop manager to prevent frames from beeing moved out of the desktop pane.
 		DesktopManager manager = new DefaultDesktopManager() {
@@ -122,14 +128,22 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, List
 		
 		Tile[][] tiles = town.getTiles();
 		
-		tileSize = Math.min(getWidth() / (double) town.getSizeX(), getHeight() / (double) town.getSizeY());
+		if (getWidth() / town.getSizeX() > getHeight() / town.getSizeY()) {
+			tileSize = getHeight() / (double) town.getSizeY();
+			tileX = (int) ((getWidth() - town.getSizeX() * tileSize) / 2);
+			tileY = 0;
+		} else {
+			tileSize = getWidth() / (double) town.getSizeX();
+			tileX = 0;
+			tileY = (int) ((getHeight() - town.getSizeY() * tileSize) / 2);
+		}
 		
 		// Draw town tiles
 		for (int x = 0; x < town.getSizeX(); x++) {
 			for (int y = 0; y < town.getSizeY(); y++) {
 				Tile tile = tiles[x][y];
-				int dx = (int) (x * tileSize);
-				int dy = (int) (y * tileSize);
+				int dx = (int) (x * tileSize) + tileX;
+				int dy = (int) (y * tileSize) + tileY;
 				int ds = (int) tileSize + 1;
 				
 				// Draw the tile background
@@ -160,32 +174,43 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, List
 			
 			// Draw route of focus bus
 			if (focusBus != null) {
-				g.setColor(new Color(0, 255, 0, 128));
 				
 				Schedule schedule = focusBus.getSchedule().getSchedule();
 				for (int i = 0; i < schedule.getWaypointSize() - 1; i++) {
 					Waypoint w1 = schedule.getWaypoint(i);
 					Waypoint w2 = schedule.getWaypoint(i + 1);
+
+					g.setColor(new Color(0, 255, 0, DEFAULT_TRANSPARENCY));
 					g.drawLine(
-							(int) (w1.getX() * tileSize), 
-							(int) (w1.getY() * tileSize), 
-							(int) (w2.getX() * tileSize), 
-							(int) (w2.getY() * tileSize)
+							(int) (w1.getX() * tileSize) + tileX, 
+							(int) (w1.getY() * tileSize) + tileY, 
+							(int) (w2.getX() * tileSize) + tileX, 
+							(int) (w2.getY() * tileSize) + tileY
 					);
+					
+					if (i > 0) {
+						g.setColor(new Color(0, 255, 0));
+						g.drawLine(
+								(int) (w1.getX() * tileSize) + tileX, 
+								(int) (w1.getY() * tileSize) + tileY,
+								(int) (w1.getX() * tileSize) + tileX, 
+								(int) (w1.getY() * tileSize) + tileY
+						);
+					}
 				}
 			}
 			
 			// Draw route of focus person (draw a strait line from origin to target station)
 			if (focusPerson != null) {
-				g.setColor(new Color(255, 0, 0, 128));
+				g.setColor(new Color(255, 0, 0, DEFAULT_TRANSPARENCY));
 			
 				Waypoint w1 = focusPerson.getRoute().getOrigin().toWaypoint();
 				Waypoint w2 = focusPerson.getRoute().getTarget().toWaypoint();
 				g.drawLine(
-						(int) ((w1.getX() + 0.5) * tileSize), 
-						(int) ((w1.getY() + 0.5) * tileSize), 
-						(int) ((w2.getX() + 0.5) * tileSize), 
-						(int) ((w2.getY() + 0.5) * tileSize)
+						(int) ((w1.getX() + 0.5) * tileSize) + tileX, 
+						(int) ((w1.getY() + 0.5) * tileSize) + tileY, 
+						(int) ((w2.getX() + 0.5) * tileSize) + tileX, 
+						(int) ((w2.getY() + 0.5) * tileSize) + tileY
 				);
 			}
 		}
@@ -194,7 +219,9 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, List
 		for (Bus b : town.getBusses()) {
 			g.setColor(new Color(100, 100, 100));
 			if (b == focusBus) g.setColor(Color.green);
-			g.fillRect((int) (b.getX() * tileSize - tileSize * BUS_DRAW_SIZE / 2), (int) (b.getY() * tileSize - tileSize * BUS_DRAW_SIZE / 2), 
+			g.fillRect(
+					(int) (b.getX() * tileSize - tileSize * BUS_DRAW_SIZE / 2) + tileX,
+					(int) (b.getY() * tileSize - tileSize * BUS_DRAW_SIZE / 2) + tileY, 
 					(int) (tileSize * BUS_DRAW_SIZE), (int) (tileSize * BUS_DRAW_SIZE) );
 
 			// Draw the persons inside the bus
@@ -212,8 +239,8 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, List
 					
 					g.setColor(Color.white);
 					
-					int sx = (int) ((frame.getTile().getX() + 0.5) * tileSize);
-					int sy = (int) ((frame.getTile().getY() + 0.5) * tileSize);
+					int sx = (int) ((frame.getTile().getX() + 0.5) * tileSize) + tileX;
+					int sy = (int) ((frame.getTile().getY() + 0.5) * tileSize) + tileY;
 					int ex = frame.getX() + frame.getWidth() / 2;
 					int ey = frame.getY() + frame.getHeight() / 2;
 					
@@ -225,8 +252,8 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, List
 					
 					g.setColor(Color.white);
 					
-					int sx = (int) ((frame.getTile().getX() + 0.5) * tileSize);
-					int sy = (int) ((frame.getTile().getY() + 0.5) * tileSize);
+					int sx = (int) ((frame.getTile().getX() + 0.5) * tileSize) + tileX;
+					int sy = (int) ((frame.getTile().getY() + 0.5) * tileSize) + tileY;
 					int ex = frame.getX() + frame.getWidth() / 2;
 					int ey = frame.getY() + frame.getHeight() / 2;
 					
@@ -240,8 +267,8 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, List
 					g.setColor(Color.white);
 					if (frame.getBus() == focusBus) g.setColor(Color.green);
 					
-					int sx = (int) (frame.getBus().getX() * tileSize);
-					int sy = (int) (frame.getBus().getY() * tileSize);
+					int sx = (int) (frame.getBus().getX() * tileSize) + tileX;
+					int sy = (int) (frame.getBus().getY() * tileSize) + tileY;
 					int ex = frame.getX() + frame.getWidth() / 2;
 					int ey = frame.getY() + frame.getHeight() / 2;
 					
@@ -254,8 +281,8 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, List
 					g.setColor(Color.white);
 					if (frame.getPerson() == focusPerson) g.setColor(Color.red);
 					
-					int sx = (int) (frame.getPerson().getX() * tileSize);
-					int sy = (int) (frame.getPerson().getY() * tileSize);
+					int sx = (int) (frame.getPerson().getX() * tileSize) + tileX;
+					int sy = (int) (frame.getPerson().getY() * tileSize) + tileY;
 					int ex = frame.getX() + frame.getWidth() / 2;
 					int ey = frame.getY() + frame.getHeight() / 2;
 					
@@ -273,12 +300,14 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, List
 		if (numPersons <= 0) return;
 		
 		g.setColor(new Color(255, 200, 0));
-		g.fillRect((int) (x * tileSize - tileSize * PERSON_DRAW_SIZE / 2), (int) (y * tileSize - tileSize * PERSON_DRAW_SIZE / 2), 
+		g.fillRect(
+				(int) (x * tileSize - tileSize * PERSON_DRAW_SIZE / 2) + tileX,
+				(int) (y * tileSize - tileSize * PERSON_DRAW_SIZE / 2) + tileY, 
 				(int) (tileSize * PERSON_DRAW_SIZE), (int) (tileSize * PERSON_DRAW_SIZE) );
 		
 		if (numPersons > 1) {
 			g.setColor(Color.black);
-			g.drawString("x" + numPersons, (int) ((x + PERSON_DRAW_SIZE / 2 + 0.05) * tileSize), (int) ((y + 0.04) * tileSize));
+			g.drawString("x" + numPersons, (int) ((x + PERSON_DRAW_SIZE / 2 + 0.05) * tileSize) + tileX, (int) ((y + 0.04) * tileSize) + tileY);
 		}
 	}
 	
@@ -378,8 +407,8 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, List
 		while (busIt.hasNext()) {
 			Bus bus = busIt.next();
 			
-			int busMidX = (int) (bus.getX() * tileSize);
-			int busMidY = (int) (bus.getY() * tileSize);
+			int busMidX = (int) (bus.getX() * tileSize) + tileX;
+			int busMidY = (int) (bus.getY() * tileSize) + tileY;
 			int busSize = (int) (tileSize * BUS_DRAW_SIZE);
 
 			// Check if user clicked on bus
@@ -390,10 +419,10 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, List
 		}
 		
 		// CLICK EVENT ON TILE
-		int tileX = (int) (e.getX() / tileSize);
-		int tileY = (int) (e.getY() / tileSize);
-		if (tileX >= 0 && tileX < town.getSizeX() && tileY >= 0 && tileY < town.getSizeY()) {
-			Tile tile = town.getTiles()[tileX][tileY];
+		int tx = (int) ((e.getX() - tileX) / tileSize);
+		int ty = (int) ((e.getY() - tileY) / tileSize);
+		if (tx >= 0 && tx < town.getSizeX() && ty >= 0 && ty < town.getSizeY()) {
+			Tile tile = town.getTiles()[tx][ty];
 			if (tile instanceof StreetTile)
 				createStreetTileInfoFrame(
 						(StreetTile) tile,
