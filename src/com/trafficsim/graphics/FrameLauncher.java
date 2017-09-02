@@ -47,26 +47,25 @@ public class FrameLauncher {
 		Chromosom c = new Chromosom();
 		ArrayList<Schedule> schedules = new ArrayList<Schedule>();
 		ArrayList<Waypoint> waypoints = new ArrayList<Waypoint>();
-		waypoints.add(new Waypoint(0.5, 0.5));
-		waypoints.add(new Waypoint(3.5, 3.5));
-		waypoints.add(new Waypoint(0.5, 0.5));
+		waypoints.add(new Waypoint(5.5, 3.5));
+		waypoints.add(new Waypoint(5.5, 5.5));
 		ArrayList<BusStartTime> startTimes = new ArrayList<BusStartTime>();
 		startTimes.add(new BusStartTime(5, BusDirection.NORMAL));
 		schedules.add(new Schedule(waypoints, startTimes, 0, "187"));
 		
 		waypoints = new ArrayList<Waypoint>();
-		waypoints.add(new Waypoint(0.5, 5.5));		
-		waypoints.add(new Waypoint(5.5, 3.5));		
-		waypoints.add(new Waypoint(0.5, 5.5));
+		waypoints.add(new Waypoint(0.5, 0.5));
+		waypoints.add(new Waypoint(5.5, 3.5));
 		
 		startTimes = new ArrayList<BusStartTime>();
 		startTimes.add(new BusStartTime(0, BusDirection.NORMAL));
-		schedules.add(new Schedule(waypoints, startTimes, 0, "188", true));
+		schedules.add(new Schedule(waypoints, startTimes, 0, "188", false));
 		c.setSchedules(schedules);
 		
 		ArrayList<Point> stations = new ArrayList<Point>();
 		stations.add(new Point(0, 0));
 		stations.add(new Point(5, 3));
+		stations.add(new Point(5, 5));
 		c.setStations(stations);
 		
 		simulation.getTown().setChromosom(c);

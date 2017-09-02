@@ -7,6 +7,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
+import org.jgrapht.alg.DijkstraShortestPath;
+import org.jgrapht.graph.DefaultWeightedEdge;
+import org.jgrapht.graph.SimpleWeightedGraph;
 import org.xguzm.pathfinding.grid.GridCell;
 import org.xguzm.pathfinding.grid.NavigationGrid;
 import org.xguzm.pathfinding.grid.finders.AStarGridFinder;
@@ -32,14 +35,14 @@ public class Town implements Updateable {
 	private long time; //aktuelle Zeit der Stadt
 	private Random random; //jede Stadt besitzt einen eigenen Randomgenerator (so können bestimmte Szenarien erneut simuliert werden)
 	
+	//Wegfindungszeug für Busse:
 	private GridCell[][] pathfindingMap = null; //die aktuelle Pathfindingkarte, wird bei applyChromosom erzeugt
-	//create a navigation grid with the cells you just created
 	private NavigationGrid<GridCell> navGrid = null;
-	
-	//or create your own pathfinder options:
 	private GridFinderOptions opt = null;
-	
 	AStarGridFinder<GridCell> finder = null;
+	
+	//Wegfindungszeug für Personen:
+	private SimpleWeightedGraph<Waypoint, DefaultWeightedEdge> stationGraph = null;
 	
 	public Town(int sizeX, int sizeY) {
 		this(sizeX, sizeY, null, null, new Random());
@@ -230,9 +233,9 @@ public class Town implements Updateable {
 	public void applyChromosom() {
 		if (chromosom != null) {
 			toNormal(); //Alles auf Anfang setzen
-			//Pathfindingkarte erzeugen:
+			
+			//Pathfindingkarte erzeugen (für Busse):
 			pathfindingMap = new GridCell[sizeX][sizeY];
-
 			for (int x=0;x<sizeX;x++) {
 				for (int y=0;y<sizeY;y++) {
 					boolean walkable = false;
@@ -246,6 +249,41 @@ public class Town implements Updateable {
 			opt = new GridFinderOptions();
 			opt.allowDiagonal = false;
 			finder = new AStarGridFinder(GridCell.class, opt);
+			
+			//Pathfindingkarte für Menschen erzeugen:
+			stationGraph = new SimpleWeightedGraph<Waypoint, DefaultWeightedEdge>(DefaultWeightedEdge.class); 
+			for ( Schedule s : chromosom.getSchedules()) { //Fügt alle Vertexe ein
+				for ( Waypoint w : s.getStations()) {
+					if (!stationGraph.containsVertex(w)) {
+						stationGraph.addVertex(w);
+					}
+				}
+			}
+			
+			//Verlinkt die Vertexe untereinander:
+			for ( Schedule s : chromosom.getSchedules()) { //Fügt alle Vertexe ein
+				Waypoint start = s.getStations().get(0);
+				Waypoint end = null;
+				for ( int i=1;i<s.getStations().size();i++) {
+					end = s.getStations().get(i);
+					DefaultWeightedEdge d = stationGraph.addEdge(start, end);
+					stationGraph.setEdgeWeight(d, getPathLength( 
+							(int) start.getX(), 
+							(int) start.getY(),
+							(int) end.getX(),
+							(int) end.getY()));
+					start = s.getStations().get(i);
+				}
+				if (s.isCircle()) {
+					DefaultWeightedEdge d = stationGraph.addEdge(s.getStations().get(s.getStations().size()-1), s.getStations().get(0));
+					stationGraph.setEdgeWeight(d, getPathLength( 
+							(int) s.getStations().get(s.getStations().size()-1).getX(), 
+							(int) s.getStations().get(s.getStations().size()-1).getY(),
+							(int) s.getStations().get(0).getX(),
+							(int) s.getStations().get(0).getY()));
+				}
+			}
+
 			
 			//Bushaltestellen setzen:
 			for ( Point p : chromosom.getStations() ) {
@@ -373,6 +411,29 @@ public class Town implements Updateable {
 	 */
 	private void generateRoutingForPerson(Person p, ArrayList<Event> list) {
 		
+		System.out.println(stationGraph.vertexSet());
+		
+		/*
+		Tile origin = getRandomTileWithExclude(p.getHouse());
+		int newX = random.nextInt(sizeX-(StreetTile.AREA_STATION*2+1) );
+		if (newX >= origin.getX()-(StreetTile.AREA_STATION*2+1)) {
+			newX += StreetTile.AREA_STATION*2+1;
+		}
+		int newY = random.nextInt(sizeY-(StreetTile.AREA_STATION*2+1) );
+		if (newY >= origin.getY()-(StreetTile.AREA_STATION*2+1)) {
+			newY += StreetTile.AREA_STATION*2+1;
+		}
+		Tile target = tiles[newX][newY];
+		*/
+		
+		Tile origin = tiles[0][0];
+		Tile target = tiles[5][5];
+		
+		System.out.println(origin);
+		System.out.println(target);
+		
+		getPathForPerson(origin, target);
+		
 		/*
 		if (random.nextBoolean()) {
 			StreetTile origin = (StreetTile) tiles[0][0];
@@ -456,5 +517,57 @@ public class Town implements Updateable {
 	
 	public List<GridCell> findPath(int x1, int y1, int x2, int y2) {
 		return finder.findPath(x1, y1, x2, y2, navGrid);
+	}
+	
+	public int getPathLength(int x1, int y1, int x2, int y2) {
+		List<GridCell> a = findPath(x1, y1, x2, y2);
+		return (a.size()+2);
+	}
+	public void getPathForPerson(Tile origin, Tile target) {
+		StreetTile originNextStation;
+		StreetTile targetNextStation;
+		originNextStation = origin.getNextStation(tiles);
+		targetNextStation = target.getNextStation(tiles);
+		if (originNextStation == targetNextStation) {
+			System.out.println("Gleiche Station..return :(");
+			return;
+		}
+		if (originNextStation != null && targetNextStation != null) {
+			System.out.println("VErtex:"+stationGraph.vertexSet());
+			
+			Waypoint start = findWaypointInChromosom(originNextStation.getX(), originNextStation.getY());
+			Waypoint end = findWaypointInChromosom(targetNextStation.getX(), targetNextStation.getY());
+			
+			if (start != null && end != null) {
+				Simulation.logger.warning("Achtung, Start und Ziel konnte im Graphen nicht ermittelt werden. Start:"+start+":Ziel:"+end);
+				return;
+			}
+			
+			List<DefaultWeightedEdge> shortest_path =   DijkstraShortestPath.findPathBetween(stationGraph, start, end);
+			System.out.println("Habe einen Weg gefunden!");
+			System.out.println(shortest_path);
+		} else {
+			Simulation.logger.warning("Achtung, keine Station im Umkreis vom Start/Ziel gefunden.");
+		}
+		
+	}
+	private int getLengthForPathPerson(List<DefaultWeightedEdge> list) {
+		int result=-1;
+		for (DefaultWeightedEdge w : list) {
+			result += stationGraph.getEdgeWeight(w);
+		}
+		return result;
+	}
+	
+	//Wird für die richtige Zuordnung des Graphen benötigt
+	private Waypoint findWaypointInChromosom(double x, double y) {
+		for (Schedule s : chromosom.getSchedules()) {
+			for (Waypoint w  : s.getStations()) {
+				if (w.isSame((int) x, (int) y)) {
+					return w;
+				}
+			}
+		}
+		return null;
 	}
 }

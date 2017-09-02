@@ -75,6 +75,10 @@ public abstract class Tile {
 		return new Waypoint(x, y);
 	}
 	
+	public Waypoint toWaypointWithOffset() {
+		return new Waypoint(x+0.5, y+0.5);
+	}
+	
 	@Override
 	public String toString() {
 		return "X: "+x+" Y:"+y;
