@@ -373,16 +373,17 @@ public class Town implements Updateable {
 	 */
 	private void generateRoutingForPerson(Person p, ArrayList<Event> list) {
 		
+		/*
 		if (random.nextBoolean()) {
 			StreetTile origin = (StreetTile) tiles[0][0];
 			Tile target = tiles[5][3];
 			ArrayList<ChangeStation> stations = new ArrayList<ChangeStation>();		
-			stations.add(new ChangeStation(new Waypoint(0,0), origin.getSchedules().get(0).getScheduleNormal()));
-			stations.add(new ChangeStation(new Waypoint(3,3), ((StreetTile) tiles[5][3]).getSchedules().get(0).getScheduleNormal()));
-			stations.add(new ChangeStation(new Waypoint(5,3), ((StreetTile) tiles[5][3]).getSchedules().get(0).getScheduleNormal()));
-			Route r = new Route(origin, target, stations);
-			RoutingEvent re = new RoutingEvent(15, p, r);
-			list.add(re);
+			//stations.add(new ChangeStation(new Waypoint(0,0), origin.getSchedules().get(0).getScheduleNormal()));
+			//stations.add(new ChangeStation(new Waypoint(3,3), ((StreetTile) tiles[5][3]).getSchedules().get(0).getScheduleNormal()));
+			//stations.add(new ChangeStation(new Waypoint(5,3), ((StreetTile) tiles[5][3]).getSchedules().get(0).getScheduleNormal()));
+			//Route r = new Route(origin, target, stations);
+			//RoutingEvent re = new RoutingEvent(15, p, r);
+			//list.add(re);
 		} else {
 			StreetTile origin = (StreetTile) tiles[0][0];
 			Tile target = tiles[0][5];
@@ -394,7 +395,7 @@ public class Town implements Updateable {
 			RoutingEvent re = new RoutingEvent(15, p, r);
 			list.add(re);
 		}
-		
+		*/
 		/*
 		int warning_counter = 0;
 		StreetTile origin = null;

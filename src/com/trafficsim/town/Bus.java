@@ -89,7 +89,14 @@ public class Bus extends Entity {
 			
 			//Halte den Wegpunkt immer im richtigen Bereich: (Rotationsprinzip)
 			currentWaypoint++;
-			if (currentWaypoint>=schedule.getSchedule().getWaypointSize()) {
+			if (currentWaypoint>=schedule.getSchedule().getWaypointSize()) { //Hier wird die Richtung geändert, da die Endhaltestelle erreicht ist
+				if (!schedule.getSchedule().isCircle()) { //Nur die Richtung wechseln, wenn die Linie nicht im Kreis verläuft
+					if (schedule.isNormal()) {
+						schedule = schedule.getSchedule().getScheduleReverse();
+					} else {
+						schedule = schedule.getSchedule().getScheduleNormal();					
+					}
+				}
 				currentWaypoint = 0;
 			}
 			

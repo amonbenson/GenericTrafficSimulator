@@ -9,6 +9,8 @@ public class SpecificSchedule {
 	private Schedule schedule;
 	private BusDirection direction;
 	
+	private boolean shouldAlternate = false; //FLAG, ob 
+	
 	public SpecificSchedule(Schedule schedule, BusDirection direction) {
 		if (schedule == null) throw new NullPointerException("Schedule can't be null.");
 		if (direction == null) throw new NullPointerException("Direction can't be null.");

@@ -41,17 +41,25 @@ public class Schedule {
 	 */
 	private SpecificSchedule scheduleNormal, scheduleReverse;
 	
+	private boolean isCircle = false; //FLAG, ob die Linie im Kreis verläuft, oder an der Endhaltestelle die Richtung wechselt
+	
 	public Schedule(ArrayList<Waypoint> stations, ArrayList<BusStartTime> busStartTimes, int minDelay, String name) {
+		this(stations, busStartTimes, minDelay, name, false);
+	}
+	
+	public Schedule(ArrayList<Waypoint> stations, ArrayList<BusStartTime> busStartTimes, int minDelay, String name, boolean isCircle) {
 		this.stations = stations;
 		this.waypoints = null;
 		this.busStartTimes = busStartTimes;
 		this.minDelay = minDelay;
 		this.name = name;
+		this.isCircle = isCircle;
 		
 		scheduleNormal = new SpecificSchedule(this, BusDirection.NORMAL);
 		scheduleReverse = new SpecificSchedule(this, BusDirection.REVERSE);
+		
+		
 	}
-	
 	
 	/**
 	 * Berechnet alle Wegpunkte, welche angefahren werden müssen.
@@ -86,6 +94,10 @@ public class Schedule {
 	
 	public boolean hasSameName(String n) {
 		return this.name.equalsIgnoreCase(n);
+	}
+	
+	public boolean isCircle() {
+		return isCircle;
 	}
 	
 	public long getMinDelay() {
