@@ -104,7 +104,13 @@ public class Bus extends Entity {
 						p.getRoute().reachedChangeStation();
 						//Die Person wird der Station nur hinzugefügt, wenn diese nicht das Ziel ist:
 						if (!p.getRoute().isFinished()) {
-							st.addPerson(p);							
+							st.addPerson(p);
+						} else {
+							// Andernfalls, wenn die Person ihr Ziel erreicht hat, wird sie auch aus der Stadt entfernt
+							town.getPersons().remove(p);
+							
+							// TODO: An diesem Punkt müsste man schauen, wie "zufrieden" die Person mit ihrere Reise war,
+							// um das aktuelle Chromosom berwerten zu können.
 						}
 						iterator.remove();
 					}

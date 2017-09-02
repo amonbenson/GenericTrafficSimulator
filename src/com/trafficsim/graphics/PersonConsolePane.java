@@ -19,25 +19,23 @@ public class PersonConsolePane extends ConsolePane {
 	
 	@Override
 	public void paintComponent(Graphics g) {
-		ArrayList<String> lines = new ArrayList<String>();
+		clear();
 		
 		// List all persons
-		lines.add("%A0A0A0Person List");
-		lines.add("ID\tName");
-		lines.add("");
-		lines.add("%C00000town.getPersons() funktioniert noch nicht?");
-		lines.add("%C00000oder verwende ich das falsch?");
+		append("%A0A0A0Person List");
+		append("ID\tName");
+		if (town.getPersons().isEmpty()) append("-\t-");
 		for (Person person : town.getPersons()) {
-			lines.add(person.getID() + "\t" + person.getName());
+			append(person.getID() + "\t" + person.getName());
 		}
-		lines.add("");
+		append("");
 		
 		// List all busses
-		lines.add("%A0A0A0Bus List");
+		append("%A0A0A0Bus List");
+		if (town.getBusses().isEmpty()) append("-");
 		for (Bus bus : town.getBusses()) {
-			lines.add(bus.getSchedule().getSchedule().getName());
+			append(bus.getSchedule().getSchedule().getName());
 		}
-		setLines(lines);
 		
 		// Repaint the super class
 		super.paintComponent(g);

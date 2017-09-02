@@ -28,8 +28,6 @@ public class RoutingEvent extends Event{
 	@Override
 	public void start(Town t) {
 		
-		System.out.println("Routing Event wurde gestartet");
-		
 		if (route.getStations() != null) {
 			Tile startTile = t.getTiles()[(int) route.getStations().get(0).getStation().getX()][(int) route.getStations().get(0).getStation().getY()];
 			if (startTile instanceof StreetTile) {
@@ -37,6 +35,7 @@ public class RoutingEvent extends Event{
 				if (st.isStation()) { //Fügt die Person der Startstation hinzu
 					person.setRoute(route);
 					st.addPerson(person);
+					t.getPersons().add(person); // Add the person to the town
 				} else {
 					Simulation.logger.warning("Startfield isn't a station (but a street)");
 				}

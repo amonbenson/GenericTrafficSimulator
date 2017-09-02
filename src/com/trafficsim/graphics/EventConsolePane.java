@@ -19,30 +19,30 @@ public class EventConsolePane extends ConsolePane {
 	
 	@Override
 	public void paintComponent(Graphics g) {
-		ArrayList<String> lines = new ArrayList<String>();
+		clear();
 		
 		// Write the global time
-		lines.add("%A0A0A0Info");
-		lines.add("Global time (ticks): " + town.getTime());
-		lines.add("");
+		append("%A0A0A0Info");
+		append("Global time (ticks): " + town.getTime());
+		append("");
 		
 		// Write all the key actions
-		lines.add("%A0A0A0Key Actions");
-		lines.add("Enter\tStart / Pause simulation");
-		lines.add("U\tUpdate by one tick");
-		lines.add("R\tReverse update by one tick");
-		lines.add("");
+		append("%A0A0A0Key Actions");
+		append("Enter\tStart / Pause simulation");
+		append("U\tUpdate by one tick");
+		append("R\tReverse update by one tick");
+		append("");
 
 		// Get all events and write them into the lines array
-		lines.add("%A0A0A0Event List");
-		lines.add("Time\tType");
+		append("%A0A0A0Event List");
+		append("Time\tType");
+		if (town.getEvents().isEmpty()) append("-\t-");
 		for (Event event : town.getEvents()) {
 			String line = "";
 			if (town.getTime() > event.getStartTime()) line = "%606060";
 			line += event.getStartTime() + "\t" + event.getClass().getSimpleName();
-			lines.add(line);
+			append(line);
 		}
-		setLines(lines);
 		
 		// Repaint the super class
 		super.paintComponent(g);
