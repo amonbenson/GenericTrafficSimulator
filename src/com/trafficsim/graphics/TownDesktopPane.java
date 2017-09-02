@@ -192,7 +192,7 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, List
 		
 		// Draw busses
 		for (Bus b : town.getBusses()) {
-			g.setColor(Color.black);
+			g.setColor(new Color(100, 100, 100));
 			if (b == focusBus) g.setColor(Color.green);
 			g.fillRect((int) (b.getX() * tileSize - tileSize * BUS_DRAW_SIZE / 2), (int) (b.getY() * tileSize - tileSize * BUS_DRAW_SIZE / 2), 
 					(int) (tileSize * BUS_DRAW_SIZE), (int) (tileSize * BUS_DRAW_SIZE) );
@@ -235,7 +235,7 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, List
 				
 				if (iFrame instanceof BusInfoFrame) { // BUS INFO
 					BusInfoFrame frame = (BusInfoFrame) iFrame;
-					frame.updatePersonList(); // Update the person list
+					frame.updateInfo(); // Update the bus info
 	
 					g.setColor(Color.white);
 					if (frame.getBus() == focusBus) g.setColor(Color.green);
@@ -254,7 +254,7 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, List
 					g.setColor(Color.white);
 					if (frame.getPerson() == focusPerson) g.setColor(Color.red);
 					
-					int sx = (int) (frame.getPerson().getX() * tileSize); // TODO: Person.getXY() funktioniert noch nicht?
+					int sx = (int) (frame.getPerson().getX() * tileSize);
 					int sy = (int) (frame.getPerson().getY() * tileSize);
 					int ex = frame.getX() + frame.getWidth() / 2;
 					int ey = frame.getY() + frame.getHeight() / 2;
@@ -275,6 +275,11 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, List
 		g.setColor(new Color(255, 200, 0));
 		g.fillRect((int) (x * tileSize - tileSize * PERSON_DRAW_SIZE / 2), (int) (y * tileSize - tileSize * PERSON_DRAW_SIZE / 2), 
 				(int) (tileSize * PERSON_DRAW_SIZE), (int) (tileSize * PERSON_DRAW_SIZE) );
+		
+		if (numPersons > 1) {
+			g.setColor(Color.black);
+			g.drawString("x" + numPersons, (int) ((x + PERSON_DRAW_SIZE / 2 + 0.05) * tileSize), (int) ((y + 0.04) * tileSize));
+		}
 	}
 	
 	public void updateFocusElement() {
