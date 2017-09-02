@@ -3,6 +3,7 @@ package com.trafficsim.graphics;
 import java.awt.Graphics;
 import java.util.ArrayList;
 
+import com.trafficsim.town.BusCreationEvent;
 import com.trafficsim.town.Event;
 import com.trafficsim.town.Town;
 

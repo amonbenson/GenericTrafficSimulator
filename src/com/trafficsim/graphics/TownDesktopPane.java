@@ -302,6 +302,8 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, List
 		BusInfoFrame frame = new BusInfoFrame(this, bus, dx, dy);
 		frame.addListSelectionListener(this);
 		frame.setVisible(true);
+		
+		updateInternalFramePositions();
 	}
 	
 	private void createPersonInfoFrame(Person person, int dx, int dy) {
@@ -310,6 +312,8 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, List
 		// Create a person info frame
 		PersonInfoFrame frame = new PersonInfoFrame(this, person, dx, dy);
 		frame.setVisible(true);
+		
+		updateInternalFramePositions();
 	}
 	
 	private void createStreetTileInfoFrame(StreetTile tile, int dx, int dy) {
@@ -320,6 +324,8 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, List
 		frame.addNextStationActionListener(this);
 		frame.addListSelectionListener(this);
 		frame.setVisible(true);
+		
+		updateInternalFramePositions();
 	}
 	
 	private void createHouseTileInfoFrame(HouseTile tile, int dx, int dy) {
@@ -329,6 +335,8 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, List
 		HouseTileInfoFrame frame = new HouseTileInfoFrame(this, tile, dx, dy);
 		frame.addNextStationActionListener(this);
 		frame.setVisible(true);
+		
+		updateInternalFramePositions();
 	}
 
 	private boolean containsInfoFrame(Object object) {
@@ -347,6 +355,12 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, List
 			}
 		}
 		return false;
+	}
+
+	private void updateInternalFramePositions() {
+		// (there may be a better way, but this one works quite nicely)
+		for (JInternalFrame frame : getAllFrames())
+			getDesktopManager().setBoundsForFrame(frame, frame.getX(), frame.getY(), frame.getWidth(), frame.getHeight());
 	}
 
 	public Town getTown() {
@@ -469,9 +483,7 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, List
 
 	public void componentResized(ComponentEvent e) {
 		// When this desktop pane resizes, we have to keep all internal frames inside the bounds
-		// (there may be a better way, but this one works quite nicely)
-		for (JInternalFrame frame : getAllFrames())
-			getDesktopManager().setBoundsForFrame(frame, frame.getX(), frame.getY(), frame.getWidth(), frame.getHeight());
+		updateInternalFramePositions();
 	}
 
 	public void componentMoved(ComponentEvent e) {
