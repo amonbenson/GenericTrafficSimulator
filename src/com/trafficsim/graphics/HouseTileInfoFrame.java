@@ -25,6 +25,9 @@ public class HouseTileInfoFrame extends InfoFrame {
 		setTitle("House Tile");
 		
 		openNextStation = new JButton("Show next Station");
+		if (nextStation == null) {
+			openNextStation.setEnabled(false); // Disable button if no station is near
+		}
 		add(openNextStation);
 		
 		numPersons = new JLabel("Persons: " + tile.getNumberPersons());

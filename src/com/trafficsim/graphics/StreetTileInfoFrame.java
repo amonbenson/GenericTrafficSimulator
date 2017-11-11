@@ -27,8 +27,8 @@ public class StreetTileInfoFrame extends InfoFrame {
 		setTitle("Street Tile");
 		
 		openNextStation = new JButton("Show next Station");
-		if (tile == nextStation) {
-			openNextStation.setEnabled(false); // Disable button if tile is a station
+		if (tile == nextStation || nextStation == null) {
+			openNextStation.setEnabled(false); // Disable button if tile is a station or no station is near
 		}
 		add(openNextStation);
 		

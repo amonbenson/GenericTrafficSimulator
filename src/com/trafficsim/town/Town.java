@@ -533,7 +533,7 @@ public class Town implements Updateable {
 			return;
 		}
 		if (originNextStation != null && targetNextStation != null) {
-			System.out.println("VErtex:"+stationGraph.vertexSet());
+			System.out.println("Vertex:"+stationGraph.vertexSet());
 			
 			Waypoint start = findWaypointInChromosom((int) originNextStation.getX(), (int) originNextStation.getY());
 			Waypoint end = findWaypointInChromosom((int) targetNextStation.getX(), (int) targetNextStation.getY());
