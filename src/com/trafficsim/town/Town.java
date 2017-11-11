@@ -535,10 +535,10 @@ public class Town implements Updateable {
 		if (originNextStation != null && targetNextStation != null) {
 			System.out.println("VErtex:"+stationGraph.vertexSet());
 			
-			Waypoint start = findWaypointInChromosom(originNextStation.getX(), originNextStation.getY());
-			Waypoint end = findWaypointInChromosom(targetNextStation.getX(), targetNextStation.getY());
+			Waypoint start = findWaypointInChromosom((int) originNextStation.getX(), (int) originNextStation.getY());
+			Waypoint end = findWaypointInChromosom((int) targetNextStation.getX(), (int) targetNextStation.getY());
 			
-			if (start != null && end != null) {
+			if (start == null || end == null) {
 				Simulation.logger.warning("Achtung, Start und Ziel konnte im Graphen nicht ermittelt werden. Start:"+start+":Ziel:"+end);
 				return;
 			}
