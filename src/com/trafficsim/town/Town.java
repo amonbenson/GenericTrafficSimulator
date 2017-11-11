@@ -26,6 +26,8 @@ public class Town implements Updateable {
 	// Generating person names
 	private static final PersonNameGenerator personNameGenerator = new PersonNameGenerator();
 	
+	private ErrorCounter errorCounter;
+	
 	private Tile[][] tiles; //Die Karte der Start
 	private int sizeX, sizeY; //Größe der Stadt
 	private Chromosom chromosom; //Chromosom, welches auf diese Stadt angewendet wurde.
