@@ -10,10 +10,15 @@ import com.trafficsim.sim.Simulation;
 
 /**
  * Repräsentiert eine Buslinie
+ * 
+ * WICHTIG:
+ * Wenn in den Stations Waypoints doppelt vorkommen (z.B. Position 1,2) MÜSSEN diese das gleiche Objekt sein und dürfen nicht erneut erzeugt werden!
  */
 public class Schedule {
 	
-	//Liste mit Stationen, welche angefahren werden sollen
+	/*
+	 * Liste mit Stationen, welche angefahren werden sollen
+	 */
 	private ArrayList<Waypoint> stations;
 	/**
 	 * Liste an Wegpunkten, welche chronologisch angefahren werden. Diese ergeben sich aus den 
@@ -41,19 +46,14 @@ public class Schedule {
 	 */
 	private SpecificSchedule scheduleNormal, scheduleReverse;
 	
-	private boolean isCircle = false; //FLAG, ob die Linie im Kreis verläuft, oder an der Endhaltestelle die Richtung wechselt
+
 	
 	public Schedule(ArrayList<Waypoint> stations, ArrayList<BusStartTime> busStartTimes, int minDelay, String name) {
-		this(stations, busStartTimes, minDelay, name, false);
-	}
-	
-	public Schedule(ArrayList<Waypoint> stations, ArrayList<BusStartTime> busStartTimes, int minDelay, String name, boolean isCircle) {
 		this.stations = stations;
 		this.waypoints = null;
 		this.busStartTimes = busStartTimes;
 		this.minDelay = minDelay;
 		this.name = name;
-		this.isCircle = isCircle;
 		
 		scheduleNormal = new SpecificSchedule(this, BusDirection.NORMAL);
 		scheduleReverse = new SpecificSchedule(this, BusDirection.REVERSE);
@@ -74,7 +74,6 @@ public class Schedule {
 			Waypoint start = stations.get(0);
 			Waypoint end;
 			for (int i=1;i<stations.size();i++) {
-				System.out.println(name);
 				end = stations.get(i);
 				List<GridCell> result = t.findPath((int)start.getX(), (int)start.getY(), (int)end.getX(), (int)end.getY());
 				
@@ -94,10 +93,6 @@ public class Schedule {
 	
 	public boolean hasSameName(String n) {
 		return this.name.equalsIgnoreCase(n);
-	}
-	
-	public boolean isCircle() {
-		return isCircle;
 	}
 	
 	public long getMinDelay() {
@@ -133,6 +128,11 @@ public class Schedule {
 	public Waypoint getStation(int index) {
 		return stations.get(index);
 	}
+	
+	public Waypoint getStationReverse(int index) {
+		return stations.get(stations.size()-index-1);
+	}
+	
 	/**
 	 * Gibt die Station links/vorherig vom <code>index/<code> zurück.
 	 * Falls diese außerhalb des Arrays liegt, wird <code>null</code> zurückgegeben.
@@ -252,33 +252,72 @@ public class Schedule {
 	 * Gibt zurück, mit welcher Richtung der Bus schneller zur angegebenden Station kommt.
 	 */
 	public BusDirection whichDirectionIsFaster(Waypoint start, Waypoint end) {
-		float timeNormal = 0, timeReverse = 0;
-		int indexStart = waypoints.indexOf(start);
-		int indexEnd = waypoints.indexOf(end);
+		float timeNormal, timeReverse;
+		timeNormal = getTimeForBusDirectionNormal(start, end);
+		timeReverse = getTimeForBusDirectionReverse(start, end);
 		
-		//Messe Zeit für BusDirection.NORMAL
+		return ( timeNormal <= timeReverse ? BusDirection.NORMAL : BusDirection.REVERSE );
+	}
+	
+
+	public float getTimeForBusDirectionNormal(Waypoint start, Waypoint end) {
+		float timeReverse = 0;
+		
+		int indexStart = getStationIndex((int) start.getX(), (int) start.getY());
+		int indexEnd = getStationIndex((int) end.getX(), (int) end.getY());
+		
+		if (indexStart == -1 || indexEnd == -1) {
+			Simulation.logger.warning("indexStart oder indexEnd konnte nicht gefunden werden! Start: "+start+",Status:"+indexStart+":Ende:"+end+"Status:"+indexEnd);
+			return 99;
+		} else if (indexStart == indexEnd) {
+			Simulation.logger.warning("Start und End ist eine Station?"+start+":"+end);
+		}
+		
+		//Messe Zeit für BusDirection.Normal
 		int i = 0;
+		int realIndex, realIndexNext;
 		do {
 			int sizeOfWay = 0;
-			sizeOfWay = Math.max( 
-					Math.abs((int) (getWaypoint((indexStart+i)%waypoints.size()).getX()) - (int) (getWaypoint((indexStart+i+1)%waypoints.size()).getX())),
-					Math.abs((int) (getWaypoint((indexStart+i)%waypoints.size()).getY()) - (int) (getWaypoint((indexStart+i+1)%waypoints.size()).getY()))
-					);
-			timeNormal += sizeOfWay;
+
+			realIndex = (indexStart+i>=stations.size() ? stations.size()-1-((indexStart+i)%stations.size()) : i+indexStart);
+			realIndexNext = (indexStart+i+1>=stations.size() ? stations.size()-1-((indexStart+1+i)%stations.size()) : i+1+indexStart);
+			sizeOfWay = 
+					Math.abs((int) (getStation(realIndex).getX()) - (int) (getStation(realIndexNext).getX()))+
+					Math.abs((int) (getStation(realIndex).getY()) - (int) (getStation(realIndexNext).getY()));
+					
+			timeReverse += sizeOfWay;
 			i++;
-		} while (indexEnd == (indexStart+i)%waypoints.size());
+		} while (indexEnd != realIndexNext );
+		return timeReverse;
+	}
+	
+	
+	public float getTimeForBusDirectionReverse(Waypoint start, Waypoint end) {
+		float timeReverse = 0;
+		
+		int indexStart = getStationIndex((int) start.getX(), (int) start.getY());
+		int indexEnd = getStationIndex((int) end.getX(), (int) end.getY());
+		
+		if (indexStart == -1 || indexEnd == -1) {
+			Simulation.logger.warning("indexStart oder indexEnd konnte nicht gefunden werden! Start: "+start+",Status:"+indexStart+":Ende:"+end+"Status:"+indexEnd+"Name der Linie:"+getName());
+		} else if (indexStart == indexEnd) {
+			Simulation.logger.warning("Start und End ist eine Station?"+start+":"+end);
+		}
+		
 		//Messe Zeit für BusDirection.REVERSE
+		int i = 0;
 		i = 0;
 		do {
 			int sizeOfWay = 0;
-			sizeOfWay = Math.max( 
-					Math.abs((int) (getWaypointReverse((indexStart+i)%waypoints.size()).getX()) - (int) (getWaypointReverse((indexStart+i+1)%waypoints.size()).getX())),
-					Math.abs((int) (getWaypointReverse((indexStart+i)%waypoints.size()).getY()) - (int) (getWaypointReverse((indexStart+i+1)%waypoints.size()).getY()))
-					);
+			
+			sizeOfWay = 
+					Math.abs((int) (getStation(Math.abs(indexStart+i)).getX()) - (int) (getStation(Math.abs(indexStart+i-1)).getX()))+
+					Math.abs((int) (getStation(Math.abs(indexStart+i)).getY()) - (int) (getStation(Math.abs(indexStart+i-1)).getY()));
+					
 			timeReverse += sizeOfWay;
-			i++;
-		} while (indexEnd == (indexStart+i)%waypoints.size());
-		return ( timeNormal <= timeReverse ? BusDirection.NORMAL : BusDirection.REVERSE );
+			i--;
+		} while (indexEnd != Math.abs(indexStart+i) );
+		return timeReverse;
 	}
 	
 	@Override

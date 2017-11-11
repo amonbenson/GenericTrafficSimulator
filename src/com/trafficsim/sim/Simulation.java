@@ -65,7 +65,8 @@ public class Simulation {
 				}
 			}
 		}
-		townList[0][1][1] = 10; //0px, 1py einen Menschen setzen
+		townList[0][1][1] = 500; //0px, 1py einen Menschen setzen
+		townList[4][4][1] = 2;
 		return townList;
 	}
 }

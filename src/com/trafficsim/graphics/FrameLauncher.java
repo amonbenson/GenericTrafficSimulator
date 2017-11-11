@@ -5,6 +5,7 @@ import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import javax.swing.AbstractAction;
 import javax.swing.JFrame;
@@ -47,23 +48,44 @@ public class FrameLauncher {
 		Chromosom c = new Chromosom();
 		ArrayList<Schedule> schedules = new ArrayList<Schedule>();
 		ArrayList<Waypoint> waypoints = new ArrayList<Waypoint>();
-		waypoints.add(new Waypoint(5.5, 3.5));
-		waypoints.add(new Waypoint(5.5, 5.5));
+		
+		
+		Waypoint w1 = new Waypoint(0.5, 0.5);
+		Waypoint w2 = new Waypoint(1.5, 2.5);
+		Waypoint w3 = new Waypoint(3.5, 3.5);
+		Waypoint w4 = new Waypoint(5.5, 3.5);
+		Waypoint w5 = new Waypoint(5.5, 5.5);
+		waypoints.add(w4);
+		waypoints.add(w5);
 		ArrayList<BusStartTime> startTimes = new ArrayList<BusStartTime>();
 		startTimes.add(new BusStartTime(5, BusDirection.NORMAL));
 		schedules.add(new Schedule(waypoints, startTimes, 0, "187"));
-		
+
 		waypoints = new ArrayList<Waypoint>();
-		waypoints.add(new Waypoint(0.5, 0.5));
-		waypoints.add(new Waypoint(5.5, 3.5));
+		waypoints.add(w1);
+		waypoints.add(w2);
+		waypoints.add(w3);
+		waypoints.add(w4);
 		
 		startTimes = new ArrayList<BusStartTime>();
 		startTimes.add(new BusStartTime(0, BusDirection.NORMAL));
-		schedules.add(new Schedule(waypoints, startTimes, 0, "188", false));
+		schedules.add(new Schedule(waypoints, startTimes, 0, "188"));
 		c.setSchedules(schedules);
+		
+		waypoints = new ArrayList<Waypoint>();
+		waypoints.add(w1);
+		waypoints.add(w2);
+		waypoints.add(w3);
+		startTimes = new ArrayList<BusStartTime>();
+		startTimes.add(new BusStartTime(0, BusDirection.NORMAL));
+		schedules.add(new Schedule(waypoints, startTimes, 0, "100"));
+		
+
 		
 		ArrayList<Point> stations = new ArrayList<Point>();
 		stations.add(new Point(0, 0));
+		stations.add(new Point(1, 2));
+		stations.add(new Point(3, 3));
 		stations.add(new Point(5, 3));
 		stations.add(new Point(5, 5));
 		c.setStations(stations);

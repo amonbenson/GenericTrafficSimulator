@@ -4,16 +4,15 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import java.util.logging.Logger;
 
-import javax.swing.JFrame;
-
-import org.jgraph.JGraph;
 import org.jgrapht.alg.DijkstraShortestPath;
-import org.jgrapht.ext.JGraphModelAdapter;
 import org.jgrapht.graph.DefaultWeightedEdge;
-import org.jgrapht.graph.SimpleWeightedGraph;
+import org.jgrapht.graph.SimpleDirectedWeightedGraph;
 import org.xguzm.pathfinding.grid.GridCell;
 import org.xguzm.pathfinding.grid.NavigationGrid;
 import org.xguzm.pathfinding.grid.finders.AStarGridFinder;
@@ -46,7 +45,7 @@ public class Town implements Updateable {
 	AStarGridFinder<GridCell> finder = null;
 	
 	//Wegfindungszeug für Personen:
-	private SimpleWeightedGraph<Waypoint, DefaultWeightedEdge> stationGraph = null;
+	private SimpleDirectedWeightedGraph<Waypoint, DefaultWeightedEdge> stationGraph = null;
 	
 	public Town(int sizeX, int sizeY) {
 		this(sizeX, sizeY, null, null, new Random());
@@ -238,6 +237,8 @@ public class Town implements Updateable {
 		if (chromosom != null) {
 			toNormal(); //Alles auf Anfang setzen
 			
+			long t1 = System.currentTimeMillis();
+			
 			//Pathfindingkarte erzeugen (für Busse):
 			pathfindingMap = new GridCell[sizeX][sizeY];
 			for (int x=0;x<sizeX;x++) {
@@ -255,7 +256,7 @@ public class Town implements Updateable {
 			finder = new AStarGridFinder(GridCell.class, opt);
 			
 			//Pathfindingkarte für Menschen erzeugen:
-			stationGraph = new SimpleWeightedGraph<Waypoint, DefaultWeightedEdge>(DefaultWeightedEdge.class); 
+			stationGraph = new SimpleDirectedWeightedGraph<Waypoint, DefaultWeightedEdge>(DefaultWeightedEdge.class); 
 			for ( Schedule s : chromosom.getSchedules()) { //Fügt alle Vertexe ein
 				for ( Waypoint w : s.getStations()) {
 					if (!stationGraph.containsVertex(w)) {
@@ -264,27 +265,28 @@ public class Town implements Updateable {
 				}
 			}
 			
+			
 			//Verlinkt die Vertexe untereinander:
-			for ( Schedule s : chromosom.getSchedules()) { //Fügt alle Vertexe ein
+			for ( Schedule s : chromosom.getSchedules()) {
 				Waypoint start = s.getStations().get(0);
 				Waypoint end = null;
 				for ( int i=1;i<s.getStations().size();i++) {
 					end = s.getStations().get(i);
-					DefaultWeightedEdge d = stationGraph.addEdge(start, end);
-					stationGraph.setEdgeWeight(d, getPathLength( 
-							(int) start.getX(), 
-							(int) start.getY(),
-							(int) end.getX(),
-							(int) end.getY()));
+					if (!stationGraph.containsEdge(start, end) && !stationGraph.containsEdge(end, start)) {
+						DefaultWeightedEdge d = stationGraph.addEdge(start, end);
+						stationGraph.setEdgeWeight(d, getPathLength( 
+								(int) start.getX(), 
+								(int) start.getY(),
+								(int) end.getX(),
+								(int) end.getY()));
+						DefaultWeightedEdge d2 = stationGraph.addEdge(end, start);
+						stationGraph.setEdgeWeight(d2, getPathLength( 
+								(int) end.getX(),
+								(int) end.getY(),
+								(int) start.getX(), 
+								(int) start.getY()));			
+					}
 					start = s.getStations().get(i);
-				}
-				if (s.isCircle()) {
-					DefaultWeightedEdge d = stationGraph.addEdge(s.getStations().get(s.getStations().size()-1), s.getStations().get(0));
-					stationGraph.setEdgeWeight(d, getPathLength( 
-							(int) s.getStations().get(s.getStations().size()-1).getX(), 
-							(int) s.getStations().get(s.getStations().size()-1).getY(),
-							(int) s.getStations().get(0).getX(),
-							(int) s.getStations().get(0).getY()));
 				}
 			}
 
@@ -315,7 +317,10 @@ public class Town implements Updateable {
 				}
 			}
 			
+
 			RoutingAlgorithm.init(tiles);
+			
+
 			
 			//Generiert die Routen für die Menschen:
 			generateRoutings();
@@ -323,7 +328,8 @@ public class Town implements Updateable {
 			//Sortiert schließlich die fertige Eventliste:
 			sortEvents();
 			
-
+			System.out.println("Zeit: "+(System.currentTimeMillis()-t1));
+			
 		}
 	}
 	
@@ -416,25 +422,9 @@ public class Town implements Updateable {
 	 */
 	private void generateRoutingForPerson(Person p, ArrayList<Event> list) {
 		
-		System.out.println(stationGraph.vertexSet());
-		// create a visualization using JGraph, via the adapter
 
-	     JFrame frame = new JFrame();
-	     frame.setSize(400, 400);
-	     JGraph a = new JGraph (new JGraphModelAdapter( stationGraph )) ;
-	     frame.getContentPane().add(a);
-	     frame.setVisible(true);
-	     while (true) {
-	     try {
-			Thread.sleep(2000);
-			if (p==null) break;
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	     }
 		
-		/*
+		
 		Tile origin = getRandomTileWithExclude(p.getHouse());
 		int newX = random.nextInt(sizeX-(StreetTile.AREA_STATION*2+1) );
 		if (newX >= origin.getX()-(StreetTile.AREA_STATION*2+1)) {
@@ -445,15 +435,13 @@ public class Town implements Updateable {
 			newY += StreetTile.AREA_STATION*2+1;
 		}
 		Tile target = tiles[newX][newY];
-		*/
 		
-		Tile origin = tiles[0][0];
-		Tile target = tiles[5][5];
-		
-		System.out.println(origin);
-		System.out.println(target);
-		
-		getPathForPerson(origin, target);
+		List<DefaultWeightedEdge> path = getPathForPerson(origin, target);
+		Route r = pathToRoute(path);
+		if (r != null) {
+			RoutingEvent re = new RoutingEvent(0, p, r);
+			events.add(re);
+		}
 		
 		/*
 		if (random.nextBoolean()) {
@@ -544,32 +532,34 @@ public class Town implements Updateable {
 		List<GridCell> a = findPath(x1, y1, x2, y2);
 		return (a.size()+2);
 	}
-	public void getPathForPerson(Tile origin, Tile target) {
+	public List<DefaultWeightedEdge> getPathForPerson(Tile origin, Tile target) {
 		StreetTile originNextStation;
 		StreetTile targetNextStation;
 		originNextStation = origin.getNextStation(tiles);
 		targetNextStation = target.getNextStation(tiles);
 		if (originNextStation == targetNextStation) {
 			System.out.println("Gleiche Station..return :(");
-			return;
+			return null;
 		}
 		if (originNextStation != null && targetNextStation != null) {
-			System.out.println("Vertex:"+stationGraph.vertexSet());
 			
 			Waypoint start = findWaypointInChromosom((int) originNextStation.getX(), (int) originNextStation.getY());
 			Waypoint end = findWaypointInChromosom((int) targetNextStation.getX(), (int) targetNextStation.getY());
 			
 			if (start == null || end == null) {
 				Simulation.logger.warning("Achtung, Start und Ziel konnte im Graphen nicht ermittelt werden. Start:"+start+":Ziel:"+end);
-				return;
+				return null;
 			}
-			
+
 			List<DefaultWeightedEdge> shortest_path =   DijkstraShortestPath.findPathBetween(stationGraph, start, end);
-			System.out.println("Habe einen Weg gefunden!");
-			System.out.println(shortest_path);
+
+			return shortest_path;
+			
 		} else {
 			Simulation.logger.warning("Achtung, keine Station im Umkreis vom Start/Ziel gefunden.");
 		}
+		
+		return null;
 		
 	}
 	private int getLengthForPathPerson(List<DefaultWeightedEdge> list) {
@@ -590,5 +580,118 @@ public class Town implements Updateable {
 			}
 		}
 		return null;
+	}
+	
+	private StreetTile findStationInChromosom(Waypoint w) {
+		if (tiles[(int)w.getX()][(int)w.getY()] instanceof StreetTile ) {
+			StreetTile st = (StreetTile) tiles[(int)w.getX()][(int)w.getY()];
+			if (!st.isStation()) {
+				Logger.getGlobal().warning("findStationInChromsom ist keine Station! (sondern Straße)");
+				return null;
+			}
+			return st;
+		} else {
+			Logger.getGlobal().warning("findStationInChromsom verweist auf ein Haus!");
+			return null;
+		}
+	}
+	
+	/**
+	 * Kann <code>null</code> zurückgeben, wenn <code>null</code> der Parameter ist
+	 * @param path
+	 * @return
+	 */
+	private Route pathToRoute(List<DefaultWeightedEdge> path) {
+		if (path == null) return null;
+		Waypoint startW = stationGraph.getEdgeSource(path.get(0));
+		Waypoint endW = stationGraph.getEdgeTarget(path.get(path.size()-1));
+		StreetTile origin = findStationInChromosom(startW);
+		StreetTile target = findStationInChromosom(endW);		
+		ArrayList<ChangeStation> stations = new ArrayList<ChangeStation>();
+		
+		ArrayList<Schedule> lastSchedules = findStationInChromosom(stationGraph.getEdgeSource(path.get(0))).getSchedules();
+		
+		SpecificSchedule first = null;
+		
+		Waypoint lastChangeStation = startW;
+		
+		//Als erstes die Buslinie finden, welche am weitesten zum Ziel kommt:
+		for ( int i=0;i<path.size();i++) {
+			StreetTile nextStation = findStationInChromosom(stationGraph.getEdgeTarget(path.get(i)));
+			ArrayList<Schedule> hs1 = new ArrayList<Schedule>(lastSchedules); //Start
+			HashSet<Schedule> hs2 = new HashSet<Schedule>(nextStation.getSchedules());
+			hs1.retainAll(hs2); //Schnittmenge mit Stationen, welche in beiden Listen vorhanden sind
+			if (hs1.isEmpty()) { //Alle Buslinien enden auf einmal.. also eine zufällige auswählen
+				Schedule selected = lastSchedules.get(random.nextInt(lastSchedules.size()));
+				
+				if (selected.whichDirectionIsFaster(lastChangeStation, stationGraph.getEdgeSource(path.get(i))) == BusDirection.NORMAL ) {
+					first = selected.getScheduleNormal();
+				} else { //REVERSE
+					first = selected.getScheduleReverse();
+				}
+				stations.add(new ChangeStation(startW, first)); //Anfangsrichtung hinzufügen
+				lastChangeStation = findWaypointInChromosom(nextStation.getX(), nextStation.getY());
+			} else if (hs1.size() == 1) { //letzte Busstation gefunden!
+				Schedule selected = hs1.get(0);
+				if (selected.whichDirectionIsFaster(lastChangeStation, stationGraph.getEdgeTarget(path.get(i))) == BusDirection.NORMAL ) {
+					first = selected.getScheduleNormal();
+				} else { //REVERSE
+					first = selected.getScheduleReverse();
+				}
+				stations.add(new ChangeStation(lastChangeStation, first)); //Anfangsrichtung hinzufügen
+				lastChangeStation = findWaypointInChromosom(nextStation.getX(), nextStation.getY());
+			}
+			lastSchedules = new ArrayList<Schedule>(nextStation.getSchedules());
+		}
+
+		
+		stations.add(new ChangeStation(endW, target.getSchedules().get(0).getScheduleReverse())); //Ende hinzufügen
+		
+		Route r = new Route(origin, target, stations);
+		return r;
+	}
+	
+	/**
+	 * Gibt die kürzeste SpecificSchedule zwischen zwei Stationen zurück (müssen nicht nebeneinander sein)
+	 * @param station1
+	 * @param station2
+	 * @return
+	 */
+	private SpecificSchedule getSpecificScheduleOfTwoStations(StreetTile station1, StreetTile station2) {
+		HashSet<Schedule> hs1 = new HashSet<Schedule>(station1.getSchedules());
+		HashSet<Schedule> hs2 = new HashSet<Schedule>(station2.getSchedules());
+		hs1.retainAll(hs2);
+		if (hs1.isEmpty()) {
+			Simulation.logger.warning("getSpecificScheduleOfTwoStations hat keine direkte Verbindung zwischen zwei Stationen gefunden.");
+			return null;
+		}
+		//Jede Route durchkalkulieren, mit BusDirection.NORMAL und BusDirection.REVERSE
+		SpecificSchedule shortest = null;
+		float duration = Float.MAX_VALUE;
+		for (Iterator<Schedule> it = hs1.iterator(); it.hasNext();){
+			Schedule schedule = it.next();
+			if (schedule.getStationIndex(station1.getX(), station1.getY()) == 0) {
+				duration = schedule.getTimeForBusDirectionNormal(findWaypointInChromosom(station1.getX(), station1.getY()), findWaypointInChromosom(station2.getX(), station2.getY()));
+				shortest = schedule.getScheduleNormal();
+			} else if (schedule.getStationIndex(station1.getX(), station1.getY()) == schedule.getStations().size()-1 ) {
+				duration = schedule.getTimeForBusDirectionReverse(findWaypointInChromosom(station1.getX(), station1.getY()), findWaypointInChromosom(station2.getX(), station2.getY()));
+				shortest = schedule.getScheduleReverse();
+			} else {
+				float timeNormal = schedule.getTimeForBusDirectionNormal(findWaypointInChromosom(station1.getX(), station1.getY()), findWaypointInChromosom(station2.getX(), station2.getY()));
+				float timeReverse = schedule.getTimeForBusDirectionReverse(findWaypointInChromosom(station1.getX(), station1.getY()), findWaypointInChromosom(station2.getX(), station2.getY()));
+				
+				if (timeNormal < duration) {
+					duration = timeNormal;
+					shortest = schedule.getScheduleNormal();
+				}
+				if (timeReverse < duration) {
+					duration = timeReverse;
+					shortest = schedule.getScheduleReverse();
+				}
+			}
+		}
+		
+
+		return shortest;
 	}
 }
