@@ -34,7 +34,7 @@ public class Person {
 		if (house == null) throw new NullPointerException("House tile cannot be null (we don't have homeless people yet).");
 		
 		id = createID();
-		name = createName(id);
+		name = createName();
 		
 		this.house = house;
 		floating = false;
@@ -139,13 +139,8 @@ public class Person {
 	 * 
 	 * @return		The name string that was generated.
 	 */
-	private static String createName(long seed) {
-		Random r = new Random(seed);
-		int nameLength = 4 + r.nextInt(5);
-		
-		String name = "";
-		for (int i = 0; i < nameLength; i++) name += Character.toString((char) (97 + r.nextInt(26))); // Create random letter
-		name = name.substring(0, 1).toUpperCase() + name.substring(1); // Make first character an upper case
-		return name;
+	private static String createName() {
+		// Generate Name and Surname
+		return Town.getPersonNameGenerator().getName() + " " + Town.getPersonNameGenerator().getName();
 	}
 }

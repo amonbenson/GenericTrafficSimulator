@@ -5,10 +5,10 @@ import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
-import java.util.HashSet;
 
 import javax.swing.AbstractAction;
 import javax.swing.JFrame;
+import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 
@@ -109,10 +109,16 @@ public class FrameLauncher {
 		frame.add(townDesktopPane);
 		
 		personConsolePane = new PersonConsolePane(this, simulation.getTown());
-		frame.add(BorderLayout.EAST, personConsolePane);
+		JScrollPane pcScroll = new JScrollPane(personConsolePane);
+		pcScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		pcScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		frame.add(BorderLayout.EAST, pcScroll);
 		
 		eventConsolePane = new EventConsolePane(this, simulation.getTown());
-		frame.add(BorderLayout.WEST, eventConsolePane);
+		JScrollPane ecScroll = new JScrollPane(eventConsolePane);
+		ecScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		ecScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		frame.add(BorderLayout.WEST, ecScroll);
 
 		frame.setSize(highDPI(1300), highDPI(800));
 		frame.setLocationRelativeTo(null);

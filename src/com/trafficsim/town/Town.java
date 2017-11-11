@@ -23,9 +23,8 @@ import com.trafficsim.sim.Simulation;
 
 public class Town implements Updateable {
 	
-
-	
-	
+	// Generating person names
+	private static final PersonNameGenerator personNameGenerator = new PersonNameGenerator();
 	
 	private Tile[][] tiles; //Die Karte der Start
 	private int sizeX, sizeY; //Größe der Stadt
@@ -693,5 +692,9 @@ public class Town implements Updateable {
 		
 
 		return shortest;
+	}
+	
+	public static PersonNameGenerator getPersonNameGenerator() {
+		return personNameGenerator;
 	}
 }

@@ -1,6 +1,7 @@
 package com.trafficsim.graphics;
 
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
@@ -8,7 +9,6 @@ import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
 import javax.swing.BoxLayout;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public abstract class ConsolePane extends JPanel implements MouseListener {
@@ -21,11 +21,8 @@ public abstract class ConsolePane extends JPanel implements MouseListener {
 	private int sx, sy, dx, dy;
 	
 	public ConsolePane() {
-		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-		setPreferredSize(new Dimension(FrameLauncher.highDPI(DEFAULT_WIDTH), 1));
-		
 		addMouseListener(this);
-
+		
 		sx = FrameLauncher.highDPI(BORDER_X);
 		sy = FrameLauncher.highDPI(BORDER_Y);
 		dx = FrameLauncher.highDPI(TAB_SIZE);
@@ -33,9 +30,30 @@ public abstract class ConsolePane extends JPanel implements MouseListener {
 		
 		clear();
 	}
+	
+	private void updatePreferredSize() {
+		// If we have no lines or the console is added nowhere, return
+		if (lines == null) return;
+		if (getParent() == null) return;
+		
+		// Get an appropriate size for our pane
+		Dimension size = new Dimension(
+				FrameLauncher.highDPI(DEFAULT_WIDTH),
+				lines.size() * dy + sy * 2
+		);
+		
+		// If the pane is already that size, return (don't wanna paint things more than once and cause lag)
+		if (getPreferredSize().width == size.width && getPreferredSize().height == size.height) return;
+		
+		// Set the new size and update the overlaying scroll pane
+		setPreferredSize(size);
+		getParent().revalidate();
+		getParent().repaint();
+	}
 
 	@Override
 	public void paintComponent(Graphics g) {
+		// Clear background
 		g.setColor(Color.black);
 		g.fillRect(0, 0, getWidth(), getHeight());
 		
@@ -68,6 +86,9 @@ public abstract class ConsolePane extends JPanel implements MouseListener {
 			}
 			y += dy;
 		}
+		
+		// Update the dimensions
+		updatePreferredSize();
 	}
 	
 	public abstract void lineClicked(int line, String content);
