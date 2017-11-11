@@ -31,7 +31,7 @@ public abstract class ConsolePane extends JPanel implements MouseListener {
 		clear();
 	}
 	
-	private void updatePreferredSize() {
+	public void updatePreferredSize() {
 		// If we have no lines or the console is added nowhere, return
 		if (lines == null) return;
 		if (getParent() == null) return;
