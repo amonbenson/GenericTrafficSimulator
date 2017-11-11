@@ -41,8 +41,8 @@ public class FrameLauncher {
 	
 	public FrameLauncher() {
 		// TOWN ERSTELLEN
-		simulation = new Simulation( new Town(7, 6));
-		simulation.getTown().generateTiles(Simulation.randomTown(7, 6)); //Landschaftskarte
+		simulation = new Simulation( new Town(10, 10));
+		simulation.getTown().generateTiles(Simulation.randomTown(10, 10)); //Landschaftskarte
 		
 		// BUS SCHEDULES ERSTELLEN
 		Chromosom c = new Chromosom();
@@ -51,10 +51,17 @@ public class FrameLauncher {
 		
 		
 		Waypoint w1 = new Waypoint(0.5, 0.5);
-		Waypoint w2 = new Waypoint(1.5, 2.5);
-		Waypoint w3 = new Waypoint(3.5, 3.5);
-		Waypoint w4 = new Waypoint(5.5, 3.5);
-		Waypoint w5 = new Waypoint(5.5, 5.5);
+		Waypoint w2 = new Waypoint(0.5, 2.5);
+		Waypoint w3 = new Waypoint(0.5, 5.5);
+		Waypoint w4 = new Waypoint(1.5, 7.5);
+		Waypoint w5 = new Waypoint(0.5, 9.5);
+		Waypoint w6 = new Waypoint(3.5, 5.5);
+		Waypoint w7 = new Waypoint(5.5, 6.5);
+		Waypoint w8 = new Waypoint(6.5, 9.5);
+		
+		waypoints.add(w1);
+		waypoints.add(w2);
+		waypoints.add(w3);
 		waypoints.add(w4);
 		waypoints.add(w5);
 		ArrayList<BusStartTime> startTimes = new ArrayList<BusStartTime>();
@@ -62,10 +69,8 @@ public class FrameLauncher {
 		schedules.add(new Schedule(waypoints, startTimes, 0, "187"));
 
 		waypoints = new ArrayList<Waypoint>();
-		waypoints.add(w1);
-		waypoints.add(w2);
-		waypoints.add(w3);
 		waypoints.add(w4);
+		waypoints.add(w7);
 		
 		startTimes = new ArrayList<BusStartTime>();
 		startTimes.add(new BusStartTime(0, BusDirection.NORMAL));
@@ -73,9 +78,10 @@ public class FrameLauncher {
 		c.setSchedules(schedules);
 		
 		waypoints = new ArrayList<Waypoint>();
-		waypoints.add(w1);
-		waypoints.add(w2);
-		waypoints.add(w3);
+		waypoints.add(w5);
+		waypoints.add(w6);
+		waypoints.add(w7);
+		waypoints.add(w8);
 		startTimes = new ArrayList<BusStartTime>();
 		startTimes.add(new BusStartTime(0, BusDirection.NORMAL));
 		schedules.add(new Schedule(waypoints, startTimes, 0, "100"));
@@ -84,10 +90,13 @@ public class FrameLauncher {
 		
 		ArrayList<Point> stations = new ArrayList<Point>();
 		stations.add(new Point(0, 0));
-		stations.add(new Point(1, 2));
-		stations.add(new Point(3, 3));
-		stations.add(new Point(5, 3));
-		stations.add(new Point(5, 5));
+		stations.add(new Point(0, 2));
+		stations.add(new Point(0, 5));
+		stations.add(new Point(1, 7));
+		stations.add(new Point(0, 9));
+		stations.add(new Point(3, 5));
+		stations.add(new Point(5, 6));
+		stations.add(new Point(6, 9));
 		c.setStations(stations);
 		
 		simulation.getTown().setChromosom(c);

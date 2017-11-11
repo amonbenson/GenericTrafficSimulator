@@ -1,5 +1,6 @@
 package com.trafficsim.sim;
 
+import java.awt.Point;
 import java.util.Random;
 import java.util.logging.Logger;
 
@@ -56,17 +57,15 @@ public class Simulation {
 		float[][][] townList = new float[width][height][2];
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
-				if ( y == 3 || x == 3 || y == 0 || y == 5 || x == 5 || x == 1) { //Straße
+				if ( x == 0 || x == 1 || x == 3 || x == 5 || x == 6 || y == 0 || y==1||y==2||y==3||y==4) { //Straße
 					townList[x][y][0] = 0;
 					townList[x][y][1] = 0.3f;
 				} else { //Haus
 					townList[x][y][0] = 1;
-					townList[x][y][1] = 0;
+					townList[x][y][1] = 2;
 				}
 			}
 		}
-		townList[0][1][1] = 500; //0px, 1py einen Menschen setzen
-		townList[4][4][1] = 2;
 		return townList;
 	}
 }

@@ -25,7 +25,7 @@ public class Town implements Updateable {
 	
 
 	
-	
+	private ErrorCounter errorCounter;
 	
 	private Tile[][] tiles; //Die Karte der Start
 	private int sizeX, sizeY; //Größe der Stadt
