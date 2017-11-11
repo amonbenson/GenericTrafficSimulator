@@ -4,5 +4,12 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5"/>
 	<classpathentry kind="lib" path="junit-4.12.jar"/>
 	<classpathentry kind="lib" path="jgrapht-core-1.0.1.jar"/>
+	<classpathentry kind="lib" path="jgraphx.jar"/>
+	<classpathentry kind="lib" path="antlr4-runtime-4.5.3.jar"/>
+	<classpathentry kind="lib" path="jgraph-5.13.0.0.jar"/>
+	<classpathentry kind="lib" path="jgrapht-demo-1.0.1.jar"/>
+	<classpathentry kind="lib" path="jgrapht-ext-1.0.1-uber.jar"/>
+	<classpathentry kind="lib" path="jgrapht-ext-1.0.1.jar"/>
+	<classpathentry kind="lib" path="jgraphx-2.0.0.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

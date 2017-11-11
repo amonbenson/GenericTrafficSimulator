@@ -7,7 +7,11 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
+import javax.swing.JFrame;
+
+import org.jgraph.JGraph;
 import org.jgrapht.alg.DijkstraShortestPath;
+import org.jgrapht.ext.JGraphModelAdapter;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
 import org.xguzm.pathfinding.grid.GridCell;
@@ -397,6 +401,7 @@ public class Town implements Updateable {
 				generateRoutingForPerson(p, tmpEvents);
 			}
 		}
+		
 		//RoutingEvents hinzufügen:
 		events.addAll(tmpEvents);
 	}
@@ -412,6 +417,22 @@ public class Town implements Updateable {
 	private void generateRoutingForPerson(Person p, ArrayList<Event> list) {
 		
 		System.out.println(stationGraph.vertexSet());
+		// create a visualization using JGraph, via the adapter
+
+	     JFrame frame = new JFrame();
+	     frame.setSize(400, 400);
+	     JGraph a = new JGraph (new JGraphModelAdapter( stationGraph )) ;
+	     frame.getContentPane().add(a);
+	     frame.setVisible(true);
+	     while (true) {
+	     try {
+			Thread.sleep(2000);
+			if (p==null) break;
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	     }
 		
 		/*
 		Tile origin = getRandomTileWithExclude(p.getHouse());
