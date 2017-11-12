@@ -162,7 +162,7 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, List
 				
 				// Draw the persons waiting on street tiles
 				if (tile instanceof StreetTile)
-					drawPersons(g, x + 0.15, x + 0.15, ((StreetTile) tile).getPersons().size());
+					drawPersons(g, x + 0.15, y + 0.15, ((StreetTile) tile).getPersons().size());
 				
 				g.setColor(Color.black);
 				g.drawRect(dx, dy, ds, ds);

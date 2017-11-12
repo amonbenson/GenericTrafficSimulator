@@ -30,7 +30,6 @@ public class EventConsolePane extends ConsolePane {
 		append("%A0A0A0Key Actions");
 		append("Enter\tStart / Pause simulation");
 		append("U\tUpdate by one tick");
-		append("R\tReverse update by one tick");
 		append("");
 
 		// Get all events and write them into the lines array

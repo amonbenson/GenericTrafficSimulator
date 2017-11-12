@@ -138,7 +138,6 @@ public class FrameLauncher {
 		
 		// Key bindings
 		townDesktopPane.getInputMap().put(KeyStroke.getKeyStroke("U"), "town update");
-		townDesktopPane.getInputMap().put(KeyStroke.getKeyStroke("R"), "town revert");
 		townDesktopPane.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "town autoupdate");
 
 		townDesktopPane.getActionMap().put("town update", new AbstractAction() {
