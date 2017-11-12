@@ -13,6 +13,9 @@ public class Person {
 	private Route route; //aktuelle Route
 	private HouseTile house;
 	
+	private Statistics statistics;
+	private long timeStart, timeEnd;
+	
 	private long id; // A unique id that every Person has
 	private String name; // A name to identify persons in the person list;
 	
@@ -31,6 +34,15 @@ public class Person {
 	 * 		@param house das Haus der Person
 	 */
 	public Person(double x, double y, HouseTile house) {
+		this(x, y, house, null);
+	}
+	/**
+	 * Initialisiert eine Person mit Koordinaten und Haus und Statistikobjekt zum loggen der Zeit
+	 * 		@param x X-Koordinate
+	 * 		@param y Y-Koordinate
+	 * 		@param house das Haus der Person
+	 */
+	public Person(double x, double y, HouseTile house, Statistics statistics) {
 		if (house == null) throw new NullPointerException("House tile cannot be null (we don't have homeless people yet).");
 		
 		id = createID();
@@ -39,9 +51,11 @@ public class Person {
 		this.house = house;
 		floating = false;
 		
+		this.statistics = statistics;
+		
 		route = null;
+		
 	}
-
 
 	
 	public HouseTile getHouse() {
@@ -120,6 +134,14 @@ public class Person {
 				+ house;
 	}
 	
+	public void start(long ticks) {
+		timeStart = ticks;
+	}
+	
+	public void done(long ticks) {
+		timeEnd = ticks;
+		statistics.addTravelTime(route, timeStart, timeEnd);
+	}
 	
 	/**
 	 * Creates an id for a new person.

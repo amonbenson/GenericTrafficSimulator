@@ -70,4 +70,19 @@ public class Waypoint {
 	public String toString() {
 		return "X: "+x+"Y: "+y+"\n";
 	}
+	
+	
+	
+	@Override
+	public boolean equals(Object o) {
+		if ( o == null )
+			return false;
+
+		if ( o == this )
+			return true;
+
+		Waypoint w = (Waypoint) o;
+		return x == w.x && y == w.y;
+	}
+	
 }

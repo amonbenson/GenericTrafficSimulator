@@ -26,7 +26,7 @@ public class Town implements Updateable {
 	// Generating person names
 	private static final PersonNameGenerator personNameGenerator = new PersonNameGenerator();
 	
-	private ErrorCounter errorCounter;
+	private Statistics statistics;
 	
 	private Tile[][] tiles; //Die Karte der Start
 	private int sizeX, sizeY; //Größe der Stadt
@@ -63,6 +63,8 @@ public class Town implements Updateable {
 		busses = new ArrayList<Bus>();
 		persons = new ArrayList<Person>();
 		time = 0;
+		
+		statistics = new Statistics();
 	}
 	
 	/**
@@ -176,6 +178,10 @@ public class Town implements Updateable {
 	
 	public Tile[][] getTiles() {
 		return tiles;
+	}
+	
+	public Statistics getStatistics() {
+		return statistics;
 	}
 	
 	public Chromosom getChromosom() {
@@ -329,8 +335,7 @@ public class Town implements Updateable {
 			//Sortiert schließlich die fertige Eventliste:
 			sortEvents();
 			
-			System.out.println("Zeit: "+(System.currentTimeMillis()-t1));
-			
+			statistics.print();
 		}
 	}
 	
@@ -404,7 +409,7 @@ public class Town implements Updateable {
 		ArrayList<Event> tmpEvents = new ArrayList<Event>();
 		for ( HouseTile house : houses ) {
 			for ( int i=0;i<house.getNumberPersons();i++) {
-				Person p = new Person(house);
+				Person p = new Person(-1d, -1d, house, statistics);
 				generateRoutingForPerson(p, tmpEvents);
 			}
 		}
@@ -539,7 +544,7 @@ public class Town implements Updateable {
 		originNextStation = origin.getNextStation(tiles);
 		targetNextStation = target.getNextStation(tiles);
 		if (originNextStation == targetNextStation) {
-			System.out.println("Gleiche Station..return :(");
+			statistics.addRouteSameTargets();
 			return null;
 		}
 		if (originNextStation != null && targetNextStation != null) {
@@ -553,11 +558,15 @@ public class Town implements Updateable {
 			}
 
 			List<DefaultWeightedEdge> shortest_path =   DijkstraShortestPath.findPathBetween(stationGraph, start, end);
-
+			if (shortest_path == null) { //Kein Weg gefunden
+				statistics.addRouteNotFound();
+			} else {
+				statistics.addRouteFound();
+			}
 			return shortest_path;
 			
 		} else {
-			Simulation.logger.warning("Achtung, keine Station im Umkreis vom Start/Ziel gefunden.");
+			statistics.addNoStationFound(origin.toWaypoint());
 		}
 		
 		return null;
