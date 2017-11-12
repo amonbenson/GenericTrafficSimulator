@@ -553,7 +553,7 @@ public class Town implements Updateable {
 			Waypoint end = findWaypointInChromosom((int) targetNextStation.getX(), (int) targetNextStation.getY());
 			
 			if (start == null || end == null) {
-				Simulation.logger.warning("Achtung, Start und Ziel konnte im Graphen nicht ermittelt werden. Start:"+start+":Ziel:"+end);
+				Simulation.logger.warning("Achtung, Start und Ziel konnte im Graphen nicht ermittelt werden. Start:"+start+" Koordinaten: "+originNextStation.getX()+":"+originNextStation.getY()+":Ziel:"+end+":"+targetNextStation.getX()+":"+targetNextStation.getY());
 				return null;
 			}
 
@@ -581,7 +581,7 @@ public class Town implements Updateable {
 	}
 	
 	//Wird für die richtige Zuordnung des Graphen benötigt
-	private Waypoint findWaypointInChromosom(double x, double y) {
+	public Waypoint findWaypointInChromosom(double x, double y) {
 		for (Schedule s : chromosom.getSchedules()) {
 			for (Waypoint w  : s.getStations()) {
 				if (w.isSame((int) x, (int) y)) {
@@ -656,9 +656,13 @@ public class Town implements Updateable {
 
 		
 		stations.add(new ChangeStation(endW, target.getSchedules().get(0).getScheduleReverse())); //Ende hinzufügen
-		
-		Route r = new Route(origin, target, stations);
-		return r;
+		if (stations.size() >= 2) {
+			Route r = new Route(origin, target, stations);
+			return r;
+		} else {
+			Simulation.logger.warning("Stationsgröße zu klein, bitte beheben");
+			return null;
+		}
 	}
 	
 	/**

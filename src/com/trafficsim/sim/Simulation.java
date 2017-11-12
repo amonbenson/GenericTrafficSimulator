@@ -79,25 +79,25 @@ public class Simulation {
 		//Hauptstraﬂe:
 		for (int x = 0; x < 9; x++) {
 			townList[1+x][4][0] = 0;
-			townList[1+x][4][1] = 1f;
+			townList[1+x][4][1] = 1f/3f;
 		}
 		//Drei kleinere Straﬂen:
 		for (int y = 0; y < 3; y++) {
 			townList[3][1+y][0] = 0;
-			townList[3][1+y][1] = 0.5f;			
+			townList[3][1+y][1] = 0.5f/3f;			
 		}
 		for (int y = 0; y < 3; y++) {
 			townList[7][1+y][0] = 0;
-			townList[7][1+y][1] = 0.5f;			
+			townList[7][1+y][1] = 0.5f/3f;			
 		}
 		for (int y = 0; y < 4; y++) {
 			townList[5][5+y][0] = 0;
-			townList[5][5+y][1] = 0.5f;			
+			townList[5][5+y][1] = 0.5f/3f;			
 		}
 		//Nebenstraﬂen:
 		for (int x = 0; x < 2; x++) {
 			townList[1+x][1][0] = 0;
-			townList[1+x][1][1] = 0.25f;
+			townList[1+x][1][1] = 0.25f/3f;
 		}
 		for (int x = 0; x < 3; x++) {
 			townList[2+x][7][0] = 0;

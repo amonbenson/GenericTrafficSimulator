@@ -44,7 +44,16 @@ public class FrameLauncher {
 		simulation = new Simulation( new Town(10, 10));
 		simulation.getTown().generateTiles(Simulation.testTown()); //Landschaftskarte
 		
+		
+		Chromosom testing = Chromosom.randomChromosom(Simulation.testTown());
+		simulation.getTown().setChromosom(testing);
+
+		testing.generate(simulation.getTown());
+		simulation.getTown().applyChromosom();
+		
+		
 		// BUS SCHEDULES ERSTELLEN
+		/*
 		Chromosom c = new Chromosom();
 		ArrayList<Schedule> schedules = new ArrayList<Schedule>();
 		ArrayList<Waypoint> waypoints = new ArrayList<Waypoint>();
@@ -85,7 +94,7 @@ public class FrameLauncher {
 		startTimes = new ArrayList<BusStartTime>();
 		startTimes.add(new BusStartTime(0, BusDirection.NORMAL));
 		schedules.add(new Schedule(waypoints, startTimes, 0, "100"));
-		*/
+		
 		c.setSchedules(schedules);
 		
 		ArrayList<Point> stations = new ArrayList<Point>();
@@ -98,11 +107,12 @@ public class FrameLauncher {
 		stations.add(new Point(3, 5));
 		stations.add(new Point(5, 6));
 		stations.add(new Point(6, 9));
-		*/
 		c.setStations(stations);
-		
 		simulation.getTown().setChromosom(c);
 		simulation.getTown().applyChromosom();
+		*/
+		
+		
 		
 		// Set laf
 		try {

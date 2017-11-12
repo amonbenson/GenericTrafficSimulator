@@ -30,11 +30,11 @@ public class Statistics {
 	
 	public void print() {
 		System.out.println("Route found: "+countRouteFound);
-		System.out.println("No Station found: "+countNoStationFound + " ("+countNoStationFound/((float)errorNoRoute)*100f+"%)");
+		System.out.println("No Station found: "+countNoStationFound + " ("+countNoStationFound/((float)errorNoRoute+countRouteFound)*100f+"%)");
 		System.out.println("No Route found: "+countNoRouteFound + " ("+countNoRouteFound/((float)errorNoRoute)*100f+"%)");
 		System.out.println("Route same targets (counts as error): "+countRouteSameTargets + " ("+countRouteSameTargets/((float)errorNoRoute)*100f+"%)");
 		System.out.println("All Errors: "+errorNoRoute+"("+(errorNoRoute/(float)(errorNoRoute+countRouteFound))*100f+"%)");
-		System.out.println("Koordinaten: ");
+		System.out.println("Koordinaten welche nicht abgedeckt sind: ");
 		for (Iterator<Waypoint> i = noStationNearby.iterator(); i.hasNext();) {
 			Waypoint w = i.next();
 			System.out.print(w);
