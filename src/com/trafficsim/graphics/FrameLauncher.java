@@ -1,10 +1,10 @@
 package com.trafficsim.graphics;
 
 import java.awt.BorderLayout;
-import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
-import java.util.ArrayList;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import javax.swing.AbstractAction;
 import javax.swing.JFrame;
@@ -14,11 +14,7 @@ import javax.swing.UIManager;
 
 import com.trafficsim.generic.Chromosom;
 import com.trafficsim.sim.Simulation;
-import com.trafficsim.town.BusDirection;
-import com.trafficsim.town.BusStartTime;
-import com.trafficsim.town.Schedule;
 import com.trafficsim.town.Town;
-import com.trafficsim.town.Waypoint;
 
 public class FrameLauncher {
 	
@@ -28,13 +24,13 @@ public class FrameLauncher {
 	private JFrame frame;
 	
 	// Town auto updater
-	private AutoUpdater updater;
+	public AutoUpdater updater;
 	
 	// Town rendering
 	private TownDesktopPane townDesktopPane;
 	
 	// Person list and event displaying consoles
-	private EventConsolePane eventConsolePane;
+	private InfoConsolePane eventConsolePane;
 	private PersonConsolePane personConsolePane;
 	
 	public Simulation simulation;
@@ -135,7 +131,7 @@ public class FrameLauncher {
 		pcScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		frame.add(BorderLayout.EAST, pcScroll);
 		
-		eventConsolePane = new EventConsolePane(this, simulation.getTown());
+		eventConsolePane = new InfoConsolePane(this, simulation.getTown());
 		JScrollPane ecScroll = new JScrollPane(eventConsolePane);
 		ecScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		ecScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -151,6 +147,8 @@ public class FrameLauncher {
 		// Key bindings
 		townDesktopPane.getInputMap().put(KeyStroke.getKeyStroke("U"), "town update");
 		townDesktopPane.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "town autoupdate");
+		townDesktopPane.getInputMap().put(KeyStroke.getKeyStroke("PLUS"), "town autoupdate faster");
+		townDesktopPane.getInputMap().put(KeyStroke.getKeyStroke("MINUS"), "town autoupdate slower");
 		townDesktopPane.getInputMap().put(KeyStroke.getKeyStroke("S"), "print statistics");
 		
 		townDesktopPane.getActionMap().put("town update", new AbstractAction() {
@@ -164,6 +162,18 @@ public class FrameLauncher {
 			public void actionPerformed(ActionEvent e) {
 				if (updater.isRunning()) updater.stop();
 				else updater.start();
+			}
+		});
+		townDesktopPane.getActionMap().put("town autoupdate faster", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				updater.faster();
+				eventConsolePane.repaint();
+			}
+		});
+		townDesktopPane.getActionMap().put("town autoupdate slower", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				updater.slower();
+				eventConsolePane.repaint();
 			}
 		});
 		townDesktopPane.getActionMap().put("print statistics", new AbstractAction() {
@@ -192,7 +202,7 @@ public class FrameLauncher {
 		return personConsolePane;
 	}
 
-	public EventConsolePane getEventConsolePane() {
+	public InfoConsolePane getEventConsolePane() {
 		return eventConsolePane;
 	}
 	
@@ -200,6 +210,14 @@ public class FrameLauncher {
 	public static int highDPI(int value) {
 		if (IS_HIGH_DPI) return value * 2;
 		return value;
+	}
+	
+	public static double round(double value, int places) {
+	    if (places < 0) throw new IllegalArgumentException();
+
+	    BigDecimal bd = new BigDecimal(value);
+	    bd = bd.setScale(places, RoundingMode.HALF_UP);
+	    return bd.doubleValue();
 	}
 
 	public static void main(String[] args) throws InterruptedException {

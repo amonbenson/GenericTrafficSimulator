@@ -66,6 +66,10 @@ public class Statistics {
 	public int getCountRouteSameTargets() {
 		return countRouteSameTargets;
 	}
+
+	public HashSet<Waypoint> getNoStationNearby() {
+		return noStationNearby;
+	}
 	
 	public void addRouteFound() {
 		countRouteFound++;

@@ -1,10 +1,13 @@
 package com.trafficsim.graphics;
 
+import java.awt.Dimension;
 import java.awt.event.ActionListener;
 
+import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
+import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionListener;
 
 import com.trafficsim.town.Person;
@@ -29,14 +32,15 @@ public class StreetTileInfoFrame extends InfoFrame {
 			openNextStation.setEnabled(false); // Disable button if tile is a station or no station is near
 		}
 		add(openNextStation);
+
+		add(new JLabel("Speed: " + FrameLauncher.round(tile.getMaxSpeed(), 3)));
 		
+		add(new JLabel("Waiting persons:"));
 		personList = new PersonList();
 		JScrollPane scroller = new JScrollPane(personList);
 		scroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		scroller.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		add(scroller);
-		
-		add(new JLabel("Geschwindigkeit: "+tile.getMaxSpeed()));
 		
 		packFrame();
 	}

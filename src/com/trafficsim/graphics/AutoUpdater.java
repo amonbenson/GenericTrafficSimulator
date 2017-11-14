@@ -8,19 +8,41 @@ import com.trafficsim.sim.Simulation;
 import com.trafficsim.town.Town;
 
 public class AutoUpdater implements Runnable {
-	
-	public static final long TICK_SPEED = 30; // Tick speed in ms
+
+	private static final long MIN_TICK_SPEED = 1;
+	private static final long MAX_TICK_SPEED = 500;
+	private static final double MULT_TICK_SPEED = 1.3;
 	
 	private JFrame frame;
 	private Town town;
-	
+
+	private long tickSpeed;
 	private boolean running;
 	
 	public AutoUpdater(JFrame frame, Town town) {
 		this.frame = frame;
 		this.town = town;
 		
+		tickSpeed = 30;
 		running = false;
+	}
+	
+	public void faster() {
+		setTickSpeed((long) (getTickSpeed() / MULT_TICK_SPEED) - 1);
+	}
+	
+	public void slower() {
+		setTickSpeed((long) (getTickSpeed() * MULT_TICK_SPEED) + 1);
+	}
+	
+	public long getTickSpeed() {
+		return tickSpeed;
+	}
+	
+	public void setTickSpeed(long tickSpeed) {
+		if (tickSpeed > MAX_TICK_SPEED) tickSpeed = MAX_TICK_SPEED;
+		if (tickSpeed < MIN_TICK_SPEED) tickSpeed = MIN_TICK_SPEED;
+		this.tickSpeed = tickSpeed;
 	}
 	
 	public void start() {
@@ -42,7 +64,7 @@ public class AutoUpdater implements Runnable {
 				frame.repaint();
 				
 				// Wait a tick
-				Thread.sleep(TICK_SPEED);
+				Thread.sleep(tickSpeed);
 			} catch (Exception ex) {
 				Simulation.logger.log(Level.SEVERE, "Error while auto updating simulation!", ex);
 			}

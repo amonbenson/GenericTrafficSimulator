@@ -13,9 +13,9 @@ import javax.swing.JPanel;
 
 public abstract class ConsolePane extends JPanel implements MouseListener {
 	
-	public static final int DEFAULT_WIDTH = 250;
+	public static final int DEFAULT_WIDTH = 290;
 	
-	public static final int BORDER_X = 10, BORDER_Y = 20, TAB_SIZE = 60;
+	public static final int BORDER_X = 10, BORDER_Y = 20, TAB_SIZE = 120;
 	
 	private ArrayList<String> lines;
 	private int sx, sy, dx, dy;
