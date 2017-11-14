@@ -22,7 +22,6 @@ import javax.swing.DesktopManager;
 import javax.swing.JComponent;
 import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
-import javax.swing.JLabel;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
@@ -30,6 +29,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import com.trafficsim.town.Bus;
+import com.trafficsim.town.ChangeStation;
 import com.trafficsim.town.HouseTile;
 import com.trafficsim.town.Person;
 import com.trafficsim.town.Schedule;
@@ -204,14 +204,17 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, List
 			if (focusPerson != null) {
 				g.setColor(new Color(255, 0, 0, DEFAULT_TRANSPARENCY));
 			
-				Waypoint w1 = focusPerson.getRoute().getOrigin().toWaypoint();
-				Waypoint w2 = focusPerson.getRoute().getTarget().toWaypoint();
-				g.drawLine(
-						(int) ((w1.getX() + 0.5) * tileSize) + tileX, 
-						(int) ((w1.getY() + 0.5) * tileSize) + tileY, 
-						(int) ((w2.getX() + 0.5) * tileSize) + tileX, 
-						(int) ((w2.getY() + 0.5) * tileSize) + tileY
-				);
+				for (int i = 0; i < focusPerson.getRoute().getStations().size() - 1; i++) {
+					Waypoint w1 = focusPerson.getRoute().getStations().get(i).getStation();
+					Waypoint w2 = focusPerson.getRoute().getStations().get(i + 1).getStation();
+					
+					g.drawLine(
+							(int) (w1.getX() * tileSize) + tileX, 
+							(int) (w1.getY() * tileSize) + tileY,
+							(int) (w2.getX() * tileSize) + tileX, 
+							(int) (w2.getY() * tileSize) + tileY
+					);
+				}
 			}
 		}
 		

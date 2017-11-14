@@ -147,13 +147,6 @@ public class FrameLauncher {
 				townDesktopPane.repaint();
 			}
 		});
-		townDesktopPane.getActionMap().put("town revert", new AbstractAction() {
-			public void actionPerformed(ActionEvent e) {
-				updater.stop();
-				simulation.getTown().revert();
-				townDesktopPane.repaint();
-			}
-		});
 		townDesktopPane.getActionMap().put("town autoupdate", new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				if (updater.isRunning()) updater.stop();

@@ -9,7 +9,7 @@ import com.trafficsim.town.Town;
 
 public class AutoUpdater implements Runnable {
 	
-	public static final long TICK_SPEED = 20; // Tick speed in ms
+	public static final long TICK_SPEED = 30; // Tick speed in ms
 	
 	private JFrame frame;
 	private Town town;
