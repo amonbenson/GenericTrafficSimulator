@@ -28,7 +28,7 @@ public abstract class Tile {
 	 * Ansonsten wird <code>null</code> zurückgegeben.
 	 * @return nächste Station, ansonsten <code>null</code>
 	 */
-	public StreetTile getNextStation(Tile[][] map) {
+	/*public StreetTile getNextStation(Tile[][] map) {
 		StreetTile nearest = null;
 		double nearestDist = -1;
 		for (int x2=x-AREA_STATION;x2<=x+AREA_STATION;x2++) {
@@ -48,6 +48,23 @@ public abstract class Tile {
 			}
 		}
 		return nearest;
+	}*/
+	/**
+	 * Gibt die nächste beste Station (mit den meisten Buslinien) zurück
+	 * @param map
+	 * @return die "beste" nächste Station, wenn keine vorhanden ist <code>null</code>
+	 */
+	public StreetTile getNextStation(Tile[][] map) {
+		ArrayList<StreetTile> all = getAllNextStations(map);
+		StreetTile best = null;
+		int numberLines = 0;
+		for (StreetTile t : all) {
+			if (t.getSchedules().size() > numberLines) {
+				numberLines = t.getSchedules().size();
+				best = t;
+			}
+		}
+		return best;
 	}
 	
 	/**

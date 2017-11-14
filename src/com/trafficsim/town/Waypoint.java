@@ -70,4 +70,27 @@ public class Waypoint {
 	public String toString() {
 		return "X: "+x+"Y: "+y+"\n";
 	}
+	
+	@Override
+	public int hashCode() {
+		int hash = 7;
+		String s = x+":"+y;
+		for (int i = 0; i < s.length(); i++) {
+		    hash = hash*31 + s.charAt(i);
+		}
+		return hash;
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if ( o == null )
+			return false;
+
+		if ( o == this )
+			return true;
+
+		Waypoint w = (Waypoint) o;
+		return x == w.x && y == w.y;
+	}
+	
 }

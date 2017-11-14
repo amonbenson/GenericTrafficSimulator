@@ -1,16 +1,14 @@
 package com.trafficsim.graphics;
 
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.event.ListSelectionListener;
 
-import com.trafficsim.town.HouseTile;
 import com.trafficsim.town.Person;
 import com.trafficsim.town.StreetTile;
-import com.trafficsim.town.Tile;
 
 public class StreetTileInfoFrame extends InfoFrame {
 
@@ -37,6 +35,8 @@ public class StreetTileInfoFrame extends InfoFrame {
 		scroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		scroller.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		add(scroller);
+		
+		add(new JLabel("Geschwindigkeit: "+tile.getMaxSpeed()));
 		
 		packFrame();
 	}

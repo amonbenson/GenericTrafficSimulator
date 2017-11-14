@@ -1,6 +1,5 @@
 package com.trafficsim.sim;
 
-import java.awt.Point;
 import java.util.Random;
 import java.util.logging.Logger;
 
@@ -66,6 +65,49 @@ public class Simulation {
 				}
 			}
 		}
+		return townList;
+	}
+	
+	public static float[][][] testTown() {
+		float[][][] townList = new float[10][10][2];
+		for (int x = 0; x < 10; x++) {
+			for (int y = 0; y < 10; y++) {
+				townList[x][y][0] = 1; //Haus
+				townList[x][y][1] = 10;
+			}
+		}
+		//Hauptstraße:
+		for (int x = 0; x < 9; x++) {
+			townList[1+x][4][0] = 0;
+			townList[1+x][4][1] = 1f/3f;
+		}
+		//Drei kleinere Straßen:
+		for (int y = 0; y < 3; y++) {
+			townList[3][1+y][0] = 0;
+			townList[3][1+y][1] = 0.5f/3f;			
+		}
+		for (int y = 0; y < 3; y++) {
+			townList[7][1+y][0] = 0;
+			townList[7][1+y][1] = 0.5f/3f;			
+		}
+		for (int y = 0; y < 4; y++) {
+			townList[5][5+y][0] = 0;
+			townList[5][5+y][1] = 0.5f/3f;			
+		}
+		//Nebenstraßen:
+		for (int x = 0; x < 2; x++) {
+			townList[1+x][1][0] = 0;
+			townList[1+x][1][1] = 0.25f/3f;
+		}
+		for (int x = 0; x < 3; x++) {
+			townList[2+x][7][0] = 0;
+			townList[2+x][7][1] = 0.25f;
+		}
+		for (int x = 0; x < 2; x++) {
+			townList[6+x][7][0] = 0;
+			townList[6+x][7][1] = 0.25f;
+		}
+		
 		return townList;
 	}
 }

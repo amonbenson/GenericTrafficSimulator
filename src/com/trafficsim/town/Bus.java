@@ -3,6 +3,8 @@ package com.trafficsim.town;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import com.trafficsim.sim.Simulation;
+
 public class Bus extends Entity {
 
 	private int maxPersons; //maximale Anzahl der Personen des Busses
@@ -112,8 +114,8 @@ public class Bus extends Entity {
 							st.addPerson(p);
 						} else {
 							// Andernfalls, wenn die Person ihr Ziel erreicht hat, wird sie auch aus der Stadt entfernt
+							p.done(town.getTime());
 							town.getPersons().remove(p);
-							
 							// TODO: An diesem Punkt müsste man schauen, wie "zufrieden" die Person mit ihrere Reise war,
 							// um das aktuelle Chromosom berwerten zu können.
 						}
@@ -175,36 +177,36 @@ public class Bus extends Entity {
 			if (schedule.isNormal()) {
 				if (getX() == schedule.getSchedule().getWaypoint(currentWaypoint).getX()) { //Bewegung auf der Y-Achse
 					if (getY() < schedule.getSchedule().getWaypoint(currentWaypoint).getY()) { //Bewegung nach oben
-						speedY=getDefaultSpeed();
+						speedY=getCurrentSpeed();
 						nextWaypointSmaller = false;
 					} else { //Bewegung nach unten
-						speedY=-getDefaultSpeed();
+						speedY=-getCurrentSpeed();
 						nextWaypointSmaller = true;
 					}
 				} else { //Bewegung auf der X-Achse
 					if (getX() < schedule.getSchedule().getWaypoint(currentWaypoint).getX()) { //Bewegung nach rechts
-						speedX=getDefaultSpeed();
+						speedX=getCurrentSpeed();
 						nextWaypointSmaller = false;
 					} else { //Bewegung nach links
-						speedX=-getDefaultSpeed();
+						speedX=-getCurrentSpeed();
 						nextWaypointSmaller = true;
 					}
 				}
 			} else { //Reverse Bewegung
 				if (getX() == schedule.getSchedule().getWaypointReverse(currentWaypoint).getX()) { //Bewegung auf der Y-Achse
 					if (getY() < schedule.getSchedule().getWaypointReverse(currentWaypoint).getY()) { //Bewegung nach oben
-						speedY=getDefaultSpeed();
+						speedY=getCurrentSpeed();
 						nextWaypointSmaller = false;
 					} else { //Bewegung nach unten
-						speedY=-getDefaultSpeed();
+						speedY=-getCurrentSpeed();
 						nextWaypointSmaller = true;
 					}
 				} else { //Bewegung auf der X-Achse
 					if (getX() < schedule.getSchedule().getWaypointReverse(currentWaypoint).getX()) { //Bewegung nach rechts
-						speedX=getDefaultSpeed();
+						speedX=getCurrentSpeed();
 						nextWaypointSmaller = false;
 					} else { //Bewegung nach links
-						speedX=-getDefaultSpeed();
+						speedX=-getCurrentSpeed();
 						nextWaypointSmaller = true;
 					}
 				}
@@ -246,7 +248,18 @@ public class Bus extends Entity {
 		this.schedule = schedule;
 	}
 	
-	
+	/**
+	 * Gibt die Geschwindigkeit auf dem Tile zurück, wo der Bus gerade ist
+	 */
+	public double getCurrentSpeed() {
+		Tile t = town.getTiles()[(int)getX()][(int)getY()];
+		if (t instanceof StreetTile) {
+			return ((StreetTile) t).getMaxSpeed();
+		} else {
+			Simulation.logger.warning("Achtung, Bus ist gerade nicht auf einer Streettile..");
+			return getDefaultSpeed();
+		}
+	}
 	
 	public static double getDefaultSpeed() {
 		return 0.05d;

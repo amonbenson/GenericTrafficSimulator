@@ -42,14 +42,23 @@ public class FrameLauncher {
 	public FrameLauncher() {
 		// TOWN ERSTELLEN
 		simulation = new Simulation( new Town(10, 10));
-		simulation.getTown().generateTiles(Simulation.randomTown(10, 10)); //Landschaftskarte
+		simulation.getTown().generateTiles(Simulation.testTown()); //Landschaftskarte
+		
+		
+		Chromosom testing = Chromosom.randomChromosom(Simulation.testTown());
+		simulation.getTown().setChromosom(testing);
+
+		testing.generate(simulation.getTown());
+		simulation.getTown().applyChromosom();
+		
 		
 		// BUS SCHEDULES ERSTELLEN
+		/*
 		Chromosom c = new Chromosom();
 		ArrayList<Schedule> schedules = new ArrayList<Schedule>();
 		ArrayList<Waypoint> waypoints = new ArrayList<Waypoint>();
 		
-		
+		/*
 		Waypoint w1 = new Waypoint(0.5, 0.5);
 		Waypoint w2 = new Waypoint(0.5, 2.5);
 		Waypoint w3 = new Waypoint(0.5, 5.5);
@@ -75,7 +84,7 @@ public class FrameLauncher {
 		startTimes = new ArrayList<BusStartTime>();
 		startTimes.add(new BusStartTime(0, BusDirection.NORMAL));
 		schedules.add(new Schedule(waypoints, startTimes, 0, "188"));
-		c.setSchedules(schedules);
+		
 		
 		waypoints = new ArrayList<Waypoint>();
 		waypoints.add(w5);
@@ -86,9 +95,10 @@ public class FrameLauncher {
 		startTimes.add(new BusStartTime(0, BusDirection.NORMAL));
 		schedules.add(new Schedule(waypoints, startTimes, 0, "100"));
 		
-
+		c.setSchedules(schedules);
 		
 		ArrayList<Point> stations = new ArrayList<Point>();
+		/*
 		stations.add(new Point(0, 0));
 		stations.add(new Point(0, 2));
 		stations.add(new Point(0, 5));
@@ -98,9 +108,11 @@ public class FrameLauncher {
 		stations.add(new Point(5, 6));
 		stations.add(new Point(6, 9));
 		c.setStations(stations);
-		
 		simulation.getTown().setChromosom(c);
 		simulation.getTown().applyChromosom();
+		*/
+		
+		
 		
 		// Set laf
 		try {
@@ -139,7 +151,8 @@ public class FrameLauncher {
 		// Key bindings
 		townDesktopPane.getInputMap().put(KeyStroke.getKeyStroke("U"), "town update");
 		townDesktopPane.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "town autoupdate");
-
+		townDesktopPane.getInputMap().put(KeyStroke.getKeyStroke("S"), "print statistics");
+		
 		townDesktopPane.getActionMap().put("town update", new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				updater.stop();
@@ -151,6 +164,11 @@ public class FrameLauncher {
 			public void actionPerformed(ActionEvent e) {
 				if (updater.isRunning()) updater.stop();
 				else updater.start();
+			}
+		});
+		townDesktopPane.getActionMap().put("print statistics", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				simulation.getTown().getStatistics().print();
 			}
 		});
 		

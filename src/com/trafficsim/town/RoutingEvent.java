@@ -36,6 +36,7 @@ public class RoutingEvent extends Event{
 					person.setRoute(route);
 					st.addPerson(person);
 					t.getPersons().add(person); // Add the person to the town
+					person.start(t.getTime());
 				} else {
 					Simulation.logger.warning("Startfield isn't a station (but a street)");
 				}
