@@ -159,22 +159,6 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 		
 		Tile[][] tiles = town.getTiles();
 		
-		// Update tile size by screen dimensions
-		if (getWidth() / town.getSizeX() > getHeight() / town.getSizeY()) {
-			tileSize = getHeight() / (double) town.getSizeY();
-			tileX = (int) ((getWidth() - town.getSizeX() * tileSize) / 2);
-			tileY = 0;
-		} else {
-			tileSize = getWidth() / (double) town.getSizeX();
-			tileX = 0;
-			tileY = (int) ((getHeight() - town.getSizeY() * tileSize) / 2);
-		}
-		
-		// Apply zoom and translation
-		tileSize *= transZ;
-		tileX += transX;
-		tileY += transY;
-		
 		// Draw town tiles
 		for (int x = 0; x < town.getSizeX(); x++) {
 			for (int y = 0; y < town.getSizeY(); y++) {
@@ -446,6 +430,26 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 		for (JInternalFrame frame : getAllFrames())
 			getDesktopManager().setBoundsForFrame(frame, frame.getX(), frame.getY(), frame.getWidth(), frame.getHeight());
 	}
+	
+	private void updateTileTransform() {
+		// Update tile size by screen dimensions
+		if (getWidth() / town.getSizeX() > getHeight() / town.getSizeY()) {
+			tileSize = getHeight() / (double) town.getSizeY();
+			tileX = (int) ((getWidth() - town.getSizeX() * tileSize) / 2);
+			tileY = 0;
+		} else {
+			tileSize = getWidth() / (double) town.getSizeX();
+			tileX = 0;
+			tileY = (int) ((getHeight() - town.getSizeY() * tileSize) / 2);
+		}
+		
+		// Apply zoom and translation
+		tileSize *= transZ;
+		tileX += transX;
+		tileY += transY;
+		
+		repaint();
+	}
 
 	public Town getTown() {
 		return town;
@@ -519,7 +523,7 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 			// Translate
 			transX += mouseDX;
 			transY += mouseDY;
-			repaint();
+			updateTileTransform();
 		}
 	}
 
@@ -533,8 +537,12 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 	}
 
 	public void mouseWheelMoved(MouseWheelEvent e) {
-		transZ *= Math.pow(ZOOM_SPEED, -e.getWheelRotation());
-		repaint();
+		double zoomD = Math.pow(ZOOM_SPEED, -e.getWheelRotation());
+		transZ *= zoomD;
+		transX -= town.getSizeX() * tileSize * transZ * (zoomD - 1) / 2;
+		transY -= town.getSizeX() * tileSize * transZ * (zoomD - 1) / 2;
+		
+		updateTileTransform();
 	}
 
 	public void valueChanged(ListSelectionEvent e) {
@@ -600,8 +608,9 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 	}
 
 	public void componentResized(ComponentEvent e) {
-		// When this desktop pane resizes, we have to keep all internal frames inside the bounds
+		// When this desktop pane resizes, we have to keep all internal frames inside the bounds and recalculate the map size
 		updateInternalFramePositions();
+		updateTileTransform();
 	}
 
 	public void componentMoved(ComponentEvent e) {

@@ -2,6 +2,7 @@ package com.trafficsim.graphics;
 
 import java.awt.Graphics;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import com.trafficsim.town.Bus;
 import com.trafficsim.town.Person;
@@ -27,22 +28,26 @@ public class PersonConsolePane extends ConsolePane {
 		clear();
 		
 		// List all persons
-		append("%A0A0A0Person List");
+		append("%A0A0A0Person List (" + town.getPersons().size() + ")");
 		append("ID\tName");
 		linePersonList = getNumLines();
 		
 		if (town.getPersons().isEmpty()) append("-\t-");
-		for (Person person : town.getPersons()) {
+		Iterator<Person> personIt = town.getPersons().iterator();
+		while (personIt.hasNext()) {
+			Person person = personIt.next();
 			append(person.getID() + "\t" + person.getName());
 		}
 		append("");
 		
 		// List all busses
-		append("%A0A0A0Bus List");
+		append("%A0A0A0Bus List (" + town.getBusses().size() + ")");
 		lineBusList = getNumLines();
 		
 		if (town.getBusses().isEmpty()) append("-");
-		for (Bus bus : town.getBusses()) {
+		Iterator<Bus> busIt = town.getBusses().iterator();
+		while (busIt.hasNext()) {
+			Bus bus = busIt.next();
 			append(bus.getSchedule().getSchedule().getName());
 		}
 		
