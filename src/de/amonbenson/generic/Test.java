@@ -57,7 +57,7 @@ public class Test {
 			int f = 0;
 			for (int i = 0; i < dna.length(); i++) {
 				if (i % 5 == 0 && ca[i] == '0') f += 100;
-				if (i % 5 == 1 && ca[i] == '1') f += 100;
+				if (i % 5 > 0 && ca[i] == '1') f += 100;
 			}
 			return f;
 		}
