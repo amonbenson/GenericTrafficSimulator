@@ -256,5 +256,4 @@ public class Chromosom {
 		return back;
 	}
 	
-
 }
