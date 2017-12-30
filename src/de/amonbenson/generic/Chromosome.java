@@ -8,36 +8,36 @@ public class Chromosome {
 	
 	private long id;
 	
-	private String dna;
+	private boolean[] dna;
 	private double fitness;
 
 	public Chromosome(Random random, int dnaSize) {
 		this();
 		
 		// Initialize the dna as a random string
-		String randomDNA = "";
+		boolean[] randomDNA = new boolean[dnaSize];
 		for (int i = 0; i < dnaSize; i++) {
-			randomDNA += random.nextBoolean() ? "1" : "0";
+			randomDNA[i] = random.nextBoolean();
 		}
 		setDNA(randomDNA);
 	}
 
 	public Chromosome() {
-		this("");
+		this(new boolean[0]);
 	}
 
-	public Chromosome(String dna) {
+	public Chromosome(boolean[] dna) {
 		this.id = nextID();
 		
 		this.dna = dna;
 		this.fitness = 0.0;
 	}
 
-	public String getDNA() {
+	public boolean[] getDNA() {
 		return dna;
 	}
 
-	public void setDNA(String dna) {
+	public void setDNA(boolean[] dna) {
 		this.dna = dna;
 	}
 

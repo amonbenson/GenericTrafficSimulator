@@ -1,6 +1,7 @@
 package de.amonbenson.generic;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -43,8 +44,7 @@ public abstract class Population<T> {
 		size = chromosomes.size();
 	}
 
-	public abstract T createIndividual(String dna);
-
+	public abstract T createIndividual(boolean[] dna);
 	public abstract double simulateIndividual(T individual);
 
 	public void createGeneration() {
@@ -118,33 +118,32 @@ public abstract class Population<T> {
 
 			// Get the dna from mom and dad. If they ar none or not the same
 			// size, continue
-			String dnaMom = mom.getDNA(), dnaDad = dad.getDNA();
+			boolean[] dnaMom = mom.getDNA(), dnaDad = dad.getDNA();
 			if (dnaMom == null || dnaDad == null)
 				continue;
-			if (dnaMom.length() != dnaDad.length())
+			if (dnaMom.length != dnaDad.length)
 				continue;
 
 			// Make the child dna
-			String dnaChild = "";
-			int dnaLength = Math.min(dnaMom.length(), dnaDad.length());
+			boolean[] dnaChild = new boolean[dnaMom.length];
 
 			// Now, lets cross over
-			int crs1 = random.nextInt(dnaLength);
-			int crs2 = random.nextInt(dnaLength);
+			int crs1 = random.nextInt(dnaChild.length);
+			int crs2 = random.nextInt(dnaChild.length);
 
-			if (crs1 < crs2) {
-				dnaChild = dnaMom.substring(0, crs1) + dnaDad.substring(crs1, crs2) + dnaMom.substring(crs2);
-			} else {
-				dnaChild = dnaMom.substring(0, crs2) + dnaDad.substring(crs2, crs1) + dnaMom.substring(crs1);
+			for (int i = 0; i < dnaChild.length; i++) {
+				if (i < Math.min(crs1, crs2) || i >= Math.max(crs1,  crs2))
+					dnaChild[i] = dnaMom[i];
+				else
+					dnaChild[i] = dnaDad[i];
 			}
 
-			// Now, lets do some swapping
+			// Now, lets do some swapping, scrambling and inverting
 			if (random.nextDouble() < mutationSwapProp) {
-				int swp1 = random.nextInt(dnaLength - mutationSwapDistance);
+				int swp1 = random.nextInt(dnaChild.length - mutationSwapDistance);
 				int swp2 = swp1 + mutationSwapDistance;
 
-				dnaChild = dnaChild.substring(0, swp1) + dnaChild.charAt(swp2) + dnaChild.substring(swp1 + 1, swp2)
-						+ dnaChild.charAt(swp1) + dnaChild.substring(swp2 + 1);
+				;
 			}
 
 			if (random.nextDouble() < mutationScrambleProp) {
