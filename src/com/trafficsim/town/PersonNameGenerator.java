@@ -12,15 +12,15 @@ public class PersonNameGenerator {
 	private ArrayList<String> nameInstructions = new ArrayList<String>();
 
 	public PersonNameGenerator() {
-		String demoVocals[] = { "a", "e", "i", "o", "u", "ei", "ai", "ou", "j", "ji", "y", "oi", "au", "oo" };
+		String demoVocals[] = { "a", "e", "i", "o", "u", "ei", "ai", "y", "eu", "au", };
 
-		String demoStartConsonants[] = { "b", "c", "d", "f", "g", "h", "k", "l", "m", "n", "p", "q", "r", "s", "t", "v",
-				"w", "x", "z", "ch", "bl", "br", "fl", "gl", "gr", "kl", "pr", "st", "sh", "th" };
+		String demoStartConsonants[] = { "b", "c", "d", "f", "g", "h", "k", "l", "m", "n", "r", "s", "t", "w", "z",
+				"br", "fl", "gr", "kl", "st", "sch" };
 
-		String demoEndConsonants[] = { "b", "d", "f", "g", "h", "k", "l", "m", "n", "p", "r", "s", "t", "v", "w", "z",
-				"ch", "gh", "nn", "st", "sh", "th", "tt", "ss", "pf", "nt" };
+		String demoEndConsonants[] = { "b", "d", "g", "k", "l", "m", "n", "p", "r", "s", "t", "w", "x", "z", "st", "sh",
+				"tz", "rt" };
 
-		String nameInstructions[] = { "vd", "cvdvd", "cvd", "vdvd" };
+		String nameInstructions[] = { "cv", "cvd", "cvdv", "cvdvd", "cvdvdv" };
 
 		this.vocals.addAll(Arrays.asList(demoVocals));
 		this.startConsonants.addAll(Arrays.asList(demoStartConsonants));

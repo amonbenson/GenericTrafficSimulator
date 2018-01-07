@@ -1,239 +1,175 @@
 package de.amonbenson.generic;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Comparator;
 import java.util.Random;
 
-public abstract class Population<T> {
 
-	public static final int MAX_BREED_ITERATIONS = 1000;
+/**
+ * A population is an abstraction of a collection of individuals. The population
+ * class is generally used to perform group-level operations on its individuals,
+ * such as finding the strongest individuals, collecting stats on the population
+ * as a whole, and selecting individuals to mutate or crossover.
+ * 
+ * @author bkanber
+ *
+ */
+public class Population {
+	private Individual population[];
+	private double populationFitness = -1;
 
-	public double deathByNaturalSelection = 0.5;
-	public double mutationSwapProp = 0.05;
-	public double mutationScrambleProp = 0.01;
-	public double mutationInverseProp = 0.01;
-
-	public int mutationSwapDistance = 5;
-	public int mutationScrambleDistance = 5;
-	public int mutationInverseDistance = 5;
-
-	private int size;
-	private List<Chromosome> chromosomes;
-	private List<T> individuals;
-	private double fitnessSum;
-
-	private Random random;
-
-	public Population(int size) {
-		this(createEmptyChromosomesList(size));
+	/**
+	 * Initializes blank population of individuals
+	 * 
+	 * @param populationSize
+	 *            The number of individuals in the population
+	 */
+	public Population(int populationSize) {
+		// Initial population
+		this.population = new Individual[populationSize];
 	}
 
-	public Population(List<Chromosome> chromosomes) {
-		this(new Random(), chromosomes);
-	}
+	/**
+	 * Initializes population of individuals
+	 * 
+	 * @param populationSize
+	 *            The number of individuals in the population
+	 * @param chromosomeLength
+	 *            The size of each individual's chromosome
+	 */
+	public Population(int populationSize, int chromosomeLength) {
+		// Initialize the population as an array of individuals
+		this(populationSize);
 
-	public Population(Random random, List<Chromosome> chromosomes) {
-		if (chromosomes == null)
-			throw new IllegalArgumentException("Chromosomes list mustn't be null.");
-		if (chromosomes.size() == 0)
-			throw new IllegalArgumentException("Chromosomes list mustn't be empty.");
-
-		this.random = random;
-		this.chromosomes = chromosomes;
-		size = chromosomes.size();
-	}
-
-	public abstract T createIndividual(boolean[] dna);
-	public abstract double simulateIndividual(T individual);
-
-	public void createGeneration() {
-		individuals = new ArrayList<T>();
-
-		for (Chromosome chromosome : chromosomes) {
-			if (chromosome.getDNA() == null)
-				throw new NullPointerException("Chromosome DNA must not be null.");
-
-			// Create an individual from the dna
-			T individual = createIndividual(chromosome.getDNA());
-
-			if (individual == null)
-				throw new NullPointerException("Individual must not be null.");
-
-			// Add this individual to the list
-			individuals.add(individual);
-
+		// Create each individual in turn
+		for (int individualCount = 0; individualCount < populationSize; individualCount++) {
+			// Create an individual, initializing its chromosome to the given
+			// length
+			Individual individual = new Individual(chromosomeLength);
+			// Add individual to population
+			this.population[individualCount] = individual;
 		}
 	}
 
-	public void simulateGeneration() {
-		if (chromosomes == null)
-			throw new NullPointerException("No chromosomes defined.");
-		if (individuals == null)
-			throw new NullPointerException("No individuals defined. Use applyDNA first.");
-		if (chromosomes.size() != individuals.size() || chromosomes.size() != size)
-			throw new IllegalStateException("Chromosomes and individuals must be the same size as population.");
-
-		// Sum all fitnesses together. Will be used to pick parents later.
-		double fitnessSum = 0;
-
-		for (int i = 0; i < size; i++) {
-			// Get the chromosome and corresponding individual
-			Chromosome chromosome = chromosomes.get(i);
-			T individual = individuals.get(i);
-
-			if (chromosome == null)
-				throw new NullPointerException("Chromosome must not be null.");
-			if (individual == null)
-				throw new NullPointerException("Individual must not be null.");
-
-			// Simulate the individual and get the fitness
-			double fitness = simulateIndividual(individual);
-			if (fitness < 0)
-				fitness = 0;
-			chromosome.setFitness(fitness);
-
-			fitnessSum += fitness;
-		}
-
-		this.fitnessSum = fitnessSum;
+	/**
+	 * Get individuals from the population
+	 * 
+	 * @return individuals Individuals in population
+	 */
+	public Individual[] getIndividuals() {
+		return this.population;
 	}
 
-	public void breedNewGeneration() {
-		// Sort the chromosomes by their fitness
-		chromosomes.sort(new ChromosomeComparator());
-
-		// Remove the unfittest chromosomes (natural selection)
-		chromosomes = chromosomes.subList((int) (chromosomes.size() * deathByNaturalSelection), chromosomes.size());
-
-		// Now do some crossover and mutation
-		while (chromosomes.size() < size) {
-			Chromosome mom = selectParent();
-			Chromosome dad = selectParent();
-
-			// If either of the parents is null or they are the same, we
-			// continue
-			if (mom == null || dad == null || mom == dad)
-				continue;
-
-			// Get the dna from mom and dad. If they ar none or not the same
-			// size, continue
-			boolean[] dnaMom = mom.getDNA(), dnaDad = dad.getDNA();
-			if (dnaMom == null || dnaDad == null)
-				continue;
-			if (dnaMom.length != dnaDad.length)
-				continue;
-
-			// Make the child dna
-			boolean[] dnaChild = new boolean[dnaMom.length];
-
-			// Now, lets cross over
-			int crs1 = random.nextInt(dnaChild.length);
-			int crs2 = random.nextInt(dnaChild.length);
-
-			for (int i = 0; i < dnaChild.length; i++) {
-				if (i < Math.min(crs1, crs2) || i >= Math.max(crs1,  crs2))
-					dnaChild[i] = dnaMom[i];
-				else
-					dnaChild[i] = dnaDad[i];
-			}
-
-			// Now, lets do some swapping, scrambling and inverting
-			if (random.nextDouble() < mutationSwapProp) {
-				int swp1 = random.nextInt(dnaChild.length - mutationSwapDistance);
-				int swp2 = swp1 + mutationSwapDistance;
-
-				;
-			}
-
-			if (random.nextDouble() < mutationScrambleProp) {
-				int scb1 = random.nextInt(dnaLength - mutationScrambleDistance);
-				int scb2 = scb1 + mutationScrambleDistance;
-
-				char[] scramble = dnaChild.substring(scb1, scb2).toCharArray();
-				shuffleCharArray(scramble);
-
-				dnaChild = dnaChild.substring(0, scb1) + String.valueOf(scramble) + dnaChild.substring(scb2);
-			}
-
-			if (random.nextDouble() < mutationInverseProp) {
-				int inv1 = random.nextInt(dnaLength - mutationInverseDistance);
-				int inv2 = inv1 + mutationInverseDistance;
-			}
-
-			// Finally, some real mutation (changing 0s to 1s and vice versa).
-			for (int i = 0; i < dnaChild.length(); i++) {
-				if (random.nextDouble() < 1.0 / dnaChild.length()) {
-					char replaceChar = '0';
-					if (dnaChild.charAt(i) == '0') replaceChar = '1';
-					
-					dnaChild = dnaChild.substring(0, i) + replaceChar + dnaChild.substring(i + 1);
+	/**
+	 * Find an individual in the population by its fitness
+	 * 
+	 * This method lets you select an individual in order of its fitness. This
+	 * can be used to find the single strongest individual (eg, if you're
+	 * testing for a solution), but it can also be used to find weak individuals
+	 * (if you're looking to cull the population) or some of the strongest
+	 * individuals (if you're using "elitism").
+	 * 
+	 * @param offset
+	 *            The offset of the individual you want, sorted by fitness. 0 is
+	 *            the strongest, population.length - 1 is the weakest.
+	 * @return individual Individual at offset
+	 */
+	public Individual getFittest(int offset) {
+		// Order population by fitness
+		Arrays.sort(this.population, new Comparator<Individual>() {
+			public int compare(Individual o1, Individual o2) {
+				if (o1.getFitness() > o2.getFitness()) {
+					return -1;
+				} else if (o1.getFitness() < o2.getFitness()) {
+					return 1;
 				}
+				return 0;
 			}
+		});
 
-			// Add the child chromosom
-			Chromosome child = new Chromosome();
-			child.setDNA(dnaChild);
-			chromosomes.add(child);
+		// Return the fittest individual
+		return this.population[offset];
+	}
+
+	/**
+	 * Set population's group fitness
+	 * 
+	 * @param fitness
+	 *            The population's total fitness
+	 */
+	public void setPopulationFitness(double fitness) {
+		this.populationFitness = fitness;
+	}
+
+	/**
+	 * Get population's group fitness
+	 * 
+	 * @return populationFitness The population's total fitness
+	 */
+	public double getPopulationFitness() {
+		return this.populationFitness;
+	}
+
+	/**
+	 * Get population's size
+	 * 
+	 * @return size The population's size
+	 */
+	public int size() {
+		return this.population.length;
+	}
+
+	/**
+	 * Set individual at offset
+	 * 
+	 * @param individual
+	 * @param offset
+	 * @return individual
+	 */
+	public Individual setIndividual(int offset, Individual individual) {
+		return population[offset] = individual;
+	}
+
+	/**
+	 * Get individual at offset
+	 * 
+	 * @param offset
+	 * @return individual
+	 */
+	public Individual getIndividual(int offset) {
+		return population[offset];
+	}
+	
+	public int indexOf(Individual individual) {
+		int index = -1;
+		for (int i = 0; i < population.length; i++) {
+			if (population[i] == individual) return i;
+		}
+		return -1;
+	}
+	
+	/**
+	 * Shuffles the population in-place
+	 * 
+	 * @param void
+	 * @return void
+	 */
+	public void shuffle() {
+		Random rnd = new Random();
+		for (int i = population.length - 1; i > 0; i--) {
+			int index = rnd.nextInt(i + 1);
+			Individual a = population[index];
+			population[index] = population[i];
+			population[i] = a;
 		}
 	}
-
-	private Chromosome selectParent() {
-		// If the fitnessSum is 0, we just choose a true random chromosome
-		if (fitnessSum == 0) {
-			return chromosomes.get(random.nextInt(chromosomes.size()));
+	
+	public String toString() {
+		String s = "";
+		for (int i = 0; i < population.length; i++) {
+			if (i > 0) s += " ";
+			s += population[i];
 		}
-
-		// Choose a weightet random chromosome
-		double p = 0;
-		double r = random.nextDouble() * fitnessSum;
-
-		for (Chromosome c : chromosomes) {
-			p += c.getFitness();
-			if (p > r)
-				return c;
-		}
-
-		return null;
-	}
-
-	private void shuffleCharArray(char[] ar) {
-		for (int i = ar.length - 1; i > 0; i--) {
-			int index = random.nextInt(i + 1);
-			// Simple swap
-			char a = ar[index];
-			ar[index] = ar[i];
-			ar[i] = a;
-		}
-	}
-
-	public void initChromosomesRandom(int dnaSize) {
-		if (chromosomes == null)
-			return;
-		for (int i = 0; i < chromosomes.size(); i++)
-			chromosomes.set(i, new Chromosome(random, dnaSize));
-	}
-
-	private static List<Chromosome> createEmptyChromosomesList(int size) {
-		List<Chromosome> chromosomes = new ArrayList<Chromosome>();
-		for (int i = 0; i < size; i++)
-			chromosomes.add(new Chromosome(""));
-		return chromosomes;
-	}
-
-	public int getSize() {
-		return size;
-	}
-
-	public List<Chromosome> getChromosomes() {
-		return chromosomes;
-	}
-
-	public List<T> getIndividuals() {
-		return individuals;
-	}
-
-	public double getFitnessSum() {
-		return fitnessSum;
+		return s;
 	}
 }

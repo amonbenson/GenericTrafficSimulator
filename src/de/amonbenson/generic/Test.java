@@ -1,72 +1,114 @@
 package de.amonbenson.generic;
 
+/**
+ * This is our main class used to run the genetic algorithm.
+ * 
+ * This case is one of the simplest problems we can solve: the objective is to
+ * end up with an individual whose chromosome is all ones.
+ * 
+ * The simplicity of this problem makes the GeneticAlgorithm class'
+ * "calcFitness" method very simple. We'll just count the number of ones in the
+ * chromosome and use that as the fitness score. Similarly, the
+ * "isTerminationConditionMet" method in the GeneticAlgorithm class for this
+ * example is very simple: if the fitness score (ie, number of ones) is the same
+ * as the length of the chromosome (ie, we're all ones), we're done!
+ * 
+ * @author bkanber
+ *
+ */
 public class Test {
+
 	public Test() {
-		TestPopulation p = new TestPopulation(10); // Create a test population with n individuals
-		p.initChromosomesRandom(20); // Init all chromosomes randomly with lengths of m
-		
-		p.deathByNaturalSelection = 0.5;
-		p.mutationSwapProp = 0.05;
-		p.mutationScrambleProp = 0.01;
-		p.mutationInverseProp = 0.01;
-		
-		p.mutationSwapDistance = 4;
-		p.mutationScrambleDistance = 4;
-		p.mutationSwapDistance = 4;
-		
-		while (true) {
-			// Create a generation of individuals from the chromosomes' dna
-			p.createGeneration();
-			
-			// Simulate this generation and get the fitnesses
-			p.simulateGeneration();
-			
-			for (int i = 0; i < p.getSize(); i++) {
-				Chromosome c = p.getChromosomes().get(i);
-				
-				System.out.print(c + "      ");
-			}
-			System.out.println("\n");
-			
-			// Apply natural selection and create a new generation
-			p.breedNewGeneration();
-			
-			try {
-				Thread.sleep(10);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		// Create GA object
+		GeneticAlgorithm ga = new GeneticAlgorithm(new BasicSimulator(), 10, 0.05, 0.95, 2);
+		ga.addGenericAlgorithmWatcher(new BasicGenericAlgorithmWatcher());
+
+		// Initialize population
+		Population population = ga.initPopulation(5);
+
+		// Evaluate population for the first time
+		ga.evalPopulation(population);
+
+		while (ga.isTerminationConditionMet(population) == false) {
+			// Apply crossover
+			population = ga.crossoverPopulation(population);
+
+			// Apply mutation
+			population = ga.mutatePopulation(population);
+
+			// Evaluate population
+			ga.evalPopulation(population);
 		}
+		
+		System.out.println("Found solution in " + ga.getGeneration() + " generations");
+		System.out.println("Best solution: " + population.getFittest(0).toString());
 	}
 	
+	class BasicGenericAlgorithmWatcher implements GenericAlgorithmWatcher {
+
+		public void crossover(Population before, Population after, Individual parent1, Individual parent2,
+				Individual offspring) {
+			System.out.println("We will now perform a crossover:");
+			System.out.println(parent1 + " + " + parent2 + " -> " + offspring);
+			System.out.println();
+		}
+
+		public void crossoverDone(Population before, Population after) {
+			System.out.println("The crossover is done. These are the new individuals");
+			System.out.println("old   " + before);
+			System.out.println("new   " + after);
+			System.out.println();
+		}
+
+		public void mutation(Population population, int individualIndex, int geneIndex) {
+			System.out.println("We will now perform a mutation on individual no. " + individualIndex);
+			System.out.println("We will change gene no. " + geneIndex + ":");
+			System.out.println(population.getIndividual(individualIndex));
+			for (int i = 0; i < geneIndex; i++) System.out.print(" ");
+			System.out.println("^");
+			System.out.println();
+		}
+
+		public void mutationDone(Population before, Population after) {
+			System.out.println("The mutation is done. These are the new individuals");
+			System.out.println("old   " + before);
+			System.out.println("new   " + after);
+			System.out.println();
+		}
+
+		public void populationEvaluated(int generation, Population population) {
+			System.out.println("We are now in generation " + generation + ". The new population is:");
+			System.out.println(population);
+			System.out.println();
+		}
+		
+	}
+
+	class BasicSimulator implements Simulator {
+		public double simulate(Individual individual) {
+			double sum = 0;
+			for (int i = 0; i < individual.getChromosomeLength(); i++) {
+				if (individual.getGene(i) == 1) sum++;
+			}
+			
+			return sum / individual.getChromosomeLength();
+		}
+
+		public boolean isTerminationConditionMet(Population population) {
+			// Check if any individual reached a fitness of 1. This will
+			// indicate, that the algorithm has found the bes solution (all 1s)
+			// for this specific individual.
+			for (Individual individual : population.getIndividuals()) {
+				if (individual.getFitness() == 1) {
+					return true;
+				}
+			}
+			
+			return false;
+		}
+	}
+
 	public static void main(String[] args) {
 		new Test();
-	}
-	
-	private class TestPopulation extends Population<Integer> {
-
-		public TestPopulation(int size) {
-			super(size);
-		}
-
-		@Override
-		public Integer createIndividual(String dna) {
-			char[] ca = dna.toCharArray();
-			
-			int f = 0;
-			for (int i = 0; i < dna.length(); i++) {
-				if (i % 5 == 0 && ca[i] == '0') f += 100;
-				if (i % 5 > 0 && ca[i] == '1') f += 100;
-			}
-			return f;
-		}
-
-		@Override
-		public double simulateIndividual(Integer individual) {
-			double fitness = individual * 10.0;
-			return fitness;
-		}
-		
 	}
 }
