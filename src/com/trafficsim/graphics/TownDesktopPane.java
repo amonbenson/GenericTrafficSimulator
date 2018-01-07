@@ -28,7 +28,6 @@ import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
-import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -41,8 +40,6 @@ import com.trafficsim.town.StreetTile;
 import com.trafficsim.town.Tile;
 import com.trafficsim.town.Town;
 import com.trafficsim.town.Waypoint;
-
-import javafx.scene.input.MouseButton;
 
 public class TownDesktopPane extends JDesktopPane implements MouseListener, MouseMotionListener, MouseWheelListener, ListSelectionListener, ActionListener, ComponentListener {
 
