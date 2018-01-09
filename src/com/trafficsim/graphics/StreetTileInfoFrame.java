@@ -33,7 +33,7 @@ public class StreetTileInfoFrame extends InfoFrame {
 		}
 		add(openNextStation);
 
-		add(new JLabel("Speed: " + FrameLauncher.round(tile.getMaxSpeed(), 3)));
+		add(new JLabel("Speed: " + SimulationFrameLauncher.round(tile.getMaxSpeed(), 3)));
 		
 		add(new JLabel("Waiting persons:"));
 		personList = new PersonList();

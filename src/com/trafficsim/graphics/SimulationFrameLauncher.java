@@ -16,7 +16,7 @@ import com.trafficsim.generic.Chromosom;
 import com.trafficsim.sim.Simulation;
 import com.trafficsim.town.Town;
 
-public class FrameLauncher {
+public class SimulationFrameLauncher {
 	
 	// high dpi
 	public static final boolean IS_HIGH_DPI = Toolkit.getDefaultToolkit().getScreenResolution() >= 216;
@@ -30,12 +30,12 @@ public class FrameLauncher {
 	private TownDesktopPane townDesktopPane;
 	
 	// Person list and event displaying consoles
-	private InfoConsolePane eventConsolePane;
+	private InfoConsolePane infoConsolePane;
 	private PersonConsolePane personConsolePane;
 	
 	public Simulation simulation;
 	
-	public FrameLauncher() {
+	public SimulationFrameLauncher() {
 		// TOWN ERSTELLEN
 		simulation = new Simulation( new Town(10, 10));
 		simulation.getTown().generateTiles(Simulation.testTown()); //Landschaftskarte
@@ -131,8 +131,8 @@ public class FrameLauncher {
 		pcScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		frame.add(BorderLayout.EAST, pcScroll);
 		
-		eventConsolePane = new InfoConsolePane(this, simulation.getTown());
-		JScrollPane ecScroll = new JScrollPane(eventConsolePane);
+		infoConsolePane = new InfoConsolePane(this, simulation.getTown());
+		JScrollPane ecScroll = new JScrollPane(infoConsolePane);
 		ecScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		ecScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		frame.add(BorderLayout.WEST, ecScroll);
@@ -167,13 +167,13 @@ public class FrameLauncher {
 		townDesktopPane.getActionMap().put("town autoupdate faster", new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				updater.faster();
-				eventConsolePane.repaint();
+				infoConsolePane.repaint();
 			}
 		});
 		townDesktopPane.getActionMap().put("town autoupdate slower", new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				updater.slower();
-				eventConsolePane.repaint();
+				infoConsolePane.repaint();
 			}
 		});
 		townDesktopPane.getActionMap().put("print statistics", new AbstractAction() {
@@ -187,7 +187,7 @@ public class FrameLauncher {
 		
 		// Update scroll bar size
 		personConsolePane.updatePreferredSize();
-		eventConsolePane.updatePreferredSize();
+		infoConsolePane.updatePreferredSize();
 	}
 	
 	public JFrame getFrame() {
@@ -202,8 +202,20 @@ public class FrameLauncher {
 		return personConsolePane;
 	}
 
-	public InfoConsolePane getEventConsolePane() {
-		return eventConsolePane;
+	public InfoConsolePane getInfoConsolePane() {
+		return infoConsolePane;
+	}
+	
+	public void setSimulation(Simulation simulation) {
+		this.simulation = simulation;
+		if (simulation == null) return;
+		
+		Town town = simulation.getTown();
+		if (town == null) return;
+		
+		townDesktopPane.setTown(town);
+		infoConsolePane.setTown(town);
+		personConsolePane.setTown(town);
 	}
 	
 	
@@ -221,7 +233,7 @@ public class FrameLauncher {
 	}
 
 	public static void main(String[] args) throws InterruptedException {
-		new FrameLauncher();
+		new SimulationFrameLauncher();
 	}
 	
 }

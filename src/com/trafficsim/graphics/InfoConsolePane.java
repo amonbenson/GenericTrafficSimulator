@@ -10,10 +10,10 @@ import com.trafficsim.town.Waypoint;
 
 public class InfoConsolePane extends ConsolePane {
 	
-	private FrameLauncher frameLauncherContext;
+	private SimulationFrameLauncher frameLauncherContext;
 	private Town town;
 	
-	public InfoConsolePane(FrameLauncher frameLauncherContext, Town town) {
+	public InfoConsolePane(SimulationFrameLauncher frameLauncherContext, Town town) {
 		this.frameLauncherContext = frameLauncherContext;
 		this.town = town;
 	}
@@ -72,15 +72,15 @@ public class InfoConsolePane extends ConsolePane {
 
 		Statistics s = town.getStatistics();
 		append("Route found:\t" + s.getCounterRouteFound());
-		append("No Station found:\t" + s.getCounterNoStationFound() + " (" + FrameLauncher
+		append("No Station found:\t" + s.getCounterNoStationFound() + " (" + SimulationFrameLauncher
 				.round(s.getCounterNoStationFound() / ((float) s.getErrorNoRoute() + s.getCounterRouteFound()) * 100, 2)
 				+ "%)");
 		append("No Route found:\t" + s.getCounterNoRouteFound() + " ("
-				+ FrameLauncher.round(s.getCounterNoRouteFound() / ((float) s.getErrorNoRoute()) * 100, 2) + "%)");
+				+ SimulationFrameLauncher.round(s.getCounterNoRouteFound() / ((float) s.getErrorNoRoute()) * 100, 2) + "%)");
 		append("Route same targets:\t" + s.getCountRouteSameTargets() + " ("
-				+ FrameLauncher.round(s.getCountRouteSameTargets() / ((float) s.getErrorNoRoute()) * 100, 2) + "%)");
+				+ SimulationFrameLauncher.round(s.getCountRouteSameTargets() / ((float) s.getErrorNoRoute()) * 100, 2) + "%)");
 		append("All Errors:\t" + s.getErrorNoRoute() + " ("
-				+ FrameLauncher.round(
+				+ SimulationFrameLauncher.round(
 						(s.getErrorNoRoute() / (float) (s.getErrorNoRoute() + s.getCounterRouteFound())) * 100, 2)
 				+ "%)");
 		append("Transport Time:\t" + s.getMedianTravelTime());
@@ -92,5 +92,13 @@ public class InfoConsolePane extends ConsolePane {
 	@Override
 	public void lineClicked(int line, String content) {
 		
+	}
+
+	public Town getTown() {
+		return town;
+	}
+
+	public void setTown(Town town) {
+		this.town = town;
 	}
 }

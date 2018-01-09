@@ -10,12 +10,12 @@ import com.trafficsim.town.Town;
 
 public class PersonConsolePane extends ConsolePane {
 	
-	private FrameLauncher frameLauncherContext;
+	private SimulationFrameLauncher frameLauncherContext;
 	private Town town;
 	
 	private int linePersonList, lineBusList; // These define the line (y position) where each list actually starts (without headline and stuff)
 	
-	public PersonConsolePane(FrameLauncher frameLauncherContext, Town town) {
+	public PersonConsolePane(SimulationFrameLauncher frameLauncherContext, Town town) {
 		this.frameLauncherContext = frameLauncherContext;
 		this.town = town;
 		
@@ -66,5 +66,13 @@ public class PersonConsolePane extends ConsolePane {
 			Bus bus = town.getBusses().get(line - lineBusList);
 			frameLauncherContext.getTownDesktopPane().createBusInfoFrame(bus, 0, 0);
 		}
+	}
+
+	public Town getTown() {
+		return town;
+	}
+
+	public void setTown(Town town) {
+		this.town = town;
 	}
 }

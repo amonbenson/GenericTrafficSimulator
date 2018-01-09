@@ -23,9 +23,9 @@ public abstract class ConsolePane extends JPanel implements MouseListener {
 	public ConsolePane() {
 		addMouseListener(this);
 		
-		sx = FrameLauncher.highDPI(BORDER_X);
-		sy = FrameLauncher.highDPI(BORDER_Y);
-		dx = FrameLauncher.highDPI(TAB_SIZE);
+		sx = SimulationFrameLauncher.highDPI(BORDER_X);
+		sy = SimulationFrameLauncher.highDPI(BORDER_Y);
+		dx = SimulationFrameLauncher.highDPI(TAB_SIZE);
 		dy = getFontMetrics(getFont()).getHeight();
 		
 		clear();
@@ -38,7 +38,7 @@ public abstract class ConsolePane extends JPanel implements MouseListener {
 		
 		// Get an appropriate size for our pane
 		Dimension size = new Dimension(
-				FrameLauncher.highDPI(DEFAULT_WIDTH),
+				SimulationFrameLauncher.highDPI(DEFAULT_WIDTH),
 				lines.size() * dy + sy * 2
 		);
 		
