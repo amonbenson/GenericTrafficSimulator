@@ -52,7 +52,7 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 	
 	public static final double ZOOM_SPEED = 1.1;
 	
-	private FrameLauncher frameLauncherContext;
+	private SimulationFrameLauncher frameLauncherContext;
 	private Town town;
 
 	private double transX, transY, transZ;
@@ -71,7 +71,7 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 	
 	private int mouseXFlag, mouseYFlag, mouseDX, mouseDY;
 	
-	public TownDesktopPane(FrameLauncher frameLauncherContext, Town town) {
+	public TownDesktopPane(SimulationFrameLauncher frameLauncherContext, Town town) {
 		super();
 		
 		this.frameLauncherContext = frameLauncherContext;
@@ -154,6 +154,14 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 	public void paintComponent(Graphics graphics) {
 		Graphics2D g = (Graphics2D) graphics;
 		
+		if (town == null) {
+			g.setColor(Color.black);
+			g.fillRect(0, 0, getWidth(), getHeight());
+			g.setColor(Color.white);
+			g.drawString("Nothing to display here.", SimulationFrameLauncher.highDPI(ConsolePane.BORDER_X), SimulationFrameLauncher.highDPI(ConsolePane.BORDER_Y));
+			return;
+		}
+		
 		Tile[][] tiles = town.getTiles();
 		
 		// Draw town tiles
@@ -198,7 +206,7 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 		}
 		
 		if (showRoutesButton.isSelected()) {
-			g.setStroke(new BasicStroke(FrameLauncher.highDPI((int) (0.06 * tileSize)), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0));
+			g.setStroke(new BasicStroke(SimulationFrameLauncher.highDPI((int) (0.06 * tileSize)), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0));
 			
 			// Draw route of focus bus
 			if (focusBus != null) {
@@ -261,7 +269,7 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 		
 		// Draw lines to the internal frames ("relation lines")
 		if (showRelationLinesButton.isSelected()) {
-			g.setStroke(new BasicStroke(FrameLauncher.highDPI((int) (0.01 * tileSize)), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0));
+			g.setStroke(new BasicStroke(SimulationFrameLauncher.highDPI((int) (0.01 * tileSize)), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0));
 			
 			for (JInternalFrame iFrame : getAllFrames()) {
 				if (iFrame instanceof StreetTileInfoFrame) { // STREET TILE INFO
@@ -322,8 +330,8 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 			}
 		}
 		
-		// Repaint the person and event console
-		frameLauncherContext.getEventConsolePane().repaint();
+		// Repaint the person and info console
+		frameLauncherContext.getInfoConsolePane().repaint();
 		frameLauncherContext.getPersonConsolePane().repaint();
 	}
 	
@@ -429,6 +437,11 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 	}
 	
 	private void updateTileTransform() {
+		if (town == null) {
+			repaint();
+			return;
+		}
+		
 		// Update tile size by screen dimensions
 		if (getWidth() / town.getSizeX() > getHeight() / town.getSizeY()) {
 			tileSize = getHeight() / (double) town.getSizeY();
@@ -452,7 +465,13 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 		return town;
 	}
 
+	public void setTown(Town town) {
+		this.town = town;
+	}
+
 	public void mouseClicked(MouseEvent e) {
+		if (town == null) return;
+		
 		if (e.getButton() == MouseEvent.BUTTON1) {
 			// CLICK EVENT ON BUS
 			Iterator<Bus> busIt = town.getBusses().iterator();
@@ -465,7 +484,7 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 	
 				// Check if user clicked on bus
 				if (new Rectangle(busMidX - busSize / 2, busMidY - busSize / 2, busSize, busSize).contains(e.getPoint())) {
-					createBusInfoFrame(bus, busMidX + FrameLauncher.highDPI(FRAME_LAYER_SPACE), busMidY + FrameLauncher.highDPI(FRAME_LAYER_SPACE));
+					createBusInfoFrame(bus, busMidX + SimulationFrameLauncher.highDPI(FRAME_LAYER_SPACE), busMidY + SimulationFrameLauncher.highDPI(FRAME_LAYER_SPACE));
 					return; // Return to avoid doubled mouse input events
 				}
 			}
@@ -478,14 +497,14 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 				if (tile instanceof StreetTile)
 					createStreetTileInfoFrame(
 							(StreetTile) tile,
-							e.getX() + FrameLauncher.highDPI(FRAME_LAYER_SPACE),
-							e.getY() + FrameLauncher.highDPI(FRAME_LAYER_SPACE)
+							e.getX() + SimulationFrameLauncher.highDPI(FRAME_LAYER_SPACE),
+							e.getY() + SimulationFrameLauncher.highDPI(FRAME_LAYER_SPACE)
 					);
 				if (tile instanceof HouseTile)
 					createHouseTileInfoFrame(
 							(HouseTile) tile,
-							e.getX() + FrameLauncher.highDPI(FRAME_LAYER_SPACE),
-							e.getY() + FrameLauncher.highDPI(FRAME_LAYER_SPACE)
+							e.getX() + SimulationFrameLauncher.highDPI(FRAME_LAYER_SPACE),
+							e.getY() + SimulationFrameLauncher.highDPI(FRAME_LAYER_SPACE)
 					);
 			}
 		}
@@ -534,6 +553,8 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 	}
 
 	public void mouseWheelMoved(MouseWheelEvent e) {
+		if (town == null) return;
+		
 		double zoomD = Math.pow(ZOOM_SPEED, -e.getWheelRotation());
 		transZ *= zoomD;
 		transX -= town.getSizeX() * tileSize * transZ * (zoomD - 1) / 2;

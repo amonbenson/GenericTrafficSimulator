@@ -133,12 +133,15 @@ public class Chromosom {
 		int tmp=0;
 		//Buslinien generieren:
 		for (ChromosomSchedule sch : schedules) {
-			System.out.println("Neue Buslinie");
+			//System.out.println("Neue Buslinie");
 			ArrayList<Waypoint> stations = new ArrayList<Waypoint>();
 			System.out.println("Linie " + sch.name + ": Folgende Stationen werden angefahren");
+
+			
+
 			for (Integer i : sch.stations) {
 				Point position = streetMapGenericToSimulation.get(i);
-				System.out.println(position);
+				//System.out.println(position);
 				Waypoint w = findWaypoint(position.x, position.y);
 				stations.add(w);
 			}
@@ -226,7 +229,7 @@ public class Chromosom {
 		for (int i=0; i<back.isStation.length; i++) {
 			if (r.nextFloat() <= chanceForStation) {
 				back.isStation[i] = true;
-				System.out.println("Station at: "+back.streetMapGenericToSimulation.get(i));
+				//System.out.println("Station at: "+back.streetMapGenericToSimulation.get(i));
 			}
 		}
 		
@@ -287,7 +290,7 @@ public class Chromosom {
 		}
 		Waypoint back = new Waypoint(x+0.5, y+0.5); //0.5, weil die Busse immer in der Mitte fahren sollen
 		waypoints.add(back);
-		System.out.println("Created "+x+":"+y);
+		//System.out.println("Created "+x+":"+y);
 		return back;
 	}
 	

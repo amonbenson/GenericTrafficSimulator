@@ -31,7 +31,7 @@ public class InfoFrame extends JInternalFrame implements AncestorListener, Inter
 		// Tweak some settings
 		setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 		setLocation(dx, dy);
-		setSize(FrameLauncher.highDPI(WIDTH), FrameLauncher.highDPI(MIN_HEIGHT));
+		setSize(SimulationFrameLauncher.highDPI(WIDTH), SimulationFrameLauncher.highDPI(MIN_HEIGHT));
 		setMinimumSize(getSize());
 		setClosable(true);
 		setMaximizable(false);
@@ -52,7 +52,7 @@ public class InfoFrame extends JInternalFrame implements AncestorListener, Inter
 	
 	public void packFrame() {
 		pack();
-		setSize(FrameLauncher.highDPI(WIDTH), Math.max(getHeight(), FrameLauncher.highDPI(MIN_HEIGHT)));
+		setSize(SimulationFrameLauncher.highDPI(WIDTH), Math.max(getHeight(), SimulationFrameLauncher.highDPI(MIN_HEIGHT)));
 	}
 
 	public void ancestorAdded(AncestorEvent event) {

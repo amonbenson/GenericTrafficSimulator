@@ -338,7 +338,7 @@ public class Town implements Updateable {
 			//Sortiert schlieﬂlich die fertige Eventliste:
 			sortEvents();
 			
-			statistics.print();
+			//statistics.print();
 		}
 	}
 	
