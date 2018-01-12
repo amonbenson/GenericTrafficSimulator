@@ -7,7 +7,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Random;
 
-import com.trafficsim.sim.Simulation;
 import com.trafficsim.town.BusDirection;
 import com.trafficsim.town.BusStartTime;
 import com.trafficsim.town.Schedule;
@@ -24,8 +23,13 @@ import com.trafficsim.town.Waypoint;
 public class Chromosom {
 
 	/**
-	 * Speichert für das Chromosom, welche IDs in Stationen umgewandelt werden sollen.
-	 * Beim Erzeugen ist jeder Wert FALSE (keine Station)
+	 * Speichert für das Chromosom, welche internen IDs in Stationen umgewandelt werden sollen.
+	 * Um herauszufinden, welche dieser IDs (oder in der weiteren Dokumentation auch Index genannt) auf welchen Punkt auf der Karte verweist, 
+	 * kann die HashMap streetMapGenericToSimulation genutzt werden.
+	 * Wenn herausgefunden werden soll, welcher Punkt welche ID in diesem Array hat, kann die HashMap streetMapSimulationToGeneric verwendet werden.
+	 * 
+	 * Beim Erzeugen ist jeder Wert FALSE (keine Station).
+	 * 
 	 */
 	public boolean[] isStation;
 	
@@ -33,8 +37,20 @@ public class Chromosom {
 	 * Liste mit allen Buslinien die existieren. Die Integer für die Stations sind die gleichen wie für die streetMaps
 	 */
 	public ArrayList<ChromosomSchedule> schedules;
-	
-	private HashMap<Integer, Point> streetMapGenericToSimulation;	
+	/**
+	 * Diese HashMap ist der Nachweis für das Array <code>isStation</code>.
+	 * Wenn herausgefunden werden soll, welcher Index aus <code>isStation</code> auf welchen Wegpunkt verweist, kann hier nachgeschaut werden.
+	 * Der Key ist dabei der Index von isStation, das Resultat der Punkt auf der zweidimensionalen Karte.
+	 * 
+	 * <code>streetMapGenericToSimulation</code> wird im Konstruktor automatisch erzeugt (@see townToMappingIP(float[][][]) ) und kann dann sofort verwendet werden.
+	 * 
+	 */
+	private HashMap<Integer, Point> streetMapGenericToSimulation;
+	/**
+	 * Diese HashMap macht das Umgekehrte von <code>streetMapGenericToSimulation</code>, als Key dient der Punkt auf der Karte, welcher in einen Index für <code>isStation</code> umgewandelt werden soll.
+	 * 
+	 * <code>streetMapSimulationToGeneric</code> wird im Konstruktor automatisch erzeugt (@see townToMappingPI(float[][][]) ) und kann dann sofort verwendet werden.
+	 */
 	private HashMap<Point, Integer> streetMapSimulationToGeneric;
 	
 	/**
@@ -42,9 +58,13 @@ public class Chromosom {
 	 */
 	private HashSet<Waypoint> waypoints; 
 	
-	//Wird später für die TOWN benötigt und in GENERATE umgerechnet
+	/*
+	 * Wird später für die TOWN benötigt und in GENERATE umgerechnet.
+	 * Die beiden Werte werden über <code>setStations(ArrayList<Point>)</code> und 
+	 * <code>setSchedules(ArrayList<Waypoint)</code> von außen gesetzt.
+	 */
 	private ArrayList<Schedule> schedulesForSimulation;
-	private ArrayList<Point> stationsForSimulation;
+	private ArrayList<Waypoint> stationsForSimulation;
 	
 	public Chromosom(float[][][] town) {
 		streetMapGenericToSimulation = (HashMap<Integer, Point>) townToMappingIP(town);
@@ -53,23 +73,29 @@ public class Chromosom {
 		for ( int i=0; i<isStation.length; i++) {
 			isStation[i] = false;
 		}
-		
 		schedules = new ArrayList<ChromosomSchedule>();
 		
 		schedulesForSimulation = new ArrayList<Schedule>();
-		stationsForSimulation = new ArrayList<Point>();
+		stationsForSimulation = new ArrayList<Waypoint>();
 		
 		waypoints = new HashSet<Waypoint>();
 	}
 	
+	/**
+	 * Gibt das Array zurück, welches angibt, wo auf den Straßen die Stationen sind.
+	 */
 	public boolean[] getIsStation() {
 		return isStation;
 	}
-	
+	/**
+	 * Gibt die "Übersetzung" für <code>getIsStation()</code>, welche Indexes davon in reguläre Punkte übersetzt, zurück.
+	 */
 	public HashMap<Integer, Point> getMapGenericSimulation() {
 		return streetMapGenericToSimulation;
 	}
-	
+	/**
+	 * Gibt die "Übersetzung" für <code>getIsStation()</code>, welche reguläre Punkte in die internen Indexes übersetzt, zurück.
+	 */
 	public HashMap<Point, Integer> getMapSimulationGeneric() {
 		return streetMapSimulationToGeneric;
 	}
@@ -83,10 +109,10 @@ public class Chromosom {
 	public void setSchedules(ArrayList<Schedule> schedules) {
 		this.schedulesForSimulation = schedules;
 	}
-	public ArrayList<Point> getStations() {
+	public ArrayList<Waypoint> getStations() {
 		return stationsForSimulation;
 	}
-	public void setStations(ArrayList<Point> stations) {
+	public void setStations(ArrayList<Waypoint> stations) {
 		this.stationsForSimulation = stations;
 	}
 	
@@ -101,7 +127,7 @@ public class Chromosom {
 		//Stationen generieren:
 		for (int i=0;i<isStation.length;i++) {
 			if (isStation[i] == true) {
-				stationsForSimulation.add(new Point(streetMapGenericToSimulation.get(i)));
+				stationsForSimulation.add(new Waypoint(streetMapGenericToSimulation.get(i).getX(), streetMapGenericToSimulation.get(i).getY()));
 			}
 		}
 		int tmp=0;
@@ -109,7 +135,7 @@ public class Chromosom {
 		for (ChromosomSchedule sch : schedules) {
 			System.out.println("Neue Buslinie");
 			ArrayList<Waypoint> stations = new ArrayList<Waypoint>();
-			System.out.println("Folgende Stationen werden angefahren");
+			System.out.println("Linie " + sch.name + ": Folgende Stationen werden angefahren");
 			for (Integer i : sch.stations) {
 				Point position = streetMapGenericToSimulation.get(i);
 				System.out.println(position);
@@ -125,13 +151,13 @@ public class Chromosom {
 	}
 	
 	/**
-	 * Konvertiert eine Karte in das interne Format für den genetischen Algorithmus, welcher alle Straßen in einem zweidimensionalen Array speichert
+	 * Konvertiert eine Karte in das interne Format für den genetischen Algorithmus, welcher alle Straßen in einem eindimensionalen Array speichert.
+	 * Namenserklärung: IP - Integer -> Point (Der Index ist Key, als Value dient der Wegpunkt mit der Straße)
 	 * @param town die Karte zum konvertieren
 	 * @return Map<Integer, Point>, welche nur Straßen beinhaltet. Der Integer einfach eine ID
 	 */
 	public static Map<Integer, Point> townToMappingIP(float[][][] town) {
 		Map<Integer, Point> back = new HashMap<Integer, Point>();
-		
 		int counter = 0;
 		
 		for (int x = 0; x < town.length; x++) {
@@ -150,6 +176,7 @@ public class Chromosom {
 	 * @see townToMappingIP(float[][][])
 	 * Macht das Gegenteil von der genannten Funktion, vertauscht deren Schlüssel <-> Wert
 	 * 
+	 * 	 * Namenserklärung: IP - Integer -> Point (Der Wegpunkt mit der Straße ist Key, als Value dient der Index von <code>isStation</code>)
 	 */
 	public static Map<Point, Integer> townToMappingPI(float[][][] town) {
 		Map<Point, Integer> back = new HashMap<Point, Integer>();
@@ -172,6 +199,13 @@ public class Chromosom {
 	public static Chromosom randomChromosom(float[][][] town) {
 		return randomChromosom(town, new Random());
 	}
+	
+	/**
+	 * Hier wird ein zufälliges Chromosom erzeugt
+	 * @param town
+	 * @param r
+	 * @return
+	 */
 	public static Chromosom randomChromosom(float[][][] town, Random r) {
 		Chromosom back = new Chromosom(town);
 		
@@ -179,15 +213,16 @@ public class Chromosom {
 		float chanceForSchedulePerStreet = 1/4f; //Wahrscheinlichkeit, dass eine Buslinie erzeugt wird, pro Straßenteil
 		float chanceForStationAddedToSchedule = 1/2f; //Wahrscheinlichkeit, ob eine Station zu einer neu generierten Buslinie hinzugefügt wird
 		
-		int maxNumberOfSchedules = 1; //Limit für die Anzahl der Schedules, kann später rausgenommen werden
+		int maxNumberOfSchedules = 3; //Limit für die Anzahl der Schedules, kann später rausgenommen werden
 		
 		//Zwischen diesen beiden Werten (beides inklusiv) liegt die Anzahl an Bussen, welche für eine Linie generiert werden
-		int minNumberOfBusses = 2;
-		int maxNumberOfBusses = 2;
+		int minNumberOfBusses = 1;
+		int maxNumberOfBusses = 1;
 		//Zwischen diesem Wert liegt jede nächste Startzeit für einen neuen Bus ( im Unterschied zum letzten Bus ) (beides inklusiv)
 		int minStartTime = 20;
 		int maxStartTime = 50;
 		
+		//Generiere zufällige Stationen
 		for (int i=0; i<back.isStation.length; i++) {
 			if (r.nextFloat() <= chanceForStation) {
 				back.isStation[i] = true;

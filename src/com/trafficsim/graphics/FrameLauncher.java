@@ -5,6 +5,8 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.Random;
 
 import javax.swing.AbstractAction;
 import javax.swing.JFrame;
@@ -14,7 +16,11 @@ import javax.swing.UIManager;
 
 import com.trafficsim.generic.Chromosom;
 import com.trafficsim.sim.Simulation;
+import com.trafficsim.town.BusDirection;
+import com.trafficsim.town.BusStartTime;
+import com.trafficsim.town.Schedule;
 import com.trafficsim.town.Town;
+import com.trafficsim.town.Waypoint;
 
 public class FrameLauncher {
 	
@@ -37,16 +43,96 @@ public class FrameLauncher {
 	
 	public FrameLauncher() {
 		// TOWN ERSTELLEN
-		simulation = new Simulation( new Town(10, 10));
-		simulation.getTown().generateTiles(Simulation.testTown()); //Landschaftskarte
+		
+		float[][][] townLandscape = Simulation.testTown();
+		Town town = new Town(townLandscape.length, townLandscape[0].length);
+		simulation = new Simulation(town);
+		town.generateTiles(townLandscape);
+		Chromosom chromosom = new Chromosom(townLandscape);
+		ArrayList<Schedule> schedules = new ArrayList<Schedule>(); //Liste mit allen Linien
+		ArrayList<Waypoint> waypoints = new ArrayList<Waypoint>(); //Alle jemals genutzten Punkte für Stationen dürfen nur einmal erzeugt werden! Dies ist ein Hilfsarray für die interne Erzeugung und wird später nicht benötigt (ist optional).
+		ArrayList<Waypoint> stations = new ArrayList<Waypoint>(); //Liste mit allen Stationen, welche generell vom Chromosom erzeugt werden.
+		Waypoint w1 = new Waypoint(1.5, 1.5); //WICHTIG: Die Koordinaten müssen mit .5 aufhören. Ist einfach so.
+		Waypoint w2 = new Waypoint(3.5, 1.5);
+		Waypoint w3 = new Waypoint(3.5, 4.5);
+		Waypoint w4 = new Waypoint(9.5, 4.5);
+		waypoints.add(w1); //Das Zufügen dient nur zur Hilfe und ist optional
+		waypoints.add(w2);
+		waypoints.add(w3);
+		waypoints.add(w4);
+		Schedule s1 = null; //s1 steht für "schedule1"
+		ArrayList<BusStartTime> s1StartTimes = new ArrayList<BusStartTime>();
+		ArrayList<Waypoint> s1Stations = new ArrayList<Waypoint>();
+		s1StartTimes.add(new BusStartTime(0, BusDirection.NORMAL));
+		s1Stations.add(w1); //Hier MUSS auf die zuvor erzeugten Wegpunkte zurückgegriffen werden
+		s1Stations.add(w3);
+		s1Stations.add(w4);
+		s1 = new Schedule(s1Stations, s1StartTimes, 0, "Name");
+		schedules.add(s1);
+		stations.add(w1); //WICHTIG: dieser Punkt muss zuvor bereits erzeugt worden sein (siehe Schritt 6.2). Deswegen wird hier w1 verwendet.
+		stations.add(w2);
+		stations.add(w3);
+		stations.add(w4);
+		chromosom.setSchedules(schedules); //Alle Linien setzen
+		chromosom.setStations(waypoints); //Alle Punkte setzen, auf welchen Straßen zu Stationen umgewandelt werden sollen
+		town.setChromosom(chromosom);
+		chromosom.generate(town);
+		town.applyChromosom();
 		
 		
-		Chromosom testing = Chromosom.randomChromosom(Simulation.testTown());
-		simulation.getTown().setChromosom(testing);
+		/*
+		float[][][] townLandscape = Simulation.testTown();
+		Town town = new Town(townLandscape.length, townLandscape[0].length, new Random(1));
+		simulation = new Simulation(town);
+		town.generateTiles(townLandscape);
+		
+		Chromosom test = new Chromosom(Simulation.testTown());
+		//--------------
+		ArrayList<Schedule> schedules = new ArrayList<Schedule>();
+		ArrayList<Waypoint> waypoints = new ArrayList<Waypoint>();
+		
+		Waypoint w1 = new Waypoint(1.5, 1.5);
+		Waypoint w2 = new Waypoint(3.5, 1.5);
+		Waypoint w3 = new Waypoint(3.5, 4.5);
+		Waypoint w4 = new Waypoint(9.5, 4.5);
+		
+		waypoints.add(w1);
+		waypoints.add(w2);
+		waypoints.add(w3);
+		waypoints.add(w4);
+		
+		Schedule s1 = null;
+		ArrayList<BusStartTime> s1StartTimes = new ArrayList<BusStartTime>();
+		ArrayList<Waypoint> s1Stations = new ArrayList<Waypoint>();
+		
+		s1StartTimes.add(new BusStartTime(1, BusDirection.NORMAL));
+		s1StartTimes.add(new BusStartTime(2, BusDirection.REVERSE));
+		
 
-		testing.generate(simulation.getTown());
+		s1Stations.add(w1);
+		s1Stations.add(w2);
+		s1Stations.add(w3);
+		s1Stations.add(w4);
+		s1 = new Schedule(s1Stations, s1StartTimes, 0, "Linie 1");
+		
+		schedules.add(s1);
+		
+		test.setSchedules(schedules);
+		
+		ArrayList<Waypoint> stations = new ArrayList<Waypoint>();
+		stations.add(w1);
+		stations.add(w2);
+		stations.add(w3);
+		stations.add(w4);
+		test.setStations(stations);
+		//--------------
+		simulation.getTown().setChromosom(test);
+
+		test.generate(simulation.getTown());
 		simulation.getTown().applyChromosom();
 		
+		
+
 		
 		// BUS SCHEDULES ERSTELLEN
 		/*

@@ -1,6 +1,5 @@
 package com.trafficsim.town;
 
-import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -50,6 +49,10 @@ public class Town implements Updateable {
 	
 	public Town(int sizeX, int sizeY) {
 		this(sizeX, sizeY, null, null, new Random());
+	}
+	
+	public Town(int sizeX, int sizeY, Random random) {
+		this(sizeX, sizeY, null, null, random);
 	}
 	
 	public Town(int sizeX, int sizeY, Tile[][] tiles, Chromosom chromosom, Random random) {
@@ -297,13 +300,13 @@ public class Town implements Updateable {
 				}
 			}
 
-			
+
 			//Bushaltestellen setzen:
-			for ( Point p : chromosom.getStations() ) {
-				if (! (tiles[p.x][p.y] instanceof StreetTile) ) {
-					Simulation.logger.warning("Achtung, Station im Chromosom verweist nicht auf eine gültige Straßenkoordinate!"+" X: "+p.x+" Y: "+p.y);
+			for ( Waypoint p : chromosom.getStations() ) {
+				if (! (tiles[(int)p.getX()][(int)p.getY()] instanceof StreetTile) ) {
+					Simulation.logger.warning("Achtung, Station im Chromosom verweist nicht auf eine gültige Straßenkoordinate!"+" X: "+p.getX()+" Y: "+p.getY());
 				} else { //korrekte Koordinate
-					StreetTile street = (StreetTile) tiles[p.x][p.y];
+					StreetTile street = (StreetTile) tiles[(int)p.getX()][(int)p.getY()];
 					street.setToStation();
 				}
 			}
@@ -623,7 +626,7 @@ public class Town implements Updateable {
 		
 		SpecificSchedule first = null;
 		
-		Waypoint lastChangeStation = startW;
+		Waypoint lastChangeStation = startW; //Die letzte Station ist am Anfang immer die Startstations
 		
 		//Als erstes die Buslinie finden, welche am weitesten zum Ziel kommt:
 		for ( int i=0;i<path.size();i++) {
@@ -660,6 +663,14 @@ public class Town implements Updateable {
 			Route r = new Route(origin, target, stations);
 			return r;
 		} else {
+			Simulation.logger.warning(path.toString());
+			Simulation.logger.warning(startW.toString());
+			Simulation.logger.warning(endW.toString());
+			for ( ChangeStation s : stations ) {
+				System.err.println(s+"\n\n");
+				
+			}
+			System.err.println("------------Stationsende------------");
 			Simulation.logger.warning("Stationsgröße zu klein, bitte beheben");
 			return null;
 		}

@@ -1,0 +1,100 @@
+--------------------ANLEITUNG ZUM ERZEUGEN UND TESTEN EINER STADT--------------------
+
+1. Town Landscape erzeugen (wie auch immer)
+
+	float[][][] townLandscape = Simulation.testTown();
+
+	Diese hat die Form float[][][] und kann z.B. in Town statisch erzeugt werden.
+2. Town erzeugen	
+	Dafür gibt es zwei Möglichkeiten
+	1.a Town ohne Randomwert erstellen
+		Town town = new Town(townLandscape.length, townLandscape[0].length);
+	1.b Town mit Randomwert erstellen
+		Town town = new Town(townLandscape.length, townLandscape[0].length, r); //r ist ein Randomobjekt
+3. Simulation erstellen
+	Simulation simulation = new Simulation(town);
+4. Town mithilfe der Landschaftkarte spezifizieren
+	town.generateTiles(townLandscape);
+5. Chromosom erzeugen
+	Chromosom chromosom = new Chromosom(townLandscape);
+6. Chromosom füllen
+	6.1 Für die Erzeugung Hilfsobjekte erstellen
+		ArrayList<Schedule> schedules = new ArrayList<Schedule>(); //Liste mit allen Linien
+		ArrayList<Waypoint> waypoints = new ArrayList<Waypoint>(); //Alle jemals genutzten Punkte für Stationen dürfen nur einmal erzeugt werden! Dies ist ein Hilfsarray für die interne Erzeugung und wird später nicht benötigt (ist optional).
+		ArrayList<Waypoint> stations = new ArrayList<Waypoint>(); //Liste mit allen Stationen, welche generell vom Chromosom erzeugt werden.
+	6.2 Alle Wegpunkte als Hilfe erstellen
+		Waypoint w1 = new Waypoint(1.5, 1.5); //WICHTIG: Die Koordinaten müssen mit .5 aufhören. Ist einfach so.
+		Waypoint w2 = new Waypoint(3.5, 1.5);
+		Waypoint w3 = new Waypoint(3.5, 4.5);
+		Waypoint w4 = new Waypoint(9.5, 4.5);
+		waypoints.add(w1); //Das Zufügen dient nur zur Hilfe und ist optional
+		waypoints.add(w3);
+		waypoints.add(w4);
+	6.3 Beliebig viele Linien erstellen, für jede Linie:
+		6.3.1 Hilfsobjekte erstellen
+			Schedule s1 = null; //s1 steht für "schedule1"
+			ArrayList<BusStartTime> s1StartTimes = new ArrayList<BusStartTime>();
+			ArrayList<Waypoint> s1Stations = new ArrayList<Waypoint>();
+		6.3.2 Startzeit(en) für die Linie einrichten
+			6.3.2.1 Für jede Buslinie, die fahren soll
+				s1StartTimes.add(new BusStartTime(ZEIT, RICHTUNG));
+		6.3.3 Anzufahrende Stationen hinzufügen
+			s1Stations.add(w1); //Hier MUSS auf die zuvor erzeugten Wegpunkte zurückgegriffen werden
+			s1Stations.add(w2);
+			s1Stations.add(w3);
+			s1Stations.add(w4);
+		6.3.4 Linie erzeugen
+			s1 = new Schedule(s1Stations, s1StartTimes, 0, "Name");
+		6.3.5 Linie zur Linienliste hinzufügen
+			schedules.add(s1);
+	6.4 Alle Stationen hinzufügen
+		6.4.1 Für jede Straße, welche vom Chromosom zur Station werden soll
+			stations.add(<Straßenpunkt>); //WICHTIG: dieser Punkt muss zuvor bereits erzeugt worden sein (siehe Schritt 6.2) 
+7. Chromosominhalt setzen
+	chromosom.setSchedules(schedules); //Alle Linien setzen
+	chromosom.setStations(waypoints); //Alle Punkte setzen, auf welchen Straßen zu Stationen umgewandelt werden sollen
+8. Chromosom setzen
+	town.setChromosom(chromosom);
+9. Chromosom intern generieren lassen (um sich an die Town anzupassen)
+	chromosom.generate(town);
+10. Chromosom anwenden
+	town.applyChromosom();
+----------------------------------------------
+Nun Stadt mit town.update() updaten.
+--------------------FERTIG--------------------
+
+--------------------COPY-PASTE-CODE--------------------
+float[][][] townLandscape = Simulation.testTown();
+Town town = new Town(townLandscape.length, townLandscape[0].length);
+Simulation simulation = new Simulation(town);
+town.generateTiles(townLandscape);
+Chromosom chromosom = new Chromosom(townLandscape);
+ArrayList<Schedule> schedules = new ArrayList<Schedule>(); //Liste mit allen Linien
+ArrayList<Waypoint> waypoints = new ArrayList<Waypoint>(); //Alle jemals genutzten Punkte für Stationen dürfen nur einmal erzeugt werden! Dies ist ein Hilfsarray für die interne Erzeugung und wird später nicht benötigt (ist optional).
+ArrayList<Waypoint> stations = new ArrayList<Waypoint>(); //Liste mit allen Stationen, welche generell vom Chromosom erzeugt werden.
+Waypoint w1 = new Waypoint(1.5, 1.5); //WICHTIG: Die Koordinaten müssen mit .5 aufhören. Ist einfach so.
+Waypoint w2 = new Waypoint(3.5, 1.5);
+Waypoint w3 = new Waypoint(3.5, 4.5);
+Waypoint w4 = new Waypoint(9.5, 4.5);
+waypoints.add(w1); //Das Zufügen dient nur zur Hilfe und ist optional
+waypoints.add(w2);
+waypoints.add(w3);
+waypoints.add(w4);
+Schedule s1 = null; //s1 steht für "schedule1"
+ArrayList<BusStartTime> s1StartTimes = new ArrayList<BusStartTime>();
+ArrayList<Waypoint> s1Stations = new ArrayList<Waypoint>();
+s1StartTimes.add(new BusStartTime(0, BusDirection.NORMAL));
+s1Stations.add(w1); //Hier MUSS auf die zuvor erzeugten Wegpunkte zurückgegriffen werden
+s1Stations.add(w3);
+s1Stations.add(w4);
+s1 = new Schedule(s1Stations, s1StartTimes, 0, "Name");
+schedules.add(s1);
+stations.add(w1); //WICHTIG: dieser Punkt muss zuvor bereits erzeugt worden sein (siehe Schritt 6.2). Deswegen wird hier w1 verwendet.
+stations.add(w2);
+stations.add(w3);
+stations.add(w4);
+chromosom.setSchedules(schedules); //Alle Linien setzen
+chromosom.setStations(waypoints); //Alle Punkte setzen, auf welchen Straßen zu Stationen umgewandelt werden sollen
+town.setChromosom(chromosom);
+chromosom.generate(town);
+town.applyChromosom();

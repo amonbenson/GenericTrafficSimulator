@@ -68,6 +68,9 @@ public class Simulation {
 		return townList;
 	}
 	
+	/**
+	 * Gibt eine Teststadt zurück.
+	 */
 	public static float[][][] testTown() {
 		float[][][] townList = new float[10][10][2];
 		for (int x = 0; x < 10; x++) {
