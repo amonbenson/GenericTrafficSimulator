@@ -1,5 +1,8 @@
 --------------------ANLEITUNG ZUM ERZEUGEN UND TESTEN EINER STADT--------------------
 
+Diese Anleitung erklärt das Erzeugen einer Simulation und eines Chromosoms und wie die Simulation lauffähig gemacht wird.
+Am Ende existiert ein Copy-Paste-Code für das sofortige Einfügen einer Stadt+Chromosom.
+
 1. Town Landscape erzeugen (wie auch immer)
 
 	float[][][] townLandscape = Simulation.testTown();
