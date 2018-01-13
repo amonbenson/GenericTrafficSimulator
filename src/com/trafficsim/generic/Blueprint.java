@@ -14,16 +14,16 @@ import com.trafficsim.town.Town;
 import com.trafficsim.town.Waypoint;
 
 /**
- * Als erstes muss das Chromosom generieren, wo Stationen gebaut werden sollen.
- * Danach erstellt das Chromosom Buslinien mit Elementen aus den gebauten Stationen.
+ * Als erstes muss das Blueprint generieren, wo Stationen gebaut werden sollen.
+ * Danach erstellt das Blueprint Buslinien mit Elementen aus den gebauten Stationen.
  * 
  * @author Luca
  *
  */
-public class Chromosom {
+public class Blueprint {
 
 	/**
-	 * Speichert für das Chromosom, welche internen IDs in Stationen umgewandelt werden sollen.
+	 * Speichert für das Blueprint, welche internen IDs in Stationen umgewandelt werden sollen.
 	 * Um herauszufinden, welche dieser IDs (oder in der weiteren Dokumentation auch Index genannt) auf welchen Punkt auf der Karte verweist, 
 	 * kann die HashMap streetMapGenericToSimulation genutzt werden.
 	 * Wenn herausgefunden werden soll, welcher Punkt welche ID in diesem Array hat, kann die HashMap streetMapSimulationToGeneric verwendet werden.
@@ -36,7 +36,7 @@ public class Chromosom {
 	/**
 	 * Liste mit allen Buslinien die existieren. Die Integer für die Stations sind die gleichen wie für die streetMaps
 	 */
-	public ArrayList<ChromosomSchedule> schedules;
+	public ArrayList<BlueprintSchedule> schedules;
 	/**
 	 * Diese HashMap ist der Nachweis für das Array <code>isStation</code>.
 	 * Wenn herausgefunden werden soll, welcher Index aus <code>isStation</code> auf welchen Wegpunkt verweist, kann hier nachgeschaut werden.
@@ -66,14 +66,14 @@ public class Chromosom {
 	private ArrayList<Schedule> schedulesForSimulation;
 	private ArrayList<Waypoint> stationsForSimulation;
 	
-	public Chromosom(float[][][] town) {
+	public Blueprint(float[][][] town) {
 		streetMapGenericToSimulation = (HashMap<Integer, Point>) townToMappingIP(town);
 		streetMapSimulationToGeneric = (HashMap<Point, Integer>) townToMappingPI(town);
 		isStation = new boolean[streetMapGenericToSimulation.values().size()];
 		for ( int i=0; i<isStation.length; i++) {
 			isStation[i] = false;
 		}
-		schedules = new ArrayList<ChromosomSchedule>();
+		schedules = new ArrayList<BlueprintSchedule>();
 		
 		schedulesForSimulation = new ArrayList<Schedule>();
 		stationsForSimulation = new ArrayList<Waypoint>();
@@ -119,7 +119,7 @@ public class Chromosom {
 	
 	/**
 	 * Generiert anhand der gesetzen Daten die Wegpunkte und Schedules und Stationen usw..
-	 * Nachdem diese Funktion aufgerufen werden, kann das Chromosom mithilfe town.setChromosom(c) angewandt werden
+	 * Nachdem diese Funktion aufgerufen werden, kann das Blueprint mithilfe town.setChromosom(c) angewandt werden
 	 * 
 	 * Die Town wird benötigt, um Zugriff auf die Waypoints für die richtige Graphenerstellung zu haben
 	 */
@@ -132,7 +132,7 @@ public class Chromosom {
 		}
 		int tmp=0;
 		//Buslinien generieren:
-		for (ChromosomSchedule sch : schedules) {
+		for (BlueprintSchedule sch : schedules) {
 			//System.out.println("Neue Buslinie");
 			ArrayList<Waypoint> stations = new ArrayList<Waypoint>();
 			System.out.println("Linie " + sch.name + ": Folgende Stationen werden angefahren");
@@ -199,7 +199,7 @@ public class Chromosom {
 	}
 	
 	
-	public static Chromosom randomChromosom(float[][][] town) {
+	public static Blueprint randomBlueprint(float[][][] town) {
 		return randomChromosom(town, new Random());
 	}
 	
@@ -209,8 +209,8 @@ public class Chromosom {
 	 * @param r
 	 * @return
 	 */
-	public static Chromosom randomChromosom(float[][][] town, Random r) {
-		Chromosom back = new Chromosom(town);
+	public static Blueprint randomChromosom(float[][][] town, Random r) {
+		Blueprint back = new Blueprint(town);
 		
 		float chanceForStation = 1/3f; //Wahrscheinlichkeit, dass eine Station entsteht
 		float chanceForSchedulePerStreet = 1/4f; //Wahrscheinlichkeit, dass eine Buslinie erzeugt wird, pro Straßenteil
@@ -237,7 +237,7 @@ public class Chromosom {
 		for (int i=0; i<back.isStation.length; i++) {
 			if (r.nextFloat() <= chanceForSchedulePerStreet && back.schedules.size() < maxNumberOfSchedules) {
 				//Buslinie erzeugen
-				ChromosomSchedule sch = new ChromosomSchedule();
+				BlueprintSchedule sch = new BlueprintSchedule();
 				
 				for (int i2=0; i2<back.isStation.length; i2++) { //Zufällig Stationen hinzufügen
 					if (back.isStation[i2] == true) { //Wenn hier eine Station ist

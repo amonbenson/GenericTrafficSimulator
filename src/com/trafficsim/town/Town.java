@@ -17,7 +17,7 @@ import org.xguzm.pathfinding.grid.NavigationGrid;
 import org.xguzm.pathfinding.grid.finders.AStarGridFinder;
 import org.xguzm.pathfinding.grid.finders.GridFinderOptions;
 
-import com.trafficsim.generic.Chromosom;
+import com.trafficsim.generic.Blueprint;
 import com.trafficsim.sim.Simulation;
 
 public class Town implements Updateable {
@@ -29,7 +29,7 @@ public class Town implements Updateable {
 	
 	private Tile[][] tiles; //Die Karte der Start
 	private int sizeX, sizeY; //Größe der Stadt
-	private Chromosom chromosom; //Chromosom, welches auf diese Stadt angewendet wurde.
+	private Blueprint blueprint; //Blueprint, welches auf diese Stadt angewendet wurde.
 	private ArrayList<Event> events; //Liste aller Events
 
 	private int events_index; //aktuelle Position der Events
@@ -39,7 +39,7 @@ public class Town implements Updateable {
 	private Random random; //jede Stadt besitzt einen eigenen Randomgenerator (so können bestimmte Szenarien erneut simuliert werden)
 	
 	//Wegfindungszeug für Busse:
-	private GridCell[][] pathfindingMap = null; //die aktuelle Pathfindingkarte, wird bei applyChromosom erzeugt
+	private GridCell[][] pathfindingMap = null; //die aktuelle Pathfindingkarte, wird bei applyBlueprint erzeugt
 	private NavigationGrid<GridCell> navGrid = null;
 	private GridFinderOptions opt = null;
 	AStarGridFinder<GridCell> finder = null;
@@ -55,11 +55,11 @@ public class Town implements Updateable {
 		this(sizeX, sizeY, null, null, random);
 	}
 	
-	public Town(int sizeX, int sizeY, Tile[][] tiles, Chromosom chromosom, Random random) {
+	public Town(int sizeX, int sizeY, Tile[][] tiles, Blueprint blueprint, Random random) {
 		this.sizeX = sizeX;
 		this.sizeY = sizeY;
 		this.tiles = tiles;
-		this.chromosom = chromosom;
+		this.blueprint = blueprint;
 		this.random = random;
 		
 		events = new ArrayList<Event>();
@@ -187,8 +187,8 @@ public class Town implements Updateable {
 		return statistics;
 	}
 	
-	public Chromosom getChromosom() {
-		return chromosom;
+	public Blueprint getBlueprint() {
+		return blueprint;
 	}
 	
 	/**
@@ -231,20 +231,20 @@ public class Town implements Updateable {
 	
 	
 	/**
-	 * Setzt das Chromosom c als Eingabewert der Simulation. Dieses wird noch nicht angewendet, d.h. die Stadt wird bisher nicht verändert.
-	 * Der Parameter darf nicht <code>null</code>sein, zum Reseten der Stadt wird die Funktion resetChromosom() verwendet
-	 * @param c Chromosom zur Eingabe, darf nicht <code>null</code> sein
+	 * Setzt das Blueprint c als Eingabewert der Simulation. Dieses wird noch nicht angewendet, d.h. die Stadt wird bisher nicht verändert.
+	 * Der Parameter darf nicht <code>null</code>sein, zum Reseten der Stadt wird die Funktion resetBlueprint() verwendet
+	 * @param c Blueprint zur Eingabe, darf nicht <code>null</code> sein
 	 */
-	public void setChromosom(Chromosom c) {
-		if (c == null) throw new NullPointerException("Chromosom can't be null.");
-		this.chromosom = c;
+	public void setBlueprint(Blueprint c) {
+		if (c == null) throw new NullPointerException("Blueprint can't be null.");
+		this.blueprint = c;
 	}
 	
 	/**
-	 * Wendet das aktuelle Chromosom auf die Stadt an, falls diese existiert. Ansonsten wird nichts gemacht.
+	 * Wendet das aktuelle Blueprint auf die Stadt an, falls diese existiert. Ansonsten wird nichts gemacht.
 	 */
-	public void applyChromosom() {
-		if (chromosom != null) {
+	public void applyBlueprint() {
+		if (blueprint != null) {
 			toNormal(); //Alles auf Anfang setzen
 			
 			long t1 = System.currentTimeMillis();
@@ -267,7 +267,7 @@ public class Town implements Updateable {
 			
 			//Pathfindingkarte für Menschen erzeugen:
 			stationGraph = new SimpleDirectedWeightedGraph<Waypoint, DefaultWeightedEdge>(DefaultWeightedEdge.class); 
-			for ( Schedule s : chromosom.getSchedules()) { //Fügt alle Vertexe ein
+			for ( Schedule s : blueprint.getSchedules()) { //Fügt alle Vertexe ein
 				for ( Waypoint w : s.getStations()) {
 					if (!stationGraph.containsVertex(w)) {
 						stationGraph.addVertex(w);
@@ -277,7 +277,7 @@ public class Town implements Updateable {
 			
 			
 			//Verlinkt die Vertexe untereinander:
-			for ( Schedule s : chromosom.getSchedules()) {
+			for ( Schedule s : blueprint.getSchedules()) {
 				Waypoint start = s.getStations().get(0);
 				Waypoint end = null;
 				for ( int i=1;i<s.getStations().size();i++) {
@@ -302,16 +302,16 @@ public class Town implements Updateable {
 
 
 			//Bushaltestellen setzen:
-			for ( Waypoint p : chromosom.getStations() ) {
+			for ( Waypoint p : blueprint.getStations() ) {
 				if (! (tiles[(int)p.getX()][(int)p.getY()] instanceof StreetTile) ) {
-					Simulation.logger.warning("Achtung, Station im Chromosom verweist nicht auf eine gültige Straßenkoordinate!"+" X: "+p.getX()+" Y: "+p.getY());
+					Simulation.logger.warning("Achtung, Station im Blueprint verweist nicht auf eine gültige Straßenkoordinate!"+" X: "+p.getX()+" Y: "+p.getY());
 				} else { //korrekte Koordinate
 					StreetTile street = (StreetTile) tiles[(int)p.getX()][(int)p.getY()];
 					street.setToStation();
 				}
 			}
 			//Buslinien einfügen:
-			for ( Schedule schedule : chromosom.getSchedules()) {
+			for ( Schedule schedule : blueprint.getSchedules()) {
 				schedule.calcWaypoints(this); //kreiert die internen Wegpunkte TODO eventuell muss auf eine Kopie zugegriffen werden
 				events.addAll(schedule.getBusCreationEvents(this));
 				//Jede Station muss wissen, dass hier diese Linie fährt:
@@ -373,16 +373,16 @@ public class Town implements Updateable {
 	}
 	
 	/**
-	 * Wandelt die Stadt wieder in den ursprünglichen Zustand um und löscht das aktuelle Chromosom
+	 * Wandelt die Stadt wieder in den ursprünglichen Zustand um und löscht das aktuelle Blueprint
 	 * @see #toNormal()
 	 */
-	public void resetChromosom() {
-		chromosom = null;
+	public void resetBlueprint() {
+		blueprint = null;
 		toNormal();
 	}
 	
 	/**
-	 * Wandelt die Stadt wieder in die Ursprüngliche um, alle Änderungen eines angewendeten Chromosoms werden rückgängig gemacht.
+	 * Wandelt die Stadt wieder in die Ursprüngliche um, alle Änderungen eines angewendeten Blueprints werden rückgängig gemacht.
 	 * Löscht außerdem die bisherigen Events
 	 */
 	public void toNormal() {
@@ -552,8 +552,8 @@ public class Town implements Updateable {
 		}
 		if (originNextStation != null && targetNextStation != null) {
 			
-			Waypoint start = findWaypointInChromosom((int) originNextStation.getX(), (int) originNextStation.getY());
-			Waypoint end = findWaypointInChromosom((int) targetNextStation.getX(), (int) targetNextStation.getY());
+			Waypoint start = findWaypointInBlueprint((int) originNextStation.getX(), (int) originNextStation.getY());
+			Waypoint end = findWaypointInBlueprint((int) targetNextStation.getX(), (int) targetNextStation.getY());
 			
 			if (start == null || end == null) {
 				Simulation.logger.warning("Achtung, Start und Ziel konnte im Graphen nicht ermittelt werden. Start:"+start+" Koordinaten: "+originNextStation.getX()+":"+originNextStation.getY()+":Ziel:"+end+":"+targetNextStation.getX()+":"+targetNextStation.getY());
@@ -584,8 +584,8 @@ public class Town implements Updateable {
 	}
 	
 	//Wird für die richtige Zuordnung des Graphen benötigt
-	public Waypoint findWaypointInChromosom(double x, double y) {
-		for (Schedule s : chromosom.getSchedules()) {
+	public Waypoint findWaypointInBlueprint(double x, double y) {
+		for (Schedule s : blueprint.getSchedules()) {
 			for (Waypoint w  : s.getStations()) {
 				if (w.isSame((int) x, (int) y)) {
 					return w;
@@ -595,16 +595,16 @@ public class Town implements Updateable {
 		return null;
 	}
 	
-	private StreetTile findStationInChromosom(Waypoint w) {
+	private StreetTile findStationInBlueprint(Waypoint w) {
 		if (tiles[(int)w.getX()][(int)w.getY()] instanceof StreetTile ) {
 			StreetTile st = (StreetTile) tiles[(int)w.getX()][(int)w.getY()];
 			if (!st.isStation()) {
-				Logger.getGlobal().warning("findStationInChromsom ist keine Station! (sondern Straße)");
+				Logger.getGlobal().warning("findStationInBlueprint ist keine Station! (sondern Straße)");
 				return null;
 			}
 			return st;
 		} else {
-			Logger.getGlobal().warning("findStationInChromsom verweist auf ein Haus!");
+			Logger.getGlobal().warning("findStationInBlueprint verweist auf ein Haus!");
 			return null;
 		}
 	}
@@ -618,11 +618,11 @@ public class Town implements Updateable {
 		if (path == null) return null;
 		Waypoint startW = stationGraph.getEdgeSource(path.get(0));
 		Waypoint endW = stationGraph.getEdgeTarget(path.get(path.size()-1));
-		StreetTile origin = findStationInChromosom(startW);
-		StreetTile target = findStationInChromosom(endW);		
+		StreetTile origin = findStationInBlueprint(startW);
+		StreetTile target = findStationInBlueprint(endW);		
 		ArrayList<ChangeStation> stations = new ArrayList<ChangeStation>();
 		
-		ArrayList<Schedule> lastSchedules = findStationInChromosom(stationGraph.getEdgeSource(path.get(0))).getSchedules();
+		ArrayList<Schedule> lastSchedules = findStationInBlueprint(stationGraph.getEdgeSource(path.get(0))).getSchedules();
 		
 		SpecificSchedule first = null;
 		
@@ -630,7 +630,7 @@ public class Town implements Updateable {
 		
 		//Als erstes die Buslinie finden, welche am weitesten zum Ziel kommt:
 		for ( int i=0;i<path.size();i++) {
-			StreetTile nextStation = findStationInChromosom(stationGraph.getEdgeTarget(path.get(i)));
+			StreetTile nextStation = findStationInBlueprint(stationGraph.getEdgeTarget(path.get(i)));
 			ArrayList<Schedule> hs1 = new ArrayList<Schedule>(lastSchedules); //Start
 			HashSet<Schedule> hs2 = new HashSet<Schedule>(nextStation.getSchedules());
 			hs1.retainAll(hs2); //Schnittmenge mit Stationen, welche in beiden Listen vorhanden sind
@@ -643,7 +643,7 @@ public class Town implements Updateable {
 					first = selected.getScheduleReverse();
 				}
 				stations.add(new ChangeStation(startW, first)); //Anfangsrichtung hinzufügen
-				lastChangeStation = findWaypointInChromosom(nextStation.getX(), nextStation.getY());
+				lastChangeStation = findWaypointInBlueprint(nextStation.getX(), nextStation.getY());
 			} else if (hs1.size() == 1) { //letzte Busstation gefunden!
 				Schedule selected = hs1.get(0);
 				if (selected.whichDirectionIsFaster(lastChangeStation, stationGraph.getEdgeTarget(path.get(i))) == BusDirection.NORMAL ) {
@@ -652,7 +652,7 @@ public class Town implements Updateable {
 					first = selected.getScheduleReverse();
 				}
 				stations.add(new ChangeStation(lastChangeStation, first)); //Anfangsrichtung hinzufügen
-				lastChangeStation = findWaypointInChromosom(nextStation.getX(), nextStation.getY());
+				lastChangeStation = findWaypointInBlueprint(nextStation.getX(), nextStation.getY());
 			}
 			lastSchedules = new ArrayList<Schedule>(nextStation.getSchedules());
 		}
@@ -696,14 +696,14 @@ public class Town implements Updateable {
 		for (Iterator<Schedule> it = hs1.iterator(); it.hasNext();){
 			Schedule schedule = it.next();
 			if (schedule.getStationIndex(station1.getX(), station1.getY()) == 0) {
-				duration = schedule.getTimeForBusDirectionNormal(findWaypointInChromosom(station1.getX(), station1.getY()), findWaypointInChromosom(station2.getX(), station2.getY()));
+				duration = schedule.getTimeForBusDirectionNormal(findWaypointInBlueprint(station1.getX(), station1.getY()), findWaypointInBlueprint(station2.getX(), station2.getY()));
 				shortest = schedule.getScheduleNormal();
 			} else if (schedule.getStationIndex(station1.getX(), station1.getY()) == schedule.getStations().size()-1 ) {
-				duration = schedule.getTimeForBusDirectionReverse(findWaypointInChromosom(station1.getX(), station1.getY()), findWaypointInChromosom(station2.getX(), station2.getY()));
+				duration = schedule.getTimeForBusDirectionReverse(findWaypointInBlueprint(station1.getX(), station1.getY()), findWaypointInBlueprint(station2.getX(), station2.getY()));
 				shortest = schedule.getScheduleReverse();
 			} else {
-				float timeNormal = schedule.getTimeForBusDirectionNormal(findWaypointInChromosom(station1.getX(), station1.getY()), findWaypointInChromosom(station2.getX(), station2.getY()));
-				float timeReverse = schedule.getTimeForBusDirectionReverse(findWaypointInChromosom(station1.getX(), station1.getY()), findWaypointInChromosom(station2.getX(), station2.getY()));
+				float timeNormal = schedule.getTimeForBusDirectionNormal(findWaypointInBlueprint(station1.getX(), station1.getY()), findWaypointInBlueprint(station2.getX(), station2.getY()));
+				float timeReverse = schedule.getTimeForBusDirectionReverse(findWaypointInBlueprint(station1.getX(), station1.getY()), findWaypointInBlueprint(station2.getX(), station2.getY()));
 				
 				if (timeNormal < duration) {
 					duration = timeNormal;

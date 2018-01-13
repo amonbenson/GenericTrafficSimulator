@@ -6,7 +6,6 @@ import java.awt.event.ActionEvent;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
-import java.util.Random;
 
 import javax.swing.AbstractAction;
 import javax.swing.JFrame;
@@ -14,7 +13,7 @@ import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 
-import com.trafficsim.generic.Chromosom;
+import com.trafficsim.generic.Blueprint;
 import com.trafficsim.sim.Simulation;
 import com.trafficsim.town.BusDirection;
 import com.trafficsim.town.BusStartTime;
@@ -48,7 +47,7 @@ public class SimulationFrameLauncher {
 		Town town = new Town(townLandscape.length, townLandscape[0].length);
 		simulation = new Simulation(town);
 		town.generateTiles(townLandscape);
-		Chromosom chromosom = new Chromosom(townLandscape);
+		Blueprint blueprint = new Blueprint(townLandscape);
 		ArrayList<Schedule> schedules = new ArrayList<Schedule>(); //Liste mit allen Linien
 		ArrayList<Waypoint> waypoints = new ArrayList<Waypoint>(); //Alle jemals genutzten Punkte für Stationen dürfen nur einmal erzeugt werden! Dies ist ein Hilfsarray für die interne Erzeugung und wird später nicht benötigt (ist optional).
 		ArrayList<Waypoint> stations = new ArrayList<Waypoint>(); //Liste mit allen Stationen, welche generell vom Chromosom erzeugt werden.
@@ -73,11 +72,11 @@ public class SimulationFrameLauncher {
 		stations.add(w2);
 		stations.add(w3);
 		stations.add(w4);
-		chromosom.setSchedules(schedules); //Alle Linien setzen
-		chromosom.setStations(waypoints); //Alle Punkte setzen, auf welchen Straßen zu Stationen umgewandelt werden sollen
-		town.setChromosom(chromosom);
-		chromosom.generate(town);
-		town.applyChromosom();
+		blueprint.setSchedules(schedules); //Alle Linien setzen
+		blueprint.setStations(waypoints); //Alle Punkte setzen, auf welchen Straßen zu Stationen umgewandelt werden sollen
+		town.setBlueprint(blueprint);
+		blueprint.generate(town);
+		town.applyBlueprint();
 		
 
 		

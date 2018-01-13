@@ -1,6 +1,6 @@
 package de.amonbenson.generic;
 
-import com.trafficsim.generic.Chromosom;
+import com.trafficsim.generic.Blueprint;
 import com.trafficsim.graphics.SimulationFrameLauncher;
 import com.trafficsim.sim.Simulation;
 import com.trafficsim.town.Town;
@@ -71,11 +71,11 @@ public class FrameLauncher implements Simulator {
 			town = simulation.getTown();
 			town.generateTiles(Simulation.testTown()); //Landschaftskarte
 			
-			Chromosom testing = Chromosom.randomChromosom(Simulation.testTown());
-			town.setChromosom(testing);
+			Blueprint testing = Blueprint.randomBlueprint(Simulation.testTown());
+			town.setBlueprint(testing);
 	
 			testing.generate(simulation.getTown());
-			town.applyChromosom();
+			town.applyBlueprint();
 			
 		} catch (IllegalArgumentException ex) {
 			// Town generation not possible. return fitness of -1.

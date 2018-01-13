@@ -5,7 +5,7 @@ import java.util.Random;
 
 import com.trafficsim.town.BusStartTime;
 
-public class ChromosomSchedule {
+public class BlueprintSchedule {
 	
 	public ArrayList<Integer> stations;
 	public ArrayList<BusStartTime> busStartTimes;	
@@ -14,11 +14,11 @@ public class ChromosomSchedule {
 	/**
 	 * Erzeugt einen Fahrplan mit einer zufälligen Zahl zwischen 1 und 1000 als Busnamen
 	 */
-	public ChromosomSchedule() {
+	public BlueprintSchedule() {
 		this(String.valueOf(getRandomBusNumber()));
 	}
 	
-	public ChromosomSchedule(String name) {
+	public BlueprintSchedule(String name) {
 		this.name = name;
 		stations = new ArrayList<Integer>();
 		busStartTimes = new ArrayList<BusStartTime>();
