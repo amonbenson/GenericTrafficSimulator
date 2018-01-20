@@ -51,11 +51,10 @@ public class FrameLauncher implements Simulator {
 	private SimulationFrameLauncher framelauncher;
 
 	public FrameLauncher() {
-		
 		/**
 		 * No debugging info
 		 */
-		Simulation.logger.setLevel(Level.SEVERE);
+		Simulation.logger.setLevel(Level.ALL);
 
 		framelauncher = new SimulationFrameLauncher();
 		new Thread(new Runnable() {

@@ -663,11 +663,11 @@ public class Town implements Updateable {
 			Route r = new Route(origin, target, stations);
 			return r;
 		} else {
-			Simulation.logger.warning(path.toString());
-			Simulation.logger.warning(startW.toString());
-			Simulation.logger.warning(endW.toString());
+			Simulation.logger.warning("Pfad:"+path.toString());
+			Simulation.logger.warning("Start:"+startW.toString());
+			Simulation.logger.warning("Ende:"+endW.toString());
 			for ( ChangeStation s : stations ) {
-				Simulation.logger.warning(s+"\n\n");
+				Simulation.logger.warning("ChangeStation:" + s+"\n\n");
 				
 			}
 			Simulation.logger.warning("------------Stationsende------------");
