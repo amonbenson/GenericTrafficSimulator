@@ -13,6 +13,8 @@ public class Statistics {
 	private int countRouteSameTargets = 0; //"Fehler", wenn Start und Ziel gleich sind
 	private int errorNoRoute = 0; //insgesamte Fehler wenn irgendwie keine Route gefunden wurden konnte
 	private int countRouteFound = 0;
+	//Fehler, wenn keine Route erzeugt wird, weil der Weg zu umständlich ist.
+	private int countCrypleErrors = 0;
 	private HashSet<Waypoint> noStationNearby;
 	
 	private ArrayList<RouteTime> travelTimes;
@@ -33,6 +35,7 @@ public class Statistics {
 		System.out.println("No Station found: "+countNoStationFound + " ("+countNoStationFound/((float)errorNoRoute+countRouteFound)*100f+"%)");
 		System.out.println("No Route found: "+countNoRouteFound + " ("+countNoRouteFound/((float)errorNoRoute)*100f+"%)");
 		System.out.println("Route same targets (counts as error): "+countRouteSameTargets + " ("+countRouteSameTargets/((float)errorNoRoute)*100f+"%)");
+		System.out.println("Cryple-Error: "+getCounterCrypleError());
 		System.out.println("All Errors: "+errorNoRoute+"("+(errorNoRoute/(float)(errorNoRoute+countRouteFound))*100f+"%)");
 		System.out.println("Koordinaten welche nicht abgedeckt sind: ");
 		for (Iterator<Waypoint> i = noStationNearby.iterator(); i.hasNext();) {
@@ -43,12 +46,13 @@ public class Statistics {
 		System.out.println(getMedianTravelTime());
 	}
 	
-	public void print(String toPrintIn) {
-		
-	}
 	
 	public int getCounterRouteFound() {
 		return countRouteFound;
+	}
+	
+	public int getCounterCrypleError() {
+		return countCrypleErrors;
 	}
 	
 	public int getCounterNoRouteFound() {
@@ -100,6 +104,12 @@ public class Statistics {
 	public void addRouteSameTargets() {
 		countRouteSameTargets++;
 		//errorNoRoute++;
+	}
+	
+	public void addCrypleError() {
+		countCrypleErrors++;
+		countRouteFound--;
+		countNoRouteFound++;
 	}
 	
 	public void addTravelTime(Route r, long start, long end) {

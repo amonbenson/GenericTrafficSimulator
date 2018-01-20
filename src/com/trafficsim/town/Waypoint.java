@@ -68,7 +68,7 @@ public class Waypoint {
 	
 	@Override
 	public String toString() {
-		return "X: "+x+"Y: "+y+"\n";
+		return "X: "+x+"Y: "+y;
 	}
 	
 	@Override

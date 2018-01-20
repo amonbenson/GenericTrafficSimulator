@@ -1,10 +1,7 @@
 package com.trafficsim.graphics;
 
 import java.awt.BorderLayout;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 
 import javax.swing.AbstractAction;
@@ -41,6 +38,7 @@ public class SimulationFrameLauncher {
 	
 	public SimulationFrameLauncher() {
 		// TOWN ERSTELLEN
+		
 		
 		float[][][] townLandscape = Simulation.testTown();
 		Town town = new Town(townLandscape.length, townLandscape[0].length);

@@ -248,7 +248,7 @@ public class Blueprint {
 				}
 				//Wenn nicht genug Stationen vorhanden sind, müssen noch welche hinzugefügt werden:
 				if (sch.stations.size() == 0) {
-					for (int i2=back.isStation.length-1; i2>=0; i2--) { //Zufällig Stationen hinzufügen
+					for (int i2=0; i2<back.isStation.length; i2++) { //Zufällig Stationen hinzufügen
 						if (back.isStation[i2] == true) { //Wenn hier eine Station ist
 							sch.stations.add(i2);
 						}
@@ -258,10 +258,11 @@ public class Blueprint {
 				if (sch.stations.size() == 1) {
 					for (int i2=0; i2<back.isStation.length; i2++) { //Zufällig Stationen hinzufügen
 						if (back.isStation[i2] == true) { //Wenn hier eine Station ist
-							sch.stations.add(i2);
+							if (!sch.stations.contains(i2)) sch.stations.add(i2);
 						}
 					}
 				}
+				
 				
 				int numberOfBusses = r.nextInt(maxNumberOfBusses+1-minNumberOfBusses)+minNumberOfBusses; //Anzahl an Bussen berechnen
 				int lastBusStartTime = 0; //letzte Startzeit ist einfach 0
@@ -292,6 +293,24 @@ public class Blueprint {
 		waypoints.add(back);
 		//Simulation.logger.fine("Created "+x+":"+y);
 		return back;
+	}
+	
+	
+	@Override
+	public String toString() {
+		StringBuilder b = new StringBuilder();
+		System.out.println("Linien:"+"\n");
+		for ( Schedule s : schedulesForSimulation ) {
+			b.append(s.getName()+"\n");
+			for ( Waypoint w : s.getStations()) {
+				b.append(w+"\n");
+			}
+		}
+		b.append("Stationen:"+"\n");
+		for ( Waypoint s : stationsForSimulation ) {
+			b.append(s+"\n");
+		}
+		return b.toString();
 	}
 	
 }
