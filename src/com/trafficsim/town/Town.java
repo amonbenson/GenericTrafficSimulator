@@ -484,9 +484,6 @@ public class Town implements Updateable {
 		StreetTile originNextStation;
 		StreetTile targetNextStation;
 		
-		origin = tiles[5][5];
-		target = tiles[3][1];
-		
 		originNextStation = origin.getNextStation(tiles);
 		targetNextStation = target.getNextStation(tiles);
 		
@@ -635,25 +632,35 @@ public class Town implements Updateable {
 		Waypoint endW = stationGraph.getEdgeTarget(path.get(path.size()-1));
 		StreetTile origin = findStationInBlueprint(startW);
 		StreetTile target = findStationInBlueprint(endW);
-		
-		Simulation.logger.warning("Start"+startW);
-		Simulation.logger.warning("End"+endW);
-
-		
 		ArrayList<ChangeStation> stations = new ArrayList<ChangeStation>();
 		
 		Waypoint lastChangeStation = startW;
-		StreetTile lastStationEntered = origin; //Letzte Station, in welcher eingestiegen wurde
 		int lastStationIndex = 0;
 		ArrayList<Schedule> possibleLines = origin.getSchedules(); //Mögliche Linien vom letzten Einstieg
 		SpecificSchedule sSchedule = null;
 		
 		for ( int i=lastStationIndex;i<path.size();i++) {
-			//Schnittmenge zur nächsten Station bilden, um zu prüfen, welche Linien weiterhin angefahren werden können
-			ArrayList<Schedule> cutSet = new ArrayList<Schedule>(possibleLines);
 			
+			//Führt diese Station direkt zum Ziel?
+			ArrayList<Schedule> cutSet = new ArrayList<Schedule>(possibleLines);			
+			cutSet.retainAll(findStationInBlueprint(endW).getSchedules());
+			if (!cutSet.isEmpty()) { //Diese Station führt direkt zum Ziel!
+				Schedule schedule = cutSet.get(random.nextInt(cutSet.size()));
+				BusDirection d = schedule.whichDirectionIsFaster(lastChangeStation, endW);
+				if (d == BusDirection.NORMAL) {
+					sSchedule = schedule.getScheduleNormal();
+				} else {
+					sSchedule = schedule.getScheduleReverse();
+				}
+				stations.add(new ChangeStation(lastChangeStation, sSchedule));
+				break;
+			}
+			
+			//Schnittmenge zur nächsten Station bilden, um zu prüfen, welche Linien weiterhin angefahren werden können
+			cutSet = new ArrayList<Schedule>(possibleLines);
 			cutSet.retainAll(findStationInBlueprint(stationGraph.getEdgeTarget(path.get(lastStationIndex))).getSchedules());
 			if (cutSet.isEmpty()) { //Schnittmenge leer, Zeit umzusteigen!
+
 				//Umsteigestation hinzufügen:
 				//Dafür eine mögliche Linie aussuchen:
 				Schedule schedule = possibleLines.get(random.nextInt(possibleLines.size()));
@@ -671,22 +678,15 @@ public class Town implements Updateable {
 				possibleLines = cutSet;
 			}
 		}
-
-		if (stations.isEmpty()) {
-			Schedule schedule = possibleLines.get(random.nextInt(possibleLines.size()));
-			BusDirection d = schedule.whichDirectionIsFaster(lastChangeStation, endW);
-			if (d == BusDirection.NORMAL) {
-				sSchedule = schedule.getScheduleNormal();
-			} else {
-				sSchedule = schedule.getScheduleReverse();
-			}
-			stations.add(new ChangeStation(lastChangeStation, sSchedule));
-		} else {
-		}
-		
 		//Letzte Station hinzufügen:
+		if (sSchedule == null) {
+			//Das kann passieren, wenn der Weg zu umständlich ist. Also ein Cryple Error
+			statistics.addCrypleError();
+			return null;
+		}
 		stations.add(new ChangeStation(endW, sSchedule));
 		
+
 		Route r = new Route(origin, target, stations);
 		return r;
 		
