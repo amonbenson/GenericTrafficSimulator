@@ -390,7 +390,8 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 		
 		// Create a bus info frame, add a person list selection listener
 		BusInfoFrame frame = new BusInfoFrame(this, bus, dx, dy);
-		frame.addListSelectionListener(this);
+		frame.addStationListSelectionListener(this);
+		frame.addPersonListSelectionListener(this);
 		frame.setVisible(true);
 		
 		updateInternalFramePositions();
@@ -585,13 +586,27 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 			// Get the root internal frame for the current jlist
 			Component rootFrame = SwingUtilities.getAncestorOfClass(JInternalFrame.class, (Component) e.getSource());
 			
-			// This will be called if someone in a bus info frame's person list was selected
+			// This will be called if something in a bus info frame was selected
 			if (rootFrame instanceof BusInfoFrame) {
 				BusInfoFrame source = (BusInfoFrame) rootFrame;
-				Person person = source.getSelectedPerson();
-				if (person != null) {
-					// We now have a person, create an info frame
-					createPersonInfoFrame(person, source.getX() + FRAME_LAYER_SPACE, source.getY() + FRAME_LAYER_SPACE);
+				
+				// It was a station selected!
+				if (e.getSource() instanceof StationList) {
+					Waypoint station = source.getSelectedStation();
+					if (station != null) {
+						int sx = (int) (station.getX() - 0.5);
+						int sy = (int) (station.getY() - 0.5);
+						createStreetTileInfoFrame((StreetTile) town.getTiles()[sx][sy], source.getX() + FRAME_LAYER_SPACE, source.getY() + FRAME_LAYER_SPACE);
+					}
+				}
+				
+				// It was a person selected!
+				if (e.getSource() instanceof PersonList) {
+					Person person = source.getSelectedPerson();
+					if (person != null) {
+						// We now have a person, create an info frame
+						createPersonInfoFrame(person, source.getX() + FRAME_LAYER_SPACE, source.getY() + FRAME_LAYER_SPACE);
+					}
 				}
 			}
 			
