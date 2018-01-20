@@ -1,4 +1,4 @@
-package com.trafficsim.graphics;
+package com.trafficsim.graphics.infoframe;
 
 import java.awt.Component;
 import java.util.ArrayList;

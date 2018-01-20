@@ -1,4 +1,4 @@
-package com.trafficsim.graphics;
+package com.trafficsim.graphics.infoframe;
 
 import java.awt.event.ActionListener;
 
@@ -6,6 +6,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 
+import com.trafficsim.graphics.TownDesktopPane;
 import com.trafficsim.town.HouseTile;
 import com.trafficsim.town.StreetTile;
 

@@ -5,6 +5,7 @@ import java.util.logging.Level;
 import com.sun.media.jfxmedia.logging.Logger;
 import com.trafficsim.generic.Blueprint;
 import com.trafficsim.graphics.SimulationFrameLauncher;
+import com.trafficsim.graphics.ga.GAFrameLauncher;
 import com.trafficsim.sim.Simulation;
 import com.trafficsim.town.Town;
 
@@ -57,6 +58,13 @@ public class FrameLauncher implements Simulator {
 	 */
 	private SimulationFrameLauncher framelauncher;
 
+	/**
+	 * The generic algorithm frame launcher will take care of showing the
+	 * current ga's process and displaying a nice family tree of the
+	 * individuals.
+	 */
+	private GAFrameLauncher frameLauncher;
+
 	public FrameLauncher() {
 		Simulation.logger.setLevel(Level.ALL);
 
@@ -86,7 +94,8 @@ public class FrameLauncher implements Simulator {
 
 		gaRuntime = 1; // Terminate after 1000 generations
 		townRuntime = 2000; // Calc fitness after 5000 ticks
-		simulationTickSpeed = 1; // DEBUGGING ONLY! Time bfor one simulation tick
+		simulationTickSpeed = 1; // DEBUGGING ONLY! Time bfor one simulation
+									// tick
 
 		// Create our genetic algorithm
 		ga = new GeneticAlgorithm(this, 1, 0.05, 0.95, 2);
@@ -151,10 +160,11 @@ public class FrameLauncher implements Simulator {
 		framelauncher.setSimulation(simulation);
 
 		try {
-			while (town.getTime() < townRuntime) { // Run simulation for some ticks
+			while (town.getTime() < townRuntime) { // Run simulation for some
+													// ticks
 				// Update town by one tick
 				town.update();
-	
+
 				Thread.sleep(simulationTickSpeed);
 			}
 		} catch (Exception ex) {

@@ -1,8 +1,9 @@
-package com.trafficsim.graphics;
+package com.trafficsim.graphics.infoframe;
 
 import javax.swing.JDesktopPane;
 import javax.swing.JLabel;
 
+import com.trafficsim.graphics.TownDesktopPane;
 import com.trafficsim.town.Person;
 
 public class PersonInfoFrame extends InfoFrame {

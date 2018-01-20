@@ -32,6 +32,13 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import com.trafficsim.graphics.consolepane.ConsolePane;
+import com.trafficsim.graphics.infoframe.BusInfoFrame;
+import com.trafficsim.graphics.infoframe.HouseTileInfoFrame;
+import com.trafficsim.graphics.infoframe.PersonInfoFrame;
+import com.trafficsim.graphics.infoframe.PersonList;
+import com.trafficsim.graphics.infoframe.StationList;
+import com.trafficsim.graphics.infoframe.StreetTileInfoFrame;
 import com.trafficsim.town.Bus;
 import com.trafficsim.town.HouseTile;
 import com.trafficsim.town.Person;
@@ -360,11 +367,9 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 				(int) (x * tileSize - tileSize * PERSON_DRAW_SIZE / 2) + tileX,
 				(int) (y * tileSize - tileSize * PERSON_DRAW_SIZE / 2) + tileY, 
 				(int) (tileSize * PERSON_DRAW_SIZE), (int) (tileSize * PERSON_DRAW_SIZE) );
-		
-		if (numPersons > 1) {
-			g.setColor(Color.black);
-			g.drawString("x" + numPersons, (int) ((x + PERSON_DRAW_SIZE / 2 + 0.05) * tileSize) + tileX, (int) ((y + 0.04) * tileSize) + tileY);
-		}
+	
+		g.setColor(Color.black);
+		g.drawString("x" + numPersons, (int) ((x + PERSON_DRAW_SIZE / 2 + 0.05) * tileSize) + tileX, (int) ((y + 0.04) * tileSize) + tileY);
 	}
 	
 	public void updateFocusElement() {

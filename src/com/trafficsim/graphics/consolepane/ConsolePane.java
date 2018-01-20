@@ -1,4 +1,4 @@
-package com.trafficsim.graphics;
+package com.trafficsim.graphics.consolepane;
 
 import java.awt.Color;
 import java.awt.Container;
@@ -10,6 +10,8 @@ import java.util.ArrayList;
 
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
+
+import com.trafficsim.graphics.SimulationFrameLauncher;
 
 public abstract class ConsolePane extends JPanel implements MouseListener {
 	

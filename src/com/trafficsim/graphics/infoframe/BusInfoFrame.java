@@ -1,9 +1,10 @@
-package com.trafficsim.graphics;
+package com.trafficsim.graphics.infoframe;
 
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.event.ListSelectionListener;
 
+import com.trafficsim.graphics.TownDesktopPane;
 import com.trafficsim.town.Bus;
 import com.trafficsim.town.Person;
 import com.trafficsim.town.Waypoint;

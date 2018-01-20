@@ -1,4 +1,4 @@
-package com.trafficsim.graphics;
+package com.trafficsim.graphics.infoframe;
 
 import java.awt.Dimension;
 import java.awt.event.ActionListener;
@@ -10,6 +10,8 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionListener;
 
+import com.trafficsim.graphics.SimulationFrameLauncher;
+import com.trafficsim.graphics.TownDesktopPane;
 import com.trafficsim.town.Person;
 import com.trafficsim.town.StreetTile;
 

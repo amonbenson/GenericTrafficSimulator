@@ -1,8 +1,9 @@
-package com.trafficsim.graphics;
+package com.trafficsim.graphics.consolepane;
 
 import java.awt.Graphics;
 import java.util.Iterator;
 
+import com.trafficsim.graphics.SimulationFrameLauncher;
 import com.trafficsim.town.Event;
 import com.trafficsim.town.Statistics;
 import com.trafficsim.town.Town;

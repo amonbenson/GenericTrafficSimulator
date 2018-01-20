@@ -1,4 +1,4 @@
-package com.trafficsim.graphics;
+package com.trafficsim.graphics.infoframe;
 
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
@@ -9,6 +9,9 @@ import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
+
+import com.trafficsim.graphics.SimulationFrameLauncher;
+import com.trafficsim.graphics.TownDesktopPane;
 
 public class InfoFrame extends JInternalFrame implements AncestorListener, InternalFrameListener {
 

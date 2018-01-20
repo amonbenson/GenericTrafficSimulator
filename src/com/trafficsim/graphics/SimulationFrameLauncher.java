@@ -14,6 +14,8 @@ import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 
 import com.trafficsim.generic.Blueprint;
+import com.trafficsim.graphics.consolepane.InfoConsolePane;
+import com.trafficsim.graphics.consolepane.PersonConsolePane;
 import com.trafficsim.sim.Simulation;
 import com.trafficsim.town.BusDirection;
 import com.trafficsim.town.BusStartTime;

@@ -1,9 +1,10 @@
-package com.trafficsim.graphics;
+package com.trafficsim.graphics.consolepane;
 
 import java.awt.Graphics;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 
+import com.trafficsim.graphics.SimulationFrameLauncher;
 import com.trafficsim.town.Bus;
 import com.trafficsim.town.Person;
 import com.trafficsim.town.Town;
