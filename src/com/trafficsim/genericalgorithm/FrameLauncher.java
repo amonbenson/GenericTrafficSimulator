@@ -51,9 +51,6 @@ public class FrameLauncher implements Simulator {
 	private SimulationFrameLauncher framelauncher;
 
 	public FrameLauncher() {
-		/**
-		 * No debugging info
-		 */
 		Simulation.logger.setLevel(Level.ALL);
 
 		framelauncher = new SimulationFrameLauncher();
@@ -80,11 +77,11 @@ public class FrameLauncher implements Simulator {
 			}
 		}).start();
 
-		gaRuntime = 1000; // Terminate after 1000 generations
+		gaRuntime = 1; // Terminate after 1000 generations
 		townRuntime = 2000; // Calc fitness after 5000 ticks
 
 		// Create our genetic algorithm
-		ga = new GeneticAlgorithm(this, 10, 0.05, 0.95, 2);
+		ga = new GeneticAlgorithm(this, 1, 0.05, 0.95, 2);
 
 		// Initialize population
 		Population population = ga.initPopulation(5);
@@ -109,7 +106,13 @@ public class FrameLauncher implements Simulator {
 		System.out.println("Best solution: " + population.getFittest(0).toString());
 	}
 
+	/**
+	 * This class handles the town simulation. We will first create a new town and generate its
+	 * blueprint from the cromosom. The chromosom is found in the 
+	 */
 	public double simulate(Individual individual) {
+		System.out.println(">>> simulate!!");
+		
 		Simulation simulation;
 		Town town;
 

@@ -113,7 +113,7 @@ public class SimulationFrameLauncher {
 		//frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		
 		// Init the auto updater
-		updater = new AutoUpdater(frame, simulation.getTown());
+		updater = new AutoUpdater(this);
 		
 		// Key bindings
 		townDesktopPane.getInputMap().put(KeyStroke.getKeyStroke("U"), "town update");

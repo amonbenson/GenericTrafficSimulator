@@ -13,15 +13,13 @@ public class AutoUpdater implements Runnable {
 	private static final long MAX_TICK_SPEED = 500;
 	private static final double MULT_TICK_SPEED = 1.3;
 	
-	private JFrame frame;
-	private Town town;
+	private SimulationFrameLauncher frameLauncher; // FrameLauncher context
 
 	private long tickSpeed;
 	private boolean running;
 	
-	public AutoUpdater(JFrame frame, Town town) {
-		this.frame = frame;
-		this.town = town;
+	public AutoUpdater(SimulationFrameLauncher frameLauncher) {
+		this.frameLauncher = frameLauncher;
 		
 		tickSpeed = 30;
 		running = false;
@@ -58,10 +56,10 @@ public class AutoUpdater implements Runnable {
 		while (running) {
 			try {
 				// Update the town
-				town.update();
+				frameLauncher.getTownDesktopPane().getTown().update();
 				
 				// Render
-				frame.repaint();
+				frameLauncher.getFrame().repaint();
 				
 				// Wait a tick
 				Thread.sleep(tickSpeed);

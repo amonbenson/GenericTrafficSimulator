@@ -234,7 +234,24 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 						);
 					}
 				}
+				
+				// Draw the stations of the focus bus
+				g.setColor(new Color(0, 255, 0));
+				g.setStroke(new BasicStroke(SimulationFrameLauncher.highDPI((int) (0.12 * tileSize)), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0));
+				for (int i = 0; i < schedule.getStations().size(); i++) {
+					Waypoint st = schedule.getStation(i);
+					g.setColor(new Color(0, 255, 0));
+					
+					g.drawLine(
+								(int) (st.getX() * tileSize) + tileX, 
+								(int) (st.getY() * tileSize) + tileY,
+								(int) (st.getX() * tileSize) + tileX, 
+								(int) (st.getY() * tileSize) + tileY
+					);
+				}
 			}
+			
+			g.setStroke(new BasicStroke(SimulationFrameLauncher.highDPI((int) (0.06 * tileSize)), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0));
 			
 			// Draw route of focus person (draw a strait line from origin to target station)
 			if (focusPerson != null) {
