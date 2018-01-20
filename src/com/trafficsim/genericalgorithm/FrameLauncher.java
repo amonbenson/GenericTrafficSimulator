@@ -2,7 +2,6 @@ package com.trafficsim.genericalgorithm;
 
 import java.util.logging.Level;
 
-import com.sun.media.jfxmedia.logging.Logger;
 import com.trafficsim.generic.Blueprint;
 import com.trafficsim.graphics.SimulationFrameLauncher;
 import com.trafficsim.sim.Simulation;

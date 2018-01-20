@@ -32,12 +32,21 @@ public abstract class Tile {
 	public StreetTile getNextStation(Tile[][] map) {
 		ArrayList<StreetTile> all = getAllNextStations(map);
 		StreetTile best = null;
-		int numberLines = 0;
+		int numberLines = 1;
+		int distance = 9;
 		for (StreetTile t : all) {
+			if ( (Math.abs(t.getX()-x)+Math.abs(t.getY()-y)) < distance &&
+				t.getSchedules().size() >= numberLines) {
+				numberLines = t.getSchedules().size();
+				best = t;
+				distance = Math.abs(t.getX()-x)+Math.abs(t.getY()-y);
+			}
 			if (t.getSchedules().size() > numberLines) {
 				numberLines = t.getSchedules().size();
 				best = t;
+				distance = Math.abs(t.getX()-x)+Math.abs(t.getY()-y);
 			}
+			
 		}
 		return best;
 	}

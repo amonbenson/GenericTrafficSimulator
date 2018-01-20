@@ -483,23 +483,11 @@ public class Town implements Updateable {
 	public List<DefaultWeightedEdge> getPathForPerson(Tile origin, Tile target) {
 		StreetTile originNextStation;
 		StreetTile targetNextStation;
-
-		//DEBUG
-		//origin = tiles[5][5];
-		//target = tiles[0][0];
 		
 		originNextStation = origin.getNextStation(tiles);
 		targetNextStation = target.getNextStation(tiles);
 		
-		//DEBUG!!!
-		if (originNextStation != null & targetNextStation != null) {
-			System.out.println(originNextStation.getX()+"a:"+originNextStation.getY());
-			System.out.println(targetNextStation.getX()+"b:"+targetNextStation.getY());
-			if (originNextStation.getX()==3&&originNextStation.getY()==4 &&
-				targetNextStation.getX()==1&&targetNextStation.getY()==1) {
-				System.out.println("PASSIERT");
-			}
-		}
+
 		
 		if (originNextStation == targetNextStation) {
 			statistics.addRouteSameTargets();
@@ -617,7 +605,6 @@ public class Town implements Updateable {
 		stations.add(new ChangeStation(endW, target.getSchedules().get(0).getScheduleReverse())); //Ende hinzufügen
 		if (stations.size() >= 2) {
 			Route r = new Route(origin, target, stations);
-			System.out.println("Route: "+r);
 			return r;
 		} else {
 			Simulation.logger.warning("Pfad:"+path.toString());
