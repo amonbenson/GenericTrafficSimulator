@@ -267,8 +267,8 @@ public class Schedule {
 		int indexEnd = getStationIndex((int) end.getX(), (int) end.getY());
 		
 		if (indexStart == -1 || indexEnd == -1) {
-			Simulation.logger.warning("indexStart oder indexEnd konnte nicht gefunden werden! Start: "+start+",Status:"+indexStart+":Ende:"+end+"Status:"+indexEnd);
-			return 99;
+			Simulation.logger.warning("indexStart oder indexEnd konnte nicht gefunden werden! Start: "+start+",dessen Index:"+indexStart+":Ende:"+end+"dessen Index:"+indexEnd);
+			return 99999;
 		} else if (indexStart == indexEnd) {
 			Simulation.logger.warning("Start und End ist eine Station?"+start+":"+end);
 		}
@@ -299,7 +299,8 @@ public class Schedule {
 		int indexEnd = getStationIndex((int) end.getX(), (int) end.getY());
 		
 		if (indexStart == -1 || indexEnd == -1) {
-			Simulation.logger.warning("indexStart oder indexEnd konnte nicht gefunden werden! Start: "+start+",Status:"+indexStart+":Ende:"+end+"Status:"+indexEnd+"Name der Linie:"+getName());
+			Simulation.logger.warning("indexStart oder indexEnd konnte nicht gefunden werden! Start: "+start+",dessen Index:"+indexStart+":Ende:"+end+"dessen Index:"+indexEnd);
+			return 99999;
 		} else if (indexStart == indexEnd) {
 			Simulation.logger.warning("Start und End ist eine Station?"+start+":"+end);
 		}

@@ -19,7 +19,7 @@ public class FrameLauncher implements Simulator {
 	
 	public FrameLauncher() {
 		
-		Simulation.logger.setLevel(Level.OFF);
+		Simulation.logger.setLevel(Level.ALL);
 		
 		framelauncher = new SimulationFrameLauncher();
 		new Thread(new Runnable() {
