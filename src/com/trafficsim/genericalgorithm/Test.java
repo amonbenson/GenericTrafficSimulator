@@ -1,4 +1,4 @@
-package de.amonbenson.generic;
+package com.trafficsim.genericalgorithm;
 
 /**
  * This is our main class used to run the genetic algorithm.

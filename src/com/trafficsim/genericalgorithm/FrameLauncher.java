@@ -1,4 +1,4 @@
-package de.amonbenson.generic;
+package com.trafficsim.genericalgorithm;
 
 import com.trafficsim.generic.Blueprint;
 import com.trafficsim.graphics.SimulationFrameLauncher;

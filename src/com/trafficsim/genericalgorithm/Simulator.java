@@ -1,4 +1,4 @@
-package de.amonbenson.generic;
+package com.trafficsim.genericalgorithm;
 
 public interface Simulator {
 

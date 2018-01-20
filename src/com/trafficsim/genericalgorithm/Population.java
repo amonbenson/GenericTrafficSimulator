@@ -1,4 +1,4 @@
-package de.amonbenson.generic;
+package com.trafficsim.genericalgorithm;
 
 import java.util.Arrays;
 import java.util.Comparator;

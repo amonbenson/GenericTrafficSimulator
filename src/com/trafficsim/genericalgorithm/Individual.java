@@ -1,4 +1,4 @@
-package de.amonbenson.generic;
+package com.trafficsim.genericalgorithm;
 
 /**
  * An "Individual" represents a single candidate solution. The core piece of

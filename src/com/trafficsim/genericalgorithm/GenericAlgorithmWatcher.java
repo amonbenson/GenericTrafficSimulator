@@ -1,4 +1,4 @@
-package de.amonbenson.generic;
+package com.trafficsim.genericalgorithm;
 
 public interface GenericAlgorithmWatcher {
 	public void crossover(Population before, Population after, Individual parent1, Individual parent2, Individual offspring);
