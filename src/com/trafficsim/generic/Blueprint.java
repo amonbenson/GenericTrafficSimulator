@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Random;
 
+import com.trafficsim.sim.Simulation;
 import com.trafficsim.town.BusDirection;
 import com.trafficsim.town.BusStartTime;
 import com.trafficsim.town.Schedule;
@@ -133,15 +134,15 @@ public class Blueprint {
 		int tmp=0;
 		//Buslinien generieren:
 		for (BlueprintSchedule sch : schedules) {
-			//System.out.println("Neue Buslinie");
+			Simulation.logger.fine("Neue Buslinie");
 			ArrayList<Waypoint> stations = new ArrayList<Waypoint>();
-			System.out.println("Linie " + sch.name + ": Folgende Stationen werden angefahren");
+			Simulation.logger.fine("Linie " + sch.name + ": Folgende Stationen werden angefahren");
 
 			
 
 			for (Integer i : sch.stations) {
 				Point position = streetMapGenericToSimulation.get(i);
-				//System.out.println(position);
+				//Simulation.logger.fine(position);
 				Waypoint w = findWaypoint(position.x, position.y);
 				stations.add(w);
 			}
@@ -229,7 +230,7 @@ public class Blueprint {
 		for (int i=0; i<back.isStation.length; i++) {
 			if (r.nextFloat() <= chanceForStation) {
 				back.isStation[i] = true;
-				//System.out.println("Station at: "+back.streetMapGenericToSimulation.get(i));
+				//Simulation.logger.fine("Station at: "+back.streetMapGenericToSimulation.get(i));
 			}
 		}
 		
@@ -284,13 +285,13 @@ public class Blueprint {
 	public Waypoint findWaypoint(int x, int y) {
 		for (Waypoint w : waypoints) {
 			if (w.isSame(x, y)) {
-				System.out.println("Found "+x+":"+y);
+				Simulation.logger.fine("Found "+x+":"+y);
 				return w;
 			}
 		}
 		Waypoint back = new Waypoint(x+0.5, y+0.5); //0.5, weil die Busse immer in der Mitte fahren sollen
 		waypoints.add(back);
-		//System.out.println("Created "+x+":"+y);
+		//Simulation.logger.fine("Created "+x+":"+y);
 		return back;
 	}
 	
