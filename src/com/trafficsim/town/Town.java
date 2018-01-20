@@ -667,10 +667,10 @@ public class Town implements Updateable {
 			Simulation.logger.warning(startW.toString());
 			Simulation.logger.warning(endW.toString());
 			for ( ChangeStation s : stations ) {
-				System.err.println(s+"\n\n");
+				Simulation.logger.warning(s+"\n\n");
 				
 			}
-			System.err.println("------------Stationsende------------");
+			Simulation.logger.warning("------------Stationsende------------");
 			Simulation.logger.warning("Stationsgröße zu klein, bitte beheben");
 			return null;
 		}

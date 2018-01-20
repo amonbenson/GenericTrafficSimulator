@@ -1,5 +1,8 @@
 package com.trafficsim.genericalgorithm;
 
+import java.util.logging.Filter;
+import java.util.logging.Level;
+
 import com.trafficsim.generic.Blueprint;
 import com.trafficsim.graphics.SimulationFrameLauncher;
 import com.trafficsim.sim.Simulation;
@@ -15,6 +18,9 @@ public class FrameLauncher implements Simulator {
 	private SimulationFrameLauncher framelauncher;
 	
 	public FrameLauncher() {
+		
+		Simulation.logger.setLevel(Level.OFF);
+		
 		framelauncher = new SimulationFrameLauncher();
 		new Thread(new Runnable() {
 			public void run() {
