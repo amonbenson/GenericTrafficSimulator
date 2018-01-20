@@ -43,6 +43,8 @@ public class SimulationFrameLauncher {
 	public SimulationFrameLauncher() {
 		// TOWN ERSTELLEN
 		
+		System.out.println("SimulationFrameLauncher start");
+		
 		float[][][] townLandscape = Simulation.testTown();
 		Town town = new Town(townLandscape.length, townLandscape[0].length);
 		simulation = new Simulation(town);
@@ -113,7 +115,7 @@ public class SimulationFrameLauncher {
 		//frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		
 		// Init the auto updater
-		updater = new AutoUpdater(frame, simulation.getTown());
+		updater = new AutoUpdater(this);
 		
 		// Key bindings
 		townDesktopPane.getInputMap().put(KeyStroke.getKeyStroke("U"), "town update");

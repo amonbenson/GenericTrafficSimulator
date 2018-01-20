@@ -75,10 +75,10 @@ public class InfoConsolePane extends ConsolePane {
 		append("No Station found:\t" + s.getCounterNoStationFound() + " (" + SimulationFrameLauncher
 				.round(s.getCounterNoStationFound() / ((float) s.getErrorNoRoute() + s.getCounterRouteFound()) * 100, 2)
 				+ "%)");
-		append("No Route found:\t" + s.getCounterNoRouteFound() + " ("
-				+ SimulationFrameLauncher.round(s.getCounterNoRouteFound() / ((float) s.getErrorNoRoute()) * 100, 2) + "%)");
-		append("Route same targets:\t" + s.getCountRouteSameTargets() + " ("
-				+ SimulationFrameLauncher.round(s.getCountRouteSameTargets() / ((float) s.getErrorNoRoute()) * 100, 2) + "%)");
+		//append("No Route found:\t" + s.getCounterNoRouteFound() + " ("
+		//		+ SimulationFrameLauncher.round(s.getCounterNoRouteFound() / ((float) s.getErrorNoRoute()) * 100, 2) + "%)");
+		//append("Route same targets:\t" + s.getCountRouteSameTargets() + " ("
+		//		+ SimulationFrameLauncher.round(s.getCountRouteSameTargets() / ((float) s.getErrorNoRoute()) * 100, 2) + "%)");
 		append("All Errors:\t" + s.getErrorNoRoute() + " ("
 				+ SimulationFrameLauncher.round(
 						(s.getErrorNoRoute() / (float) (s.getErrorNoRoute() + s.getCounterRouteFound())) * 100, 2)

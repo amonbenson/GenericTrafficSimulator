@@ -23,32 +23,7 @@ public abstract class Tile {
 	
 
 	
-	/**
-	 * Gibt die nächste Station um Umkreis von <code>AREA_STATION</code>*2+1 zurück, wenn eine vorhanden ist.
-	 * Ansonsten wird <code>null</code> zurückgegeben.
-	 * @return nächste Station, ansonsten <code>null</code>
-	 */
-	/*public StreetTile getNextStation(Tile[][] map) {
-		StreetTile nearest = null;
-		double nearestDist = -1;
-		for (int x2=x-AREA_STATION;x2<=x+AREA_STATION;x2++) {
-			for (int y2=y-AREA_STATION;y2<=y+AREA_STATION;y2++) {
-				if (x2 >= 0 && x2 < map.length && y2 >= 0 && y2 < map[0].length ) { //Koordinaten müssen im Bereich liegen
-					if (map[x2][y2] instanceof StreetTile) {
-						if (((StreetTile) map[x2][y2]).isStation()) {
-							StreetTile t = (StreetTile) map[x2][y2];
-							double dist = Math.hypot(x2 - getX(), y2 - getY());
-							if (nearestDist == -1 || dist < nearestDist) {
-								nearestDist = dist;
-								nearest = t;
-							}
-						}
-					}
-				}
-			}
-		}
-		return nearest;
-	}*/
+
 	/**
 	 * Gibt die nächste beste Station (mit den meisten Buslinien) zurück
 	 * @param map
