@@ -21,7 +21,7 @@ import com.trafficsim.town.Town;
  */
 public class FrameLauncher implements Simulator {
 
-	private GeneticAlgorithm ga;
+	private GenericAlgorithm ga;
 
 	/**
 	 * The number of iterations, which the generic algorithm will get through,
@@ -98,7 +98,7 @@ public class FrameLauncher implements Simulator {
 									// tick
 
 		// Create our genetic algorithm
-		ga = new GeneticAlgorithm(this, 1, 0.05, 0.95, 2);
+		ga = new GenericAlgorithm(this, 1, 0.05, 0.95, 2);
 
 		// Initialize population
 		Population population = ga.initPopulation(5);

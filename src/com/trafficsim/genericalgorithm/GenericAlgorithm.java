@@ -27,7 +27,7 @@ import java.util.List;
  * @author bkanber
  *
  */
-public class GeneticAlgorithm {
+public class GenericAlgorithm {
 
 	private Simulator simulator;
 	private List<GenericAlgorithmWatcher> watchers;
@@ -40,7 +40,7 @@ public class GeneticAlgorithm {
 
 	private int generation;
 
-	public GeneticAlgorithm(Simulator simulator, int populationSize, double mutationRate, double crossoverRate,
+	public GenericAlgorithm(Simulator simulator, int populationSize, double mutationRate, double crossoverRate,
 			int elitismCount) {
 		this.simulator = simulator;
 		this.populationSize = populationSize;

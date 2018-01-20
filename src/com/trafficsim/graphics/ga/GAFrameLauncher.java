@@ -1,5 +1,12 @@
 package com.trafficsim.graphics.ga;
 
-public class GAFrameLauncher {
+import com.trafficsim.genericalgorithm.GenericAlgorithm;
 
+public class GAFrameLauncher {
+	
+	private GenericAlgorithm genericAlgorithm;
+	
+	public GAFrameLauncher() {
+		
+	}
 }

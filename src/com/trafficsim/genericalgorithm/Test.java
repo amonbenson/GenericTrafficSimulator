@@ -20,7 +20,7 @@ public class Test {
 
 	public Test() {
 		// Create GA object
-		GeneticAlgorithm ga = new GeneticAlgorithm(new BasicSimulator(), 10, 0.05, 0.95, 2);
+		GenericAlgorithm ga = new GenericAlgorithm(new BasicSimulator(), 10, 0.05, 0.95, 2);
 		ga.addGenericAlgorithmWatcher(new BasicGenericAlgorithmWatcher());
 
 		// Initialize population
