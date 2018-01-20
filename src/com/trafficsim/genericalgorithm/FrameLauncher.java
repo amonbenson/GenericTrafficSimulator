@@ -2,6 +2,7 @@ package com.trafficsim.genericalgorithm;
 
 import java.util.logging.Level;
 
+import com.sun.media.jfxmedia.logging.Logger;
 import com.trafficsim.generic.Blueprint;
 import com.trafficsim.graphics.SimulationFrameLauncher;
 import com.trafficsim.sim.Simulation;
@@ -35,6 +36,12 @@ public class FrameLauncher implements Simulator {
 	 * 
 	 */
 	private int townRuntime;
+
+	/**
+	 * Sets the time to sleep between two town updates. Should only be used for
+	 * debbuging only, cause it slows down the generic algorithm.
+	 */
+	private long simulationTickSpeed;
 
 	/**
 	 * Represents the currently simulated town. The simulation will take place
@@ -81,6 +88,7 @@ public class FrameLauncher implements Simulator {
 
 		gaRuntime = 1; // Terminate after 1000 generations
 		townRuntime = 2000; // Calc fitness after 5000 ticks
+		simulationTickSpeed = 1; // DEBUGGING ONLY! Time bfor one simulation tick
 
 		// Create our genetic algorithm
 		ga = new GeneticAlgorithm(this, 1, 0.05, 0.95, 2);
@@ -109,12 +117,13 @@ public class FrameLauncher implements Simulator {
 	}
 
 	/**
-	 * This class handles the town simulation. We will first create a new town and generate its
-	 * blueprint from the cromosom. The chromosom is found in the 
+	 * This class handles the town simulation. We will first create a new town
+	 * and generate its blueprint from the cromosom. The chromosom is found in
+	 * the
 	 */
 	public double simulate(Individual individual) {
 		System.out.println(">>> simulate!!");
-		
+
 		Simulation simulation;
 		Town town;
 
@@ -131,8 +140,10 @@ public class FrameLauncher implements Simulator {
 			testing.generate(simulation.getTown());
 			town.applyBlueprint();
 
-		} catch (IllegalArgumentException ex) {
+		} catch (Exception ex) {
 			// Town generation not possible. return fitness of -1.
+			Simulation.logger.severe("Town creation failed! returning -1 for fitness");
+			ex.printStackTrace();
 			return -1;
 		}
 
@@ -141,9 +152,17 @@ public class FrameLauncher implements Simulator {
 		currentTown = town;
 		framelauncher.setSimulation(simulation);
 
-		while (town.getTime() < townRuntime) { // Run simulation for some ticks
-			// Update town by one tick
-			town.update();
+		try {
+			while (town.getTime() < townRuntime) { // Run simulation for some ticks
+				// Update town by one tick
+				town.update();
+	
+				Thread.sleep(simulationTickSpeed);
+			}
+		} catch (Exception ex) {
+			Simulation.logger.severe("Town simulation failed! returning -1 for fitness");
+			ex.printStackTrace();
+			return -1;
 		}
 
 		currentTown = null;
