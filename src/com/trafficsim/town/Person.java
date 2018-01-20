@@ -49,6 +49,9 @@ public class Person {
 		name = createName();
 		
 		this.house = house;
+		this.x = x;
+		this.y = y;
+		
 		floating = false;
 		
 		this.statistics = statistics;

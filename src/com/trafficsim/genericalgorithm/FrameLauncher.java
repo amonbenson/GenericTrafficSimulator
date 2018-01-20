@@ -16,7 +16,7 @@ public class FrameLauncher implements Simulator {
 	private SimulationFrameLauncher framelauncher;
 	
 	public FrameLauncher() {
-		
+		System.out.println("START");
 		Simulation.logger.setLevel(Level.ALL);
 		
 		framelauncher = new SimulationFrameLauncher();
@@ -35,11 +35,11 @@ public class FrameLauncher implements Simulator {
 			}
 		}).start();
 		
-		gaRuntime = 1000; // Terminate after 1000 generations
+		gaRuntime = 1; // Terminate after 1000 generations
 		townRuntime = 2000; // Calc fitness after 5000 ticks
 		
 		// Create our genetic algorithm
-		ga = new GeneticAlgorithm(this, 10, 0.05, 0.95, 2);
+		ga = new GeneticAlgorithm(this, 1, 0.05, 0.95, 2);
 
 		// Initialize population
 		Population population = ga.initPopulation(5);

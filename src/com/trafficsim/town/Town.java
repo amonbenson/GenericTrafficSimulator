@@ -431,9 +431,6 @@ public class Town implements Updateable {
 	 */
 	private void generateRoutingForPerson(Person p, ArrayList<Event> list) {
 		
-
-		
-		
 		Tile origin = getRandomTileWithExclude(p.getHouse());
 		int newX = random.nextInt(sizeX-(StreetTile.AREA_STATION*2+1) );
 		if (newX >= origin.getX()-(StreetTile.AREA_STATION*2+1)) {
@@ -610,7 +607,9 @@ public class Town implements Updateable {
 	}
 	
 	/**
-	 * Kann <code>null</code> zurückgeben, wenn <code>null</code> der Parameter ist
+	 * Kann <code>null</code> zurückgeben, wenn <code>null</code> der Parameter ist.
+	 * Generiert anhand der algorithmischen Lösung die spezifische Route.
+	 * 
 	 * @param path
 	 * @return
 	 */
