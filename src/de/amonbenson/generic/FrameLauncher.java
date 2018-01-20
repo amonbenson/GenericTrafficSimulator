@@ -22,7 +22,7 @@ public class FrameLauncher implements Simulator {
 					try {
 						
 						framelauncher.getTownDesktopPane().repaint();
-						Thread.sleep(1000/35);
+						Thread.sleep(framelauncher.updater.getTickSpeed()); // Sleep for the tick speed specified by the town
 						
 					} catch (InterruptedException ex) {
 						ex.printStackTrace();

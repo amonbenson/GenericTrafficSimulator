@@ -1,7 +1,7 @@
 package com.trafficsim.graphics;
 
 import java.awt.Graphics;
-import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 
 import com.trafficsim.town.Bus;
@@ -34,9 +34,13 @@ public class PersonConsolePane extends ConsolePane {
 		
 		if (town.getPersons().isEmpty()) append("-\t-");
 		Iterator<Person> personIt = town.getPersons().iterator();
-		while (personIt.hasNext()) {
-			Person person = personIt.next();
-			append(person.getID() + "\t" + person.getName());
+		try {
+			while (personIt.hasNext()) {
+				Person person = personIt.next();
+				append(person.getID() + "\t" + person.getName());
+			}
+		} catch (ConcurrentModificationException ex) {
+			// Just pass on and add nothing
 		}
 		append("");
 		
@@ -46,9 +50,13 @@ public class PersonConsolePane extends ConsolePane {
 		
 		if (town.getBusses().isEmpty()) append("-");
 		Iterator<Bus> busIt = town.getBusses().iterator();
-		while (busIt.hasNext()) {
-			Bus bus = busIt.next();
-			append(bus.getSchedule().getSchedule().getName());
+		try {
+			while (busIt.hasNext()) {
+				Bus bus = busIt.next();
+				append(bus.getSchedule().getSchedule().getName());
+			}
+		} catch (ConcurrentModificationException ex) {
+			// Just pass on and add nothing
 		}
 		
 		// Repaint the super class
