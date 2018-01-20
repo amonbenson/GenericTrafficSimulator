@@ -21,6 +21,7 @@ public class GAFrameLauncher implements GenericAlgorithmWatcher {
 	private GenerationHistory history;
 
 	private JFrame frame;
+	private DescendantTreePane descendantTreePane;
 
 	private boolean blockGA; // If this is true, the execution of the generic
 								// algorithm will be blocked.
@@ -28,6 +29,9 @@ public class GAFrameLauncher implements GenericAlgorithmWatcher {
 	public GAFrameLauncher() {
 		frame = new JFrame("Generic Traffic Simulator");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		descendantTreePane = new DescendantTreePane();
+		frame.add(descendantTreePane);
 
 		frame.setAlwaysOnTop(true);
 		frame.setSize(GraphicsFX.highDPI(800), GraphicsFX.highDPI(600));
@@ -44,6 +48,7 @@ public class GAFrameLauncher implements GenericAlgorithmWatcher {
 		this.ga = ga;
 		ga.addGenericAlgorithmWatcher(this);
 		history = new GenerationHistory(ga.getPopulationSize());
+		descendantTreePane.setHistory(history);
 	}
 
 	public void blockGA() {
@@ -77,12 +82,19 @@ public class GAFrameLauncher implements GenericAlgorithmWatcher {
 		int elitecount = 0;
 		// TODO: WARNING! POPULATION MUST BE EVALUATED BEFORE (!) ELITE COUNT IS CALCULATED!!! pls change that in the future.
 		for (Individual individual : population.getIndividuals()) {
-			HIndividual i = new HIndividual(individual.getID(), individual.getChromosome());
+			HIndividual i = new HIndividual(individual.getID(), individual.getParentIDs(), individual.getChromosome());
 			g.addIndividual(i);
 		}
+		
+		// Update the descendant tree
+		descendantTreePane.repaint();
 	}
 
 	public JFrame getFrame() {
 		return frame;
+	}
+
+	public GenerationHistory getGenerationHistory() {
+		return history;
 	}
 }

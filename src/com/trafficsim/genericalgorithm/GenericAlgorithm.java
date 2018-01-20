@@ -200,10 +200,16 @@ public class GenericAlgorithm {
 				// Call the watcher
 				for (GenericAlgorithmWatcher watcher : watchers)
 					watcher.crossover(population, newPopulation, parent1, parent2, offspring);
+				
+				// Set the parent ids
+				offspring.setParentIDs(new long[] {parent1.getID(), parent2.getID()});
 
 				// Add offspring to new population
 				newPopulation.setIndividual(populationIndex, offspring);
 			} else {
+				// Set the parent to itself
+				parent1.setParentIDs(new long[] {parent1.getID()});
+				
 				// Add individual to new population without applying crossover
 				newPopulation.setIndividual(populationIndex, parent1);
 			}

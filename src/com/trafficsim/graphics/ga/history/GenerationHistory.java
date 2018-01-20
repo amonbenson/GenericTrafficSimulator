@@ -26,7 +26,7 @@ public class GenerationHistory {
 		return populations.get(n);
 	}
 	
-	public int getPopulationsCount() {
+	public int getPopulationCount() {
 		return populations.size();
 	}
 

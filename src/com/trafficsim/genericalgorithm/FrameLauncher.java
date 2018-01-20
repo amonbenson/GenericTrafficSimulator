@@ -3,6 +3,8 @@ package com.trafficsim.genericalgorithm;
 import java.util.Random;
 import java.util.logging.Level;
 
+import javax.swing.UIManager;
+
 import com.trafficsim.generic.Blueprint;
 import com.trafficsim.generic.BlueprintSchedule;
 import com.trafficsim.graphics.GraphicsFX;
@@ -69,8 +71,17 @@ public class FrameLauncher implements Simulator {
 
 	public FrameLauncher() {
 
+		// Logger stuff
 		Simulation.logger.setLevel(Level.OFF);
 		GAFrameLauncher.logger.setLevel(Level.ALL);
+		
+		// Set laf
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (Exception e) {
+			System.err.println("Couldn't set LookAndFeel.");
+			e.printStackTrace();
+		}
 
 		// Create the generic algorithm frame launcher
 		gaFrameLauncher = new GAFrameLauncher();
@@ -98,7 +109,7 @@ public class FrameLauncher implements Simulator {
 
 		gaRuntime = 5; // Terminate after 1000 generations
 		townRuntime = 500; // Calc fitness after townRuntime ticks of simulation
-		simulationTickSpeed = 1; // DEBUGGING ONLY! Time bfor one simulation
+		simulationTickSpeed = -1; // DEBUGGING ONLY! Time bfor one simulation
 									// tick
 
 		// Create our genetic algorithm
@@ -170,8 +181,10 @@ public class FrameLauncher implements Simulator {
 													// ticks
 				// Update town by one tick
 				town.update();
-
-				Thread.sleep(simulationTickSpeed);
+				
+				if (simulationTickSpeed > 0) {
+					Thread.sleep(simulationTickSpeed);
+				}
 			}
 		} catch (Exception ex) {
 			Simulation.logger.severe("Town simulation failed! returning -1 for fitness");

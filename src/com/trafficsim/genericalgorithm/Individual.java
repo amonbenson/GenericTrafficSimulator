@@ -4,7 +4,7 @@ package com.trafficsim.genericalgorithm;
  * An "Individual" represents a single candidate solution. The core piece of
  * information about an individual is its "chromosome", which is an encoding of
  * a possible solution to the problem at hand. A chromosome can be a string, an
- * array, a list, etc -- in this class, the chromosome is an integer array. 
+ * array, a list, etc -- in this class, the chromosome is an integer array.
  * 
  * An individual position in the chromosome is called a gene, and these are the
  * atomic pieces of the solution that can be manipulated or mutated. When the
@@ -20,22 +20,12 @@ package com.trafficsim.genericalgorithm;
  */
 public class Individual {
 	public static long CURRENT_ID = 0;
-	
+
 	private long id;
 	private int[] chromosome;
 	private double fitness = -1;
 
-	/**
-	 * Initializes individual with specific chromosome
-	 * 
-	 * @param chromosome
-	 *            The chromosome to give individual
-	 */
-	public Individual(int[] chromosome) {
-		id = getNextID();
-		// Create individual chromosome
-		this.chromosome = chromosome;
-	}
+	private long[] parentIDs;
 
 	/**
 	 * Initializes random individual.
@@ -51,6 +41,8 @@ public class Individual {
 	 *            The length of the individuals chromosome
 	 */
 	public Individual(int chromosomeLength) {
+		this(null); // We can do this, because we'll overwrite the chromosome in
+					// the next step. Apart from that, this is no good practice.
 
 		this.chromosome = new int[chromosomeLength];
 		for (int gene = 0; gene < chromosomeLength; gene++) {
@@ -61,6 +53,20 @@ public class Individual {
 			}
 		}
 
+	}
+
+	/**
+	 * Initializes individual with specific chromosome
+	 * 
+	 * @param chromosome
+	 *            The chromosome to give individual
+	 */
+	public Individual(int[] chromosome) {
+		id = getNextID();
+		// Create individual chromosome
+		this.chromosome = chromosome;
+
+		parentIDs = new long[0];
 	}
 
 	/**
@@ -122,6 +128,17 @@ public class Individual {
 	}
 	
 	
+	public void setParentIDs(long[] parentIDs) {
+		if (parentIDs == null) throw new NullPointerException("Parent ids cannot be null");
+		if (parentIDs.length > 2) throw new IllegalArgumentException("Individual can't have more than 2 parents (" + parentIDs.length + " given)");
+		
+		this.parentIDs = parentIDs;
+	}
+	
+	public long[] getParentIDs() {
+		return parentIDs;
+	}
+
 	/**
 	 * Display the chromosome as a string.
 	 * 
@@ -134,7 +151,7 @@ public class Individual {
 		}
 		return output;
 	}
-	
+
 	public long getID() {
 		return id;
 	}

@@ -89,17 +89,6 @@ public class SimulationFrameLauncher {
 		blueprint.generate(town);
 		town.applyBlueprint();
 		
-
-		
-		
-		// Set laf
-		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (Exception e) {
-			System.err.println("Couldn't set LookAndFeel.");
-			e.printStackTrace();
-		}
-		
 		// Create all components
 		frame = new JFrame("Generic Traffic Simulator");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
