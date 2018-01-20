@@ -1,6 +1,4 @@
 package com.trafficsim.genericalgorithm;
-
-import java.util.logging.Filter;
 import java.util.logging.Level;
 
 import com.trafficsim.generic.Blueprint;
