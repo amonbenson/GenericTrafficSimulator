@@ -14,8 +14,8 @@ public class BlueprintSchedule {
 	/**
 	 * Erzeugt einen Fahrplan mit einer zufälligen Zahl zwischen 1 und 1000 als Busnamen
 	 */
-	public BlueprintSchedule() {
-		this(String.valueOf(getRandomBusNumber()));
+	public BlueprintSchedule(Random r) {
+		this(String.valueOf(getRandomBusNumber(r)));
 	}
 	
 	public BlueprintSchedule(String name) {
@@ -25,10 +25,11 @@ public class BlueprintSchedule {
 	}
 
 	
+	public ArrayList<BusStartTime> getBusStartTimes() {
+		return busStartTimes;
+	}
 	
-	
-	public static int getRandomBusNumber() {
-		Random r = new Random();
+	public static int getRandomBusNumber(Random r) {
 		return r.nextInt(1000);
 	}
 	
