@@ -34,7 +34,7 @@ public class Blueprint {
 	public boolean[] isStation;
 	
 	/**
-	 * Liste mit allen Buslinien die existieren. Die Integer für die Stations sind die gleichen wie für die streetMaps
+	 * Liste mit allen Buslinien, die existieren. Die Integer für die Stations sind die gleichen wie für die streetMaps
 	 */
 	public ArrayList<BlueprintSchedule> schedules;
 	/**
