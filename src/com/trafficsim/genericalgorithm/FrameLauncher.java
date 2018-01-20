@@ -2,7 +2,6 @@ package com.trafficsim.genericalgorithm;
 
 import java.util.logging.Level;
 
-import com.sun.media.jfxmedia.logging.Logger;
 import com.trafficsim.generic.Blueprint;
 import com.trafficsim.graphics.SimulationFrameLauncher;
 import com.trafficsim.graphics.ga.GAFrameLauncher;
@@ -66,6 +65,8 @@ public class FrameLauncher implements Simulator {
 	private GAFrameLauncher frameLauncher;
 
 	public FrameLauncher() {
+
+		System.out.println("START");
 		Simulation.logger.setLevel(Level.ALL);
 
 		framelauncher = new SimulationFrameLauncher();

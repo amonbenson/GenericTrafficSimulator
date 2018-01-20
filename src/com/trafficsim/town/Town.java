@@ -428,21 +428,23 @@ public class Town implements Updateable {
 	 * Generiert Routen für die Person p und fügt diese der Liste list hinzu
 	 * @param p die Person, auf welche sich die Routen beziehen
 	 * @param list die Liste
+	 * 
+	 * @return TRUE, wenn ein Routing erfolgreich erzeugt wurde. Ansonsten false.
 	 */
-	private void generateRoutingForPerson(Person p, ArrayList<Event> list) {
-		
-
-		
+	private boolean generateRoutingForPerson(Person p, ArrayList<Event> list) {
 		
 		Tile origin = getRandomTileWithExclude(p.getHouse());
-		int newX = random.nextInt(sizeX-(StreetTile.AREA_STATION*2+1) );
+		/*int newX = random.nextInt(sizeX-(StreetTile.AREA_STATION*2+1) );
 		if (newX >= origin.getX()-(StreetTile.AREA_STATION*2+1)) {
 			newX += StreetTile.AREA_STATION*2+1;
 		}
 		int newY = random.nextInt(sizeY-(StreetTile.AREA_STATION*2+1) );
 		if (newY >= origin.getY()-(StreetTile.AREA_STATION*2+1)) {
 			newY += StreetTile.AREA_STATION*2+1;
-		}
+		}*/
+		int newX = random.nextInt(sizeX);
+		int newY = random.nextInt(sizeY);
+		
 		Tile target = tiles[newX][newY];
 		
 		List<DefaultWeightedEdge> path = getPathForPerson(origin, target);
@@ -450,72 +452,9 @@ public class Town implements Updateable {
 		if (r != null) {
 			RoutingEvent re = new RoutingEvent(0, p, r);
 			events.add(re);
+			return true;
 		}
-		
-		/*
-		if (random.nextBoolean()) {
-			StreetTile origin = (StreetTile) tiles[0][0];
-			Tile target = tiles[5][3];
-			ArrayList<ChangeStation> stations = new ArrayList<ChangeStation>();		
-			//stations.add(new ChangeStation(new Waypoint(0,0), origin.getSchedules().get(0).getScheduleNormal()));
-			//stations.add(new ChangeStation(new Waypoint(3,3), ((StreetTile) tiles[5][3]).getSchedules().get(0).getScheduleNormal()));
-			//stations.add(new ChangeStation(new Waypoint(5,3), ((StreetTile) tiles[5][3]).getSchedules().get(0).getScheduleNormal()));
-			//Route r = new Route(origin, target, stations);
-			//RoutingEvent re = new RoutingEvent(15, p, r);
-			//list.add(re);
-		} else {
-			StreetTile origin = (StreetTile) tiles[0][0];
-			Tile target = tiles[0][5];
-			ArrayList<ChangeStation> stations = new ArrayList<ChangeStation>();		
-			stations.add(new ChangeStation(new Waypoint(0,0), origin.getSchedules().get(0).getScheduleNormal()));
-			stations.add(new ChangeStation(new Waypoint(3,3), ((StreetTile) tiles[5][3]).getSchedules().get(0).getScheduleNormal()));
-			stations.add(new ChangeStation(new Waypoint(0,5), ((StreetTile) tiles[5][3]).getSchedules().get(0).getScheduleNormal()));
-			Route r = new Route(origin, target, stations);
-			RoutingEvent re = new RoutingEvent(15, p, r);
-			list.add(re);
-		}
-		*/
-		/*
-		int warning_counter = 0;
-		StreetTile origin = null;
-		Tile target = null;
-		Waypoint stationTarget = null;
-		ArrayList<ChangeStation> stations = null;
-		
-		main:
-		while (true) {
-			if (warning_counter > 1000) {
-				break main;
-			}
-			
-			origin = p.getHouse().getAllNextStations(tiles).get(random.nextInt(p.getHouse().getAllNextStations(tiles).size()));
-			target = tiles[tiles.length-1][tiles[0].length-1];
-			for ( Schedule s : origin.getSchedules() ) {
-				if (s.canGetToTarget(target)) {
-					stations = new ArrayList<ChangeStation>();
-					stations.add(new ChangeStation(new Waypoint(origin.getX(), origin.getY()), new SpecificSchedule(s, BusDirection.REVERSE)));
-					stations.add(new ChangeStation(s.whichStationIsInArea(target.getX(), target.getY()), new SpecificSchedule(s, BusDirection.REVERSE)));
-					if (stations.get(0).getStation().isSame(stations.get(1).getStation())) {
-						continue;
-					}
-
-					break main;
-				}
-			}
-			
-
-			
-			warning_counter++;
-		}
-		
-
-		try {
-		Route route = new Route(origin, target, stations);
-		
-		RoutingEvent event = new RoutingEvent(random.nextInt(10), p, route);
-		list.add(event);
-		} catch (Exception e) { }
-		*/
+		return false;
 	}
 	
 	/**
@@ -544,8 +483,12 @@ public class Town implements Updateable {
 	public List<DefaultWeightedEdge> getPathForPerson(Tile origin, Tile target) {
 		StreetTile originNextStation;
 		StreetTile targetNextStation;
+		
 		originNextStation = origin.getNextStation(tiles);
 		targetNextStation = target.getNextStation(tiles);
+		
+
+		
 		if (originNextStation == targetNextStation) {
 			statistics.addRouteSameTargets();
 			return null;
@@ -610,7 +553,9 @@ public class Town implements Updateable {
 	}
 	
 	/**
-	 * Kann <code>null</code> zurückgeben, wenn <code>null</code> der Parameter ist
+	 * Kann <code>null</code> zurückgeben, wenn <code>null</code> der Parameter ist.
+	 * Generiert anhand der algorithmischen Lösung die spezifische Route.
+	 * 
 	 * @param path
 	 * @return
 	 */
@@ -657,7 +602,6 @@ public class Town implements Updateable {
 			lastSchedules = new ArrayList<Schedule>(nextStation.getSchedules());
 		}
 
-		
 		stations.add(new ChangeStation(endW, target.getSchedules().get(0).getScheduleReverse())); //Ende hinzufügen
 		if (stations.size() >= 2) {
 			Route r = new Route(origin, target, stations);
