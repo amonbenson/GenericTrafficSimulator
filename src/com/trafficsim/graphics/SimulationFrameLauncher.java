@@ -25,9 +25,6 @@ import com.trafficsim.town.Waypoint;
 
 public class SimulationFrameLauncher {
 	
-	// high dpi
-	public static final boolean IS_HIGH_DPI = Toolkit.getDefaultToolkit().getScreenResolution() >= 216;
-	
 	private JFrame frame;
 	
 	// Town auto updater
@@ -44,8 +41,6 @@ public class SimulationFrameLauncher {
 	
 	public SimulationFrameLauncher() {
 		// TOWN ERSTELLEN
-		
-		System.out.println("SimulationFrameLauncher start");
 		
 		float[][][] townLandscape = Simulation.testTown();
 		Town town = new Town(townLandscape.length, townLandscape[0].length);
@@ -112,7 +107,7 @@ public class SimulationFrameLauncher {
 		ecScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		frame.add(BorderLayout.WEST, ecScroll);
 
-		frame.setSize(highDPI(1300), highDPI(800));
+		frame.setSize(GraphicsFX.highDPI(1300), GraphicsFX.highDPI(800));
 		frame.setLocationRelativeTo(null);
 		//frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		
@@ -191,20 +186,6 @@ public class SimulationFrameLauncher {
 		townDesktopPane.setTown(town);
 		infoConsolePane.setTown(town);
 		personConsolePane.setTown(town);
-	}
-	
-	
-	public static int highDPI(int value) {
-		if (IS_HIGH_DPI) return value * 2;
-		return value;
-	}
-	
-	public static double round(double value, int places) {
-	    if (places < 0) throw new IllegalArgumentException();
-
-	    BigDecimal bd = new BigDecimal(value);
-	    bd = bd.setScale(places, RoundingMode.HALF_UP);
-	    return bd.doubleValue();
 	}
 
 	public static void main(String[] args) throws InterruptedException {

@@ -1,17 +1,15 @@
 package com.trafficsim.graphics.consolepane;
 
 import java.awt.Color;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
-import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
-import com.trafficsim.graphics.SimulationFrameLauncher;
+import com.trafficsim.graphics.GraphicsFX;
 
 public abstract class ConsolePane extends JPanel implements MouseListener {
 	
@@ -25,9 +23,9 @@ public abstract class ConsolePane extends JPanel implements MouseListener {
 	public ConsolePane() {
 		addMouseListener(this);
 		
-		sx = SimulationFrameLauncher.highDPI(BORDER_X);
-		sy = SimulationFrameLauncher.highDPI(BORDER_Y);
-		dx = SimulationFrameLauncher.highDPI(TAB_SIZE);
+		sx = GraphicsFX.highDPI(BORDER_X);
+		sy = GraphicsFX.highDPI(BORDER_Y);
+		dx = GraphicsFX.highDPI(TAB_SIZE);
 		dy = getFontMetrics(getFont()).getHeight();
 		
 		clear();
@@ -40,7 +38,7 @@ public abstract class ConsolePane extends JPanel implements MouseListener {
 		
 		// Get an appropriate size for our pane
 		Dimension size = new Dimension(
-				SimulationFrameLauncher.highDPI(DEFAULT_WIDTH),
+				GraphicsFX.highDPI(DEFAULT_WIDTH),
 				lines.size() * dy + sy * 2
 		);
 		

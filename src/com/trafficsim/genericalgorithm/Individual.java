@@ -19,6 +19,9 @@ package com.trafficsim.genericalgorithm;
  *
  */
 public class Individual {
+	public static long CURRENT_ID = 0;
+	
+	private long id;
 	private int[] chromosome;
 	private double fitness = -1;
 
@@ -29,6 +32,7 @@ public class Individual {
 	 *            The chromosome to give individual
 	 */
 	public Individual(int[] chromosome) {
+		id = getNextID();
 		// Create individual chromosome
 		this.chromosome = chromosome;
 	}
@@ -129,5 +133,13 @@ public class Individual {
 			output += this.chromosome[gene];
 		}
 		return output;
+	}
+	
+	public long getID() {
+		return id;
+	}
+
+	public static long getNextID() {
+		return CURRENT_ID++;
 	}
 }
