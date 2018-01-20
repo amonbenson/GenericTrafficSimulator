@@ -298,7 +298,7 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 			for (JInternalFrame iFrame : getAllFrames()) {
 				if (iFrame instanceof StreetTileInfoFrame) { // STREET TILE INFO
 					StreetTileInfoFrame frame = (StreetTileInfoFrame) iFrame;
-					frame.updatePersonList(); // Update the person list
+					frame.updateInfo(); // Update the person and bus schedule list
 					
 					g.setColor(Color.white);
 					
