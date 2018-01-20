@@ -139,19 +139,22 @@ public class FrameLauncher implements Simulator {
 		Simulation simulation;
 		Town town;
 
+		Random r = new Random();
+		
 		try {
 			// Create a town simulation
 			// TODO Make the real chromosom to town conversion
-			simulation = new Simulation(new Town(10, 10, new Random(1)));
+			simulation = new Simulation(new Town(10, 10, r));
 			town = simulation.getTown();
 			town.generateTiles(Simulation.testTown()); // Landschaftskarte
 
-			Blueprint testing = Blueprint.randomChromosom(Simulation.testTown(), new Random(1));
+			Blueprint testing = Blueprint.randomChromosom(Simulation.testTown(), r);
 			town.setBlueprint(testing);
 			
 			testing.generate(simulation.getTown());
+			System.err.println(testing);
 			town.applyBlueprint();
-
+			
 			
 		} catch (Exception ex) {
 			// Town generation not possible. return fitness of -1.
