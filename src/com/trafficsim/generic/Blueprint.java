@@ -230,7 +230,6 @@ public class Blueprint {
 		for (int i=0; i<back.isStation.length; i++) {
 			if (r.nextFloat() <= chanceForStation) {
 				back.isStation[i] = true;
-				//Simulation.logger.fine("Station at: "+back.streetMapGenericToSimulation.get(i));
 			}
 		}
 		
@@ -238,7 +237,7 @@ public class Blueprint {
 		for (int i=0; i<back.isStation.length; i++) {
 			if (r.nextFloat() <= chanceForSchedulePerStreet && back.schedules.size() < maxNumberOfSchedules) {
 				//Buslinie erzeugen
-				BlueprintSchedule sch = new BlueprintSchedule();
+				BlueprintSchedule sch = new BlueprintSchedule(r);
 				
 				for (int i2=0; i2<back.isStation.length; i2++) { //Zufällig Stationen hinzufügen
 					if (back.isStation[i2] == true) { //Wenn hier eine Station ist

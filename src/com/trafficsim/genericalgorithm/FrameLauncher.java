@@ -1,8 +1,10 @@
 package com.trafficsim.genericalgorithm;
 
+import java.util.Random;
 import java.util.logging.Level;
 
 import com.trafficsim.generic.Blueprint;
+import com.trafficsim.generic.BlueprintSchedule;
 import com.trafficsim.graphics.SimulationFrameLauncher;
 import com.trafficsim.graphics.ga.GAFrameLauncher;
 import com.trafficsim.sim.Simulation;
@@ -138,16 +140,23 @@ public class FrameLauncher implements Simulator {
 		try {
 			// Create a town simulation
 			// TODO Make the real chromosom to town conversion
-			simulation = new Simulation(new Town(10, 10));
+			simulation = new Simulation(new Town(10, 10, new Random(1)));
 			town = simulation.getTown();
 			town.generateTiles(Simulation.testTown()); // Landschaftskarte
 
-			Blueprint testing = Blueprint.randomBlueprint(Simulation.testTown());
+			Blueprint testing = Blueprint.randomChromosom(Simulation.testTown(), new Random(1));
 			town.setBlueprint(testing);
-
+			
+			int numberBusses = 0;
+			for (BlueprintSchedule s : testing.schedules) {
+				numberBusses += s.getBusStartTimes().size();
+			}
+			System.out.println("Anzahl Busse: "+numberBusses);
+			
 			testing.generate(simulation.getTown());
 			town.applyBlueprint();
 
+			
 		} catch (Exception ex) {
 			// Town generation not possible. return fitness of -1.
 			Simulation.logger.severe("Town creation failed! returning -1 for fitness");

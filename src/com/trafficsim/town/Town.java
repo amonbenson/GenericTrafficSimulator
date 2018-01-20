@@ -484,10 +484,11 @@ public class Town implements Updateable {
 		StreetTile originNextStation;
 		StreetTile targetNextStation;
 		
+		origin = tiles[5][5];
+		target = tiles[3][1];
+		
 		originNextStation = origin.getNextStation(tiles);
 		targetNextStation = target.getNextStation(tiles);
-		
-
 		
 		if (originNextStation == targetNextStation) {
 			statistics.addRouteSameTargets();
@@ -558,7 +559,7 @@ public class Town implements Updateable {
 	 * 
 	 * @param path
 	 * @return
-	 */
+	 *
 	private Route pathToRoute(List<DefaultWeightedEdge> path) {
 		if (path == null) return null;
 		Waypoint startW = stationGraph.getEdgeSource(path.get(0));
@@ -576,6 +577,7 @@ public class Town implements Updateable {
 		//Als erstes die Buslinie finden, welche am weitesten zum Ziel kommt:
 		for ( int i=0;i<path.size();i++) {
 			StreetTile nextStation = findStationInBlueprint(stationGraph.getEdgeTarget(path.get(i)));
+			System.out.println(nextStation);
 			ArrayList<Schedule> hs1 = new ArrayList<Schedule>(lastSchedules); //Start
 			HashSet<Schedule> hs2 = new HashSet<Schedule>(nextStation.getSchedules());
 			hs1.retainAll(hs2); //Schnittmenge mit Stationen, welche in beiden Listen vorhanden sind
@@ -589,7 +591,9 @@ public class Town implements Updateable {
 				}
 				stations.add(new ChangeStation(startW, first)); //Anfangsrichtung hinzufügen
 				lastChangeStation = findWaypointInBlueprint(nextStation.getX(), nextStation.getY());
-			} else if (hs1.size() == 1) { //letzte Busstation gefunden!
+			}
+			
+			if (hs1.size() == 1) { //letzte Busstation gefunden!
 				Schedule selected = hs1.get(0);
 				if (selected.whichDirectionIsFaster(lastChangeStation, stationGraph.getEdgeTarget(path.get(i))) == BusDirection.NORMAL ) {
 					first = selected.getScheduleNormal();
@@ -598,10 +602,12 @@ public class Town implements Updateable {
 				}
 				stations.add(new ChangeStation(lastChangeStation, first)); //Anfangsrichtung hinzufügen
 				lastChangeStation = findWaypointInBlueprint(nextStation.getX(), nextStation.getY());
-			}
+			
 			lastSchedules = new ArrayList<Schedule>(nextStation.getSchedules());
+			}
 		}
-
+			}
+	
 		stations.add(new ChangeStation(endW, target.getSchedules().get(0).getScheduleReverse())); //Ende hinzufügen
 		if (stations.size() >= 2) {
 			Route r = new Route(origin, target, stations);
@@ -610,6 +616,8 @@ public class Town implements Updateable {
 			Simulation.logger.warning("Pfad:"+path.toString());
 			Simulation.logger.warning("Start:"+startW.toString());
 			Simulation.logger.warning("Ende:"+endW.toString());
+			Simulation.logger.warning("Start in B:"+origin.getX()+":"+origin.getY());
+			Simulation.logger.warning("Ende in B:"+target.getX()+":"+target.getY());
 			for ( ChangeStation s : stations ) {
 				Simulation.logger.warning("ChangeStation:" + s+"\n\n");
 				
@@ -618,7 +626,73 @@ public class Town implements Updateable {
 			Simulation.logger.warning("Stationsgröße zu klein, bitte beheben");
 			return null;
 		}
-	}
+	}*/
+
+	private Route pathToRoute(List<DefaultWeightedEdge> path) {
+		if (path == null) return null;
+		Waypoint startW = stationGraph.getEdgeSource(path.get(0));
+		Waypoint endW = stationGraph.getEdgeTarget(path.get(path.size()-1));
+		StreetTile origin = findStationInBlueprint(startW);
+		StreetTile target = findStationInBlueprint(endW);
+		
+		Simulation.logger.warning("Start"+startW);
+		Simulation.logger.warning("End"+endW);
+
+		
+		ArrayList<ChangeStation> stations = new ArrayList<ChangeStation>();
+		
+		Waypoint lastChangeStation = startW;
+		StreetTile lastStationEntered = origin; //Letzte Station, in welcher eingestiegen wurde
+		int lastStationIndex = 0;
+		ArrayList<Schedule> possibleLines = origin.getSchedules(); //Mögliche Linien vom letzten Einstieg
+		SpecificSchedule sSchedule = null;
+		
+		for ( int i=lastStationIndex;i<path.size();i++) {
+			//Schnittmenge zur nächsten Station bilden, um zu prüfen, welche Linien weiterhin angefahren werden können
+			ArrayList<Schedule> cutSet = new ArrayList<Schedule>(possibleLines);
+			
+			cutSet.retainAll(findStationInBlueprint(stationGraph.getEdgeTarget(path.get(lastStationIndex))).getSchedules());
+			if (cutSet.isEmpty()) { //Schnittmenge leer, Zeit umzusteigen!
+				//Umsteigestation hinzufügen:
+				//Dafür eine mögliche Linie aussuchen:
+				Schedule schedule = possibleLines.get(random.nextInt(possibleLines.size()));
+				BusDirection d = schedule.whichDirectionIsFaster(lastChangeStation, stationGraph.getEdgeSource(path.get(lastStationIndex)));
+				if (d == BusDirection.NORMAL) {
+					sSchedule = schedule.getScheduleNormal();
+				} else {
+					sSchedule = schedule.getScheduleReverse();
+				}
+				stations.add(new ChangeStation(lastChangeStation, sSchedule));
+				lastChangeStation = stationGraph.getEdgeSource(path.get(lastStationIndex));
+				possibleLines = findStationInBlueprint(stationGraph.getEdgeTarget(path.get(lastStationIndex))).getSchedules();
+				
+			} else { //mögliche Linien müssen eingeschränkt werden
+				possibleLines = cutSet;
+			}
+		}
+
+		if (stations.isEmpty()) {
+			Schedule schedule = possibleLines.get(random.nextInt(possibleLines.size()));
+			BusDirection d = schedule.whichDirectionIsFaster(lastChangeStation, endW);
+			if (d == BusDirection.NORMAL) {
+				sSchedule = schedule.getScheduleNormal();
+			} else {
+				sSchedule = schedule.getScheduleReverse();
+			}
+			stations.add(new ChangeStation(lastChangeStation, sSchedule));
+		} else {
+		}
+		
+		//Letzte Station hinzufügen:
+		stations.add(new ChangeStation(endW, sSchedule));
+		
+		Route r = new Route(origin, target, stations);
+		return r;
+		
+		}
+	
+		
+
 	
 	/**
 	 * Gibt die kürzeste SpecificSchedule zwischen zwei Stationen zurück (müssen nicht nebeneinander sein)
