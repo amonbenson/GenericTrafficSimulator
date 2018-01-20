@@ -20,7 +20,9 @@ public class StreetTileInfoFrame extends InfoFrame {
 	private StreetTile tile, nextStation;
 	
 	private JButton openNextStation;
+	
 	private PersonList personList;
+	private BusScheduleList busList;
 	
 	public StreetTileInfoFrame(TownDesktopPane rootDesktop, StreetTile tile, int dx, int dy) {
 		super(rootDesktop, null, dx, dy);
@@ -37,18 +39,24 @@ public class StreetTileInfoFrame extends InfoFrame {
 
 		add(new JLabel("Speed: " + SimulationFrameLauncher.round(tile.getMaxSpeed(), 3)));
 		
-		add(new JLabel("Waiting persons:"));
 		personList = new PersonList();
-		JScrollPane scroller = new JScrollPane(personList);
-		scroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		scroller.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		add(scroller);
+		JScrollPane personS = new JScrollPane(personList);
+		personS.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		personS.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		add(personS);
+		
+		busList = new BusScheduleList();
+		JScrollPane busS = new JScrollPane(busList);
+		busS.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		busS.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		add(busS);
 		
 		packFrame();
 	}
 	
-	public void updatePersonList() {
+	public void updateInfo() {
 		personList.updateList(tile.getPersons());
+		busList.updateList(tile.getSchedules());
 	}
 	
 	public StreetTile getNextStation() {

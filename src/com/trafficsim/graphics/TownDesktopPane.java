@@ -209,7 +209,17 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 						g.fillRect(dx, dy, ds, ds);
 					}
 				}
+				
+				// Draw the y coordinates
+				if (x == 0) {
+					g.setColor(Color.white);
+					g.drawString("" + y, (int) (0.05 * tileSize) + tileX, (int) ((y + 0.5) * tileSize) + tileY); 
+				}
 			}
+			
+			// Draw the x coordinates
+			g.setColor(Color.white);
+			g.drawString("" + x, (int) ((x + 0.5) * tileSize) + tileX, (int) (0.2 * tileSize) + tileY); 
 		}
 		
 		if (showRoutesButton.isSelected()) {
@@ -298,7 +308,7 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 			for (JInternalFrame iFrame : getAllFrames()) {
 				if (iFrame instanceof StreetTileInfoFrame) { // STREET TILE INFO
 					StreetTileInfoFrame frame = (StreetTileInfoFrame) iFrame;
-					frame.updatePersonList(); // Update the person list
+					frame.updateInfo(); // Update the person and bus schedule list
 					
 					g.setColor(Color.white);
 					
