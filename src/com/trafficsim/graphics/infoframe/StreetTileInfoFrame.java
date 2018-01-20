@@ -1,16 +1,13 @@
 package com.trafficsim.graphics.infoframe;
 
-import java.awt.Dimension;
 import java.awt.event.ActionListener;
 
-import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
-import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionListener;
 
-import com.trafficsim.graphics.SimulationFrameLauncher;
+import com.trafficsim.graphics.GraphicsFX;
 import com.trafficsim.graphics.TownDesktopPane;
 import com.trafficsim.town.Person;
 import com.trafficsim.town.StreetTile;
@@ -37,7 +34,7 @@ public class StreetTileInfoFrame extends InfoFrame {
 		}
 		add(openNextStation);
 
-		add(new JLabel("Speed: " + SimulationFrameLauncher.round(tile.getMaxSpeed(), 3)));
+		add(new JLabel("Speed: " + GraphicsFX.round(tile.getMaxSpeed(), 3)));
 		
 		personList = new PersonList();
 		JScrollPane personS = new JScrollPane(personList);

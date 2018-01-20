@@ -165,7 +165,7 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 			g.setColor(Color.black);
 			g.fillRect(0, 0, getWidth(), getHeight());
 			g.setColor(Color.white);
-			g.drawString("Nothing to display here.", SimulationFrameLauncher.highDPI(ConsolePane.BORDER_X), SimulationFrameLauncher.highDPI(ConsolePane.BORDER_Y));
+			g.drawString("Nothing to display here.", GraphicsFX.highDPI(ConsolePane.BORDER_X), GraphicsFX.highDPI(ConsolePane.BORDER_Y));
 			return;
 		}
 		
@@ -213,17 +213,17 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 				// Draw the y coordinates
 				if (x == 0) {
 					g.setColor(Color.white);
-					g.drawString("" + y, (int) (0.05 * tileSize) + tileX, (int) ((y + 0.5) * tileSize) + tileY); 
+					g.drawString("" + y, (int) (0.05 * tileSize) + tileX, (int) ((y + 0.5) * tileSize) + tileY);
 				}
 			}
 			
 			// Draw the x coordinates
 			g.setColor(Color.white);
-			g.drawString("" + x, (int) ((x + 0.5) * tileSize) + tileX, (int) (0.2 * tileSize) + tileY); 
+			g.drawString("" + x, (int) ((x + 0.5) * tileSize) + tileX, (int) (0.2 * tileSize) + tileY);
 		}
 		
 		if (showRoutesButton.isSelected()) {
-			g.setStroke(new BasicStroke(SimulationFrameLauncher.highDPI((int) (0.06 * tileSize)), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0));
+			g.setStroke(new BasicStroke(GraphicsFX.highDPI((int) (0.06 * tileSize)), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0));
 			
 			// Draw route of focus bus
 			if (focusBus != null) {
@@ -254,7 +254,7 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 				
 				// Draw the stations of the focus bus
 				g.setColor(new Color(0, 255, 0));
-				g.setStroke(new BasicStroke(SimulationFrameLauncher.highDPI((int) (0.12 * tileSize)), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0));
+				g.setStroke(new BasicStroke(GraphicsFX.highDPI((int) (0.12 * tileSize)), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0));
 				for (int i = 0; i < schedule.getStations().size(); i++) {
 					Waypoint st = schedule.getStation(i);
 					g.setColor(new Color(0, 255, 0));
@@ -268,7 +268,7 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 				}
 			}
 			
-			g.setStroke(new BasicStroke(SimulationFrameLauncher.highDPI((int) (0.06 * tileSize)), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0));
+			g.setStroke(new BasicStroke(GraphicsFX.highDPI((int) (0.06 * tileSize)), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0));
 			
 			// Draw route of focus person (draw a strait line from origin to target station)
 			if (focusPerson != null) {
@@ -303,7 +303,7 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 		
 		// Draw lines to the internal frames ("relation lines")
 		if (showRelationLinesButton.isSelected()) {
-			g.setStroke(new BasicStroke(SimulationFrameLauncher.highDPI((int) (0.01 * tileSize)), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0));
+			g.setStroke(new BasicStroke(GraphicsFX.highDPI((int) (0.01 * tileSize)), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0));
 			
 			for (JInternalFrame iFrame : getAllFrames()) {
 				if (iFrame instanceof StreetTileInfoFrame) { // STREET TILE INFO
@@ -517,7 +517,7 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 	
 				// Check if user clicked on bus
 				if (new Rectangle(busMidX - busSize / 2, busMidY - busSize / 2, busSize, busSize).contains(e.getPoint())) {
-					createBusInfoFrame(bus, busMidX + SimulationFrameLauncher.highDPI(FRAME_LAYER_SPACE), busMidY + SimulationFrameLauncher.highDPI(FRAME_LAYER_SPACE));
+					createBusInfoFrame(bus, busMidX + GraphicsFX.highDPI(FRAME_LAYER_SPACE), busMidY + GraphicsFX.highDPI(FRAME_LAYER_SPACE));
 					return; // Return to avoid doubled mouse input events
 				}
 			}
@@ -530,14 +530,14 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 				if (tile instanceof StreetTile)
 					createStreetTileInfoFrame(
 							(StreetTile) tile,
-							e.getX() + SimulationFrameLauncher.highDPI(FRAME_LAYER_SPACE),
-							e.getY() + SimulationFrameLauncher.highDPI(FRAME_LAYER_SPACE)
+							e.getX() + GraphicsFX.highDPI(FRAME_LAYER_SPACE),
+							e.getY() + GraphicsFX.highDPI(FRAME_LAYER_SPACE)
 					);
 				if (tile instanceof HouseTile)
 					createHouseTileInfoFrame(
 							(HouseTile) tile,
-							e.getX() + SimulationFrameLauncher.highDPI(FRAME_LAYER_SPACE),
-							e.getY() + SimulationFrameLauncher.highDPI(FRAME_LAYER_SPACE)
+							e.getX() + GraphicsFX.highDPI(FRAME_LAYER_SPACE),
+							e.getY() + GraphicsFX.highDPI(FRAME_LAYER_SPACE)
 					);
 			}
 		}

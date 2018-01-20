@@ -286,4 +286,20 @@ public class GenericAlgorithm {
 	public int getGeneration() {
 		return generation;
 	}
+
+	public int getPopulationSize() {
+		return populationSize;
+	}
+
+	public double getMutationRate() {
+		return mutationRate;
+	}
+
+	public double getCrossoverRate() {
+		return crossoverRate;
+	}
+
+	public int getElitismCount() {
+		return elitismCount;
+	}
 }

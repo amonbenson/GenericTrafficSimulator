@@ -10,6 +10,7 @@ import javax.swing.event.AncestorListener;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 
+import com.trafficsim.graphics.GraphicsFX;
 import com.trafficsim.graphics.SimulationFrameLauncher;
 import com.trafficsim.graphics.TownDesktopPane;
 
@@ -34,7 +35,7 @@ public class InfoFrame extends JInternalFrame implements AncestorListener, Inter
 		// Tweak some settings
 		setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 		setLocation(dx, dy);
-		setSize(SimulationFrameLauncher.highDPI(WIDTH), SimulationFrameLauncher.highDPI(MIN_HEIGHT));
+		setSize(GraphicsFX.highDPI(WIDTH), GraphicsFX.highDPI(MIN_HEIGHT));
 		setMinimumSize(getSize());
 		setClosable(true);
 		setMaximizable(false);
@@ -55,7 +56,7 @@ public class InfoFrame extends JInternalFrame implements AncestorListener, Inter
 	
 	public void packFrame() {
 		pack();
-		setSize(SimulationFrameLauncher.highDPI(WIDTH), Math.max(getHeight(), SimulationFrameLauncher.highDPI(MIN_HEIGHT)));
+		setSize(GraphicsFX.highDPI(WIDTH), Math.max(getHeight(), GraphicsFX.highDPI(MIN_HEIGHT)));
 	}
 
 	public void ancestorAdded(AncestorEvent event) {

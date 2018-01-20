@@ -5,6 +5,7 @@ import java.util.logging.Level;
 
 import com.trafficsim.generic.Blueprint;
 import com.trafficsim.generic.BlueprintSchedule;
+import com.trafficsim.graphics.GraphicsFX;
 import com.trafficsim.graphics.SimulationFrameLauncher;
 import com.trafficsim.graphics.ga.GAFrameLauncher;
 import com.trafficsim.sim.Simulation;
@@ -57,36 +58,32 @@ public class FrameLauncher implements Simulator {
 	 * The simulation framelauncher will create a jframe to show the current
 	 * town.
 	 */
-	private SimulationFrameLauncher framelauncher;
+	private SimulationFrameLauncher simFrameLauncher;
 
 	/**
 	 * The generic algorithm frame launcher will take care of showing the
 	 * current ga's process and displaying a nice family tree of the
 	 * individuals.
 	 */
-	private GAFrameLauncher frameLauncher;
+	private GAFrameLauncher gaFrameLauncher;
 
 	public FrameLauncher() {
 
-		System.out.println("START");
-		Simulation.logger.setLevel(Level.ALL);
+		Simulation.logger.setLevel(Level.OFF);
+		GAFrameLauncher.logger.setLevel(Level.ALL);
 
-		framelauncher = new SimulationFrameLauncher();
+		// Create the generic algorithm frame launcher
+		gaFrameLauncher = new GAFrameLauncher();
+		
+		// Create the simulation frame launcher and create an automatic update thread
+		simFrameLauncher = new SimulationFrameLauncher();
 		new Thread(new Runnable() {
 			public void run() {
 				while (true) {
 					try {
 
-						framelauncher.getTownDesktopPane().repaint();
-						Thread.sleep(framelauncher.updater.getTickSpeed()); // Sleep
-																			// for
-																			// the
-																			// tick
-																			// speed
-																			// specified
-																			// by
-																			// the
-																			// town
+						simFrameLauncher.getTownDesktopPane().repaint();
+						Thread.sleep(simFrameLauncher.updater.getTickSpeed());
 
 					} catch (InterruptedException ex) {
 						ex.printStackTrace();
@@ -94,23 +91,30 @@ public class FrameLauncher implements Simulator {
 				}
 			}
 		}).start();
+		
+		// Move the frames a bit arround
+		gaFrameLauncher.getFrame().setLocation(gaFrameLauncher.getFrame().getX() + GraphicsFX.highDPI(500), gaFrameLauncher.getFrame().getY() + GraphicsFX.highDPI(100));
+		simFrameLauncher.getFrame().setLocation(simFrameLauncher.getFrame().getX(), GraphicsFX.highDPI(10));
 
-		gaRuntime = 1; // Terminate after 1000 generations
-		townRuntime = 2000; // Calc fitness after 5000 ticks
+		gaRuntime = 5; // Terminate after 1000 generations
+		townRuntime = 500; // Calc fitness after townRuntime ticks of simulation
 		simulationTickSpeed = 1; // DEBUGGING ONLY! Time bfor one simulation
 									// tick
 
 		// Create our genetic algorithm
-		ga = new GenericAlgorithm(this, 1, 0.05, 0.95, 2);
+		ga = new GenericAlgorithm(this, 5, 0.05, 0.95, 2);
 
 		// Initialize population
 		Population population = ga.initPopulation(5);
+		
+		// Set the gaframelauncher's ga
+		gaFrameLauncher.setGenericAlgorithm(ga);
 
 		// Evaluate population for the first time
 		ga.evalPopulation(population);
 
 		while (ga.isTerminationConditionMet(population) == false) {
-			System.out.println("gen " + ga.getGeneration() + "    fit " + population.getPopulationFitness());
+			GAFrameLauncher.logger.info("GEN " + ga.getGeneration() + "    FIT " + population.getPopulationFitness());
 
 			// Apply crossover
 			population = ga.crossoverPopulation(population);
@@ -122,8 +126,8 @@ public class FrameLauncher implements Simulator {
 			ga.evalPopulation(population);
 		}
 
-		System.out.println("Found solution in " + ga.getGeneration() + " generations");
-		System.out.println("Best solution: " + population.getFittest(0).toString());
+		GAFrameLauncher.logger.info("Found solution in " + ga.getGeneration() + " generations");
+		GAFrameLauncher.logger.info("Best solution: " + population.getFittest(0).toString());
 	}
 
 	/**
@@ -132,8 +136,6 @@ public class FrameLauncher implements Simulator {
 	 * the
 	 */
 	public double simulate(Individual individual) {
-		System.out.println(">>> simulate!!");
-
 		Simulation simulation;
 		Town town;
 
@@ -146,12 +148,6 @@ public class FrameLauncher implements Simulator {
 
 			Blueprint testing = Blueprint.randomChromosom(Simulation.testTown(), new Random(1));
 			town.setBlueprint(testing);
-			
-			int numberBusses = 0;
-			for (BlueprintSchedule s : testing.schedules) {
-				numberBusses += s.getBusStartTimes().size();
-			}
-			System.out.println("Anzahl Busse: "+numberBusses);
 			
 			testing.generate(simulation.getTown());
 			town.applyBlueprint();
@@ -167,7 +163,7 @@ public class FrameLauncher implements Simulator {
 		// Simulate the town and get its fitness
 		// TODO Make a real fitness function
 		currentTown = town;
-		framelauncher.setSimulation(simulation);
+		simFrameLauncher.setSimulation(simulation);
 
 		try {
 			while (town.getTime() < townRuntime) { // Run simulation for some
