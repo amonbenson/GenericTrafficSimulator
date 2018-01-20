@@ -23,6 +23,8 @@ public class DescendantTreePane extends JComponent {
 	public static final int NODE_MARGIN_Y = GraphicsFX.highDPI(70);
 	public static final int NODE_ARC = GraphicsFX.highDPI(10);
 	
+	public static final double ANIMATION_SPEED = 0.9;
+	
 	GenerationHistory history;
 	
 	@Override
