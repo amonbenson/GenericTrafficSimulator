@@ -102,7 +102,7 @@ public class FrameLauncher implements Simulator {
 									// tick
 
 		// Create our genetic algorithm
-		ga = new GenericAlgorithm(this, 20, 0.05, 0.95, 2);
+		ga = new GenericAlgorithm(this, 5, 0.05, 0.95, 2);
 
 		// Initialize population
 		Population population = ga.initPopulation(5);
