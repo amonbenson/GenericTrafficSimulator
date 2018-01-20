@@ -606,7 +606,7 @@ public class Town implements Updateable {
 			lastSchedules = new ArrayList<Schedule>(nextStation.getSchedules());
 			}
 		}
-			}
+			
 	
 		stations.add(new ChangeStation(endW, target.getSchedules().get(0).getScheduleReverse())); //Ende hinzufügen
 		if (stations.size() >= 2) {
@@ -628,6 +628,7 @@ public class Town implements Updateable {
 		}
 	}*/
 
+	
 	private Route pathToRoute(List<DefaultWeightedEdge> path) {
 		if (path == null) return null;
 		Waypoint startW = stationGraph.getEdgeSource(path.get(0));
