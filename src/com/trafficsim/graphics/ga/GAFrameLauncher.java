@@ -22,7 +22,7 @@ public class GAFrameLauncher implements GenericAlgorithmWatcher {
 
 	private JFrame frame;
 	private DescendantTreePane descendantTreePane;
-
+	
 	private boolean blockGA; // If this is true, the execution of the generic
 								// algorithm will be blocked.
 
