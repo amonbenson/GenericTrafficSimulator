@@ -173,6 +173,8 @@ public class Blueprint {
 			}
 		}
 		
+		back.size()
+		
 		return back;
 	}
 
@@ -180,7 +182,7 @@ public class Blueprint {
 	 * @see townToMappingIP(float[][][])
 	 * Macht das Gegenteil von der genannten Funktion, vertauscht deren Schlüssel <-> Wert
 	 * 
-	 * 	 * Namenserklärung: IP - Integer -> Point (Der Wegpunkt mit der Straße ist Key, als Value dient der Index von <code>isStation</code>)
+	 * 	 * Namenserklärung: PI - Point -> Integer (Der Wegpunkt mit der Straße ist Key, als Value dient der Index von <code>isStation</code>)
 	 */
 	public static Map<Point, Integer> townToMappingPI(float[][][] town) {
 		Map<Point, Integer> back = new HashMap<Point, Integer>();

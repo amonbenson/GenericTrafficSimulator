@@ -81,6 +81,7 @@ public class SimulationFrameLauncher {
 		s1 = new Schedule(s1Stations, s1StartTimes, 0, "1");
 		schedules.add(s1);
 		
+		
 		Schedule s2 = null;
 		ArrayList<BusStartTime> s2StartTimes = new ArrayList<BusStartTime>();
 		ArrayList<Waypoint> s2Stations = new ArrayList<Waypoint>();
@@ -88,11 +89,22 @@ public class SimulationFrameLauncher {
 		s2Stations.add(w1); //Hier MUSS auf die zuvor erzeugten Wegpunkte zurückgegriffen werden
 		s2Stations.add(w3);
 		s2Stations.add(w4);
-		//s2Stations.add(w7);
 		s2Stations.add(w8);
 		s2 = new Schedule(s2Stations, s2StartTimes, 0, "2");
 		schedules.add(s2);
 		
+		
+		Schedule s3 = null;
+		ArrayList<BusStartTime> s3StartTimes = new ArrayList<BusStartTime>();
+		ArrayList<Waypoint> s3Stations = new ArrayList<Waypoint>();
+		s3StartTimes.add(new BusStartTime(5, BusDirection.NORMAL));
+		s3Stations.add(w7); //Hier MUSS auf die zuvor erzeugten Wegpunkte zurückgegriffen werden
+		s3Stations.add(w8);
+		s3Stations.add(w1);
+		s3 = new Schedule(s3Stations, s3StartTimes, 0, "3");
+		schedules.add(s3);
+		
+		/*
 		Schedule s3 = null;
 		ArrayList<BusStartTime> s3StartTimes = new ArrayList<BusStartTime>();
 		ArrayList<Waypoint> s3Stations = new ArrayList<Waypoint>();
@@ -102,7 +114,7 @@ public class SimulationFrameLauncher {
 		s3Stations.add(w1);
 		s3 = new Schedule(s3Stations, s3StartTimes, 0, "3");
 		schedules.add(s3);
-		
+		*/
 		
 		stations.add(w1); //WICHTIG: dieser Punkt muss zuvor bereits erzeugt worden sein (siehe Schritt 6.2). Deswegen wird hier w1 verwendet.
 		stations.add(w2);
