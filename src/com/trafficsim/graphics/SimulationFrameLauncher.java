@@ -9,6 +9,7 @@ import javax.swing.AbstractAction;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
+import javax.swing.UIManager;
 
 import com.trafficsim.generic.Blueprint;
 import com.trafficsim.graphics.consolepane.InfoConsolePane;
