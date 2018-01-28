@@ -77,14 +77,24 @@ public class GAFrameLauncher implements GenericAlgorithmWatcher {
 		
 		// Enter the next generation
 		history.nextGeneration();
-		HPopulation g = history.getCurrentPopulation();
+		HPopulation pop = history.getCurrentPopulation();
+		HPopulation prevPop = history.getPreviousPopulation();
 		
 		int elitecount = 0;
-		// TODO: WARNING! POPULATION MUST BE EVALUATED BEFORE (!) ELITE COUNT IS CALCULATED!!! pls change that in the future.
+		// TODO: WARNING! POPULATION MUST BE EVALUATED BEFORE(!) ELITE COUNT IS CALCULATED!!! pls change that in the future.
 		for (Individual individual : population.getIndividuals()) {
-			HIndividual i = new HIndividual(individual.getID(), individual.getParentIDs(), individual.getChromosome());
-			g.addIndividual(i);
+			// Get the parent ids from our previous generation and convert them to indices
+			int[] parentIndices = null;
+			if (prevPop != null) parentIndices = prevPop.idsToIndices(individual.getParentIDs());
+			
+			// Create a new hindividual (graphical representation of a ga individual)
+			HIndividual i = new HIndividual(individual.getID(), parentIndices, individual.getChromosome());
+			pop.addIndividual(i);
 		}
+		
+		// Update the population fitness and elite count
+		pop.setFitness(population.getPopulationFitness());
+		pop.setEliteLimit(ga.getElitismCount());
 		
 		// Update the descendant tree
 		descendantTreePane.repaint();

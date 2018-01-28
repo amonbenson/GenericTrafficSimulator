@@ -3,10 +3,10 @@ package com.trafficsim.genericalgorithm;
 import java.util.Random;
 import java.util.logging.Level;
 
+import javax.swing.JFrame;
 import javax.swing.UIManager;
 
 import com.trafficsim.generic.Blueprint;
-import com.trafficsim.generic.BlueprintSchedule;
 import com.trafficsim.graphics.GraphicsFX;
 import com.trafficsim.graphics.SimulationFrameLauncher;
 import com.trafficsim.graphics.ga.GAFrameLauncher;
@@ -72,7 +72,7 @@ public class FrameLauncher implements Simulator {
 	public FrameLauncher() {
 
 		// Logger stuff
-		Simulation.logger.setLevel(Level.OFF);
+		Simulation.logger.setLevel(Level.SEVERE);
 		GAFrameLauncher.logger.setLevel(Level.ALL);
 		
 		// Set laf
@@ -82,6 +82,9 @@ public class FrameLauncher implements Simulator {
 			System.err.println("Couldn't set LookAndFeel.");
 			e.printStackTrace();
 		}
+		
+		// Retrieve the font after setting the laf
+		GraphicsFX.retrieveFont();
 
 		// Create the generic algorithm frame launcher
 		gaFrameLauncher = new GAFrameLauncher();
@@ -107,8 +110,8 @@ public class FrameLauncher implements Simulator {
 		gaFrameLauncher.getFrame().setLocation(gaFrameLauncher.getFrame().getX() + GraphicsFX.highDPI(500), gaFrameLauncher.getFrame().getY() + GraphicsFX.highDPI(100));
 		simFrameLauncher.getFrame().setLocation(simFrameLauncher.getFrame().getX(), GraphicsFX.highDPI(10));
 
-		gaRuntime = 5; // Terminate after 1000 generations
-		townRuntime = 500; // Calc fitness after townRuntime ticks of simulation
+		gaRuntime = 10000; // Terminate after n generations
+		townRuntime = 5000; // Calc fitness after n ticks of simulation
 		simulationTickSpeed = -1; // DEBUGGING ONLY! Time bfor one simulation
 									// tick
 
@@ -116,7 +119,7 @@ public class FrameLauncher implements Simulator {
 		ga = new GenericAlgorithm(this, 5, 0.05, 0.95, 2);
 
 		// Initialize population
-		Population population = ga.initPopulation(5);
+		Population population = ga.initPopulation(20);
 		
 		// Set the gaframelauncher's ga
 		gaFrameLauncher.setGenericAlgorithm(ga);
@@ -125,8 +128,6 @@ public class FrameLauncher implements Simulator {
 		ga.evalPopulation(population);
 
 		while (ga.isTerminationConditionMet(population) == false) {
-			GAFrameLauncher.logger.info("GEN " + ga.getGeneration() + "    FIT " + population.getPopulationFitness());
-
 			// Apply crossover
 			population = ga.crossoverPopulation(population);
 

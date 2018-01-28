@@ -8,10 +8,12 @@ public class HPopulation {
 	private List<HIndividual> individuals;
 
 	private int eliteLimit;
+	private double fitness;
 	private int populationSize;
 
 	public HPopulation(int populationSize) {
 		this.populationSize = populationSize;
+		this.fitness = fitness;
 		individuals = new ArrayList<HIndividual>();
 	}
 
@@ -43,6 +45,17 @@ public class HPopulation {
 		}
 		return -1;
 	}
+	
+	public int[] idsToIndices(long[] ids) {
+		if (ids == null) return new int[0]; // If no ids specified, return an empty array
+		
+		int[] indices = new int[ids.length];
+		for (int i = 0; i < ids.length; i++) {
+			indices[i] = indexOf(ids[i]); // Will be -1 if id wasn't found
+		}
+		
+		return indices;
+	}
 
 	public boolean isElite(int index) {
 		return index < eliteLimit;
@@ -54,5 +67,13 @@ public class HPopulation {
 
 	public void setEliteLimit(int eliteLimit) {
 		this.eliteLimit = eliteLimit;
+	}
+
+	public double getFitness() {
+		return fitness;
+	}
+
+	public void setFitness(double fitness) {
+		this.fitness = fitness;
 	}
 }

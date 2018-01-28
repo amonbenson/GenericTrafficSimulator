@@ -3,14 +3,14 @@ package com.trafficsim.graphics.ga.history;
 public class HIndividual {
 	
 	private long id;
-	private long[] parentIDs;
+	private int[] parentIndicies;
 	
 	private int[] chromosome;
 	private double fitness;
 	
-	public HIndividual(long id, long[] parentIDs, int[] chromosome) {
+	public HIndividual(long id, int[] parentIndicies, int[] chromosome) {
 		this.id = id;
-		this.parentIDs = parentIDs;
+		this.parentIndicies = parentIndicies;
 		this.chromosome = chromosome;
 	}
 
@@ -18,8 +18,8 @@ public class HIndividual {
 		return id;
 	}
 
-	public long[] getParentIDs() {
-		return parentIDs;
+	public int[] getParentIndicies() {
+		return parentIndicies;
 	}
 
 	public int[] getChromosome() {

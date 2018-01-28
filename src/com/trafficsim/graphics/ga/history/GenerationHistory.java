@@ -18,6 +18,11 @@ public class GenerationHistory {
 		return populations.get(populations.size() - 1);
 	}
 	
+	public HPopulation getPreviousPopulation() {
+		if (populations.size() <= 1) return null;
+		return populations.get(populations.size() - 2);
+	}
+	
 	public void nextGeneration() {
 		populations.add(new HPopulation(populationSize));
 	}

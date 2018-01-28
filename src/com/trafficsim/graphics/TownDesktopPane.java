@@ -18,6 +18,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 
 import javax.swing.DefaultDesktopManager;
@@ -39,6 +40,7 @@ import com.trafficsim.graphics.infoframe.PersonInfoFrame;
 import com.trafficsim.graphics.infoframe.PersonList;
 import com.trafficsim.graphics.infoframe.StationList;
 import com.trafficsim.graphics.infoframe.StreetTileInfoFrame;
+import com.trafficsim.sim.Simulation;
 import com.trafficsim.town.Bus;
 import com.trafficsim.town.HouseTile;
 import com.trafficsim.town.Person;
@@ -160,6 +162,7 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 	@Override
 	public void paintComponent(Graphics graphics) {
 		Graphics2D g = (Graphics2D) graphics;
+		g.setFont(GraphicsFX.FONT_DEFAULT);
 		
 		if (town == null) {
 			g.setColor(Color.black);
@@ -289,16 +292,20 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 		}
 		
 		// Draw busses
-		for (Bus b : town.getBusses()) {
-			g.setColor(new Color(100, 100, 100));
-			if (b == focusBus) g.setColor(Color.green);
-			g.fillRect(
-					(int) (b.getX() * tileSize - tileSize * BUS_DRAW_SIZE / 2) + tileX,
-					(int) (b.getY() * tileSize - tileSize * BUS_DRAW_SIZE / 2) + tileY, 
-					(int) (tileSize * BUS_DRAW_SIZE), (int) (tileSize * BUS_DRAW_SIZE) );
-
-			// Draw the persons inside the bus
-			drawPersons(g, b.getX() - 0.1, b.getY() - 0.1, b.getPersons().size());
+		try {
+			for (Bus b : town.getBusses()) {
+				g.setColor(new Color(100, 100, 100));
+				if (b == focusBus) g.setColor(Color.green);
+				g.fillRect(
+						(int) (b.getX() * tileSize - tileSize * BUS_DRAW_SIZE / 2) + tileX,
+						(int) (b.getY() * tileSize - tileSize * BUS_DRAW_SIZE / 2) + tileY, 
+						(int) (tileSize * BUS_DRAW_SIZE), (int) (tileSize * BUS_DRAW_SIZE) );
+	
+				// Draw the persons inside the bus
+				drawPersons(g, b.getX() - 0.1, b.getY() - 0.1, b.getPersons().size());
+			}
+		} catch (ConcurrentModificationException ex) {
+			Simulation.logger.severe("Concurrent modification while drawing busses.");
 		}
 		
 		// Draw lines to the internal frames ("relation lines")

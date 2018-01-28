@@ -187,7 +187,15 @@ public class SimulationFrameLauncher {
 		personConsolePane.setTown(town);
 	}
 
-	public static void main(String[] args) throws InterruptedException {
+	public static void main(String[] args) {
+		// Set the laf if we call the frame launcher from here
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (Exception e) {
+			System.err.println("Couldn't set LookAndFeel.");
+			e.printStackTrace();
+		}
+		
 		new SimulationFrameLauncher();
 	}
 	
