@@ -47,11 +47,16 @@ public class GenericAlgorithm {
 	 * 
 	 * @param chromosomeLength
 	 *            The length of the individuals chromosome
+	 * @param geneMin
+	 *            Minimal value for a gene (inclusive)
+	 * @param geneMax
+	 *            Maximal value for a gene (exclusive)
+	 * 
 	 * @return population The initial population generated
 	 */
-	public Population initPopulation(int chromosomeLength) {
+	public Population initPopulation(int chromosomeLength, int geneMin, int geneMax) {
 		// Initialize population
-		Population population = new Population(random, this.populationSize, chromosomeLength);
+		Population population = new Population(random, this.populationSize, chromosomeLength, geneMin, geneMax);
 		return population;
 	}
 
@@ -172,7 +177,7 @@ public class GenericAlgorithm {
 			// Apply crossover to this individual?
 			if (this.crossoverRate > random.nextFloat() && populationIndex >= this.elitismCount) {
 				// Initialize offspring
-				Individual offspring = new Individual(random, parent1.getChromosomeLength());
+				Individual offspring = new Individual(random, parent1.getChromosomeLength(), parent1.getGeneMin(), parent1.getGeneMax());
 
 				// Find second parent
 				Individual parent2 = selectParent(population);
@@ -242,7 +247,7 @@ public class GenericAlgorithm {
 					// Does this gene need mutation?
 					if (this.mutationRate > random.nextFloat()) {
 						// Get new gene
-						int newGene = random.nextInt();
+						int newGene = individual.getGeneMin() + random.nextInt(individual.getGeneMax() - individual.getGeneMin());
 
 						// Mutate gene
 						individual.setGene(geneIndex, newGene);

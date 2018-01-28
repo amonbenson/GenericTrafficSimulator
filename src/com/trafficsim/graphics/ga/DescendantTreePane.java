@@ -126,7 +126,11 @@ public class DescendantTreePane extends JComponent implements MouseListener, Mou
 
 	private String chromosomeToString(int[] chromosome) {
 		String s = "";
-		for (int i : chromosome) s += i;
+		for (int i = 0; i < chromosome.length; i++) {
+			if (i > 0) s += ",";
+			String chromoStr = String.valueOf(chromosome[i]);
+			s += chromoStr.substring(0, Math.min(3, chromoStr.length()));
+		}
 		return s;
 	}
 

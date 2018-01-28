@@ -24,7 +24,7 @@ public class Test {
 		ga.addGenericAlgorithmWatcher(new BasicGenericAlgorithmWatcher());
 
 		// Initialize population
-		Population population = ga.initPopulation(5);
+		Population population = ga.initPopulation(5, 0, 1);
 
 		// Evaluate population for the first time
 		ga.evalPopulation(population);
