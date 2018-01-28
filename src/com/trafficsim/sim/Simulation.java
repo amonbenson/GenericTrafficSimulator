@@ -113,4 +113,27 @@ public class Simulation {
 		
 		return townList;
 	}
+	
+	public static float[][][] testTown3x3() {
+		float[][][] townList = new float[3][3][2];
+		for (int x = 0; x < 3; x++) {
+			for (int y = 0; y < 3; y++) {
+				townList[x][y][0] = 1; //Haus
+				townList[x][y][1] = 10; //10 Einwohner
+			}
+		}
+		
+		townList[1][0][0] = 0;
+		townList[1][0][1] = 0.5f;
+		townList[1][1][0] = 0;
+		townList[1][1][1] = 0.5f;
+		townList[2][1][0] = 0;
+		townList[2][1][1] = 0.5f;
+		townList[0][1][0] = 0;
+		townList[0][1][1] = 0.5f;
+		townList[1][2][0] = 0;
+		townList[1][2][1] = 0.5f;
+		
+		return townList;
+	}
 }

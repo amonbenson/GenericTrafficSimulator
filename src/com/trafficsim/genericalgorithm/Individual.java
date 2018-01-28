@@ -59,6 +59,15 @@ public class Individual {
 	}
 
 	/**
+	 * USE WITH CARE
+	 * @param data
+	 * @return
+	 */
+	public void setChromosome(int[] data) {
+		chromosome = data;
+	}
+	
+	/**
 	 * Gets individual's chromosome length
 	 * 
 	 * @return The individual's chromosome length

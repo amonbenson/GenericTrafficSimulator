@@ -117,24 +117,37 @@ public class FrameLauncher implements Simulator {
 		gaFrameLauncher.getFrame().setLocation(gaFrameLauncher.getFrame().getX() + GraphicsFX.highDPI(500), gaFrameLauncher.getFrame().getY() + GraphicsFX.highDPI(100));
 		simFrameLauncher.getFrame().setLocation(simFrameLauncher.getFrame().getX(), GraphicsFX.highDPI(10));
 
-		gaRuntime = 10; // Terminate after n generations
+		gaRuntime = 1; // Terminate after n generations
 		townRuntime = 5000; // Calc fitness after n ticks of simulation
 		simulationTickSpeed = -1; // DEBUGGING ONLY! Time bfor one simulation
 									// tick
 		
 		// Init the chromosome length values
-		chromoStationLength = Blueprint.townToMappingIP(Simulation.testTown()).size(); // Calculates street count
-		chromoScheduleCount = 10; // Maximum number of Schedules in a Town
-		chromoScheduleStationLength = 20; // Maximum number of stations per Schedule
-		chromoScheduleStartTimeLength = 10 * 2; // Maximum number of start times per Schedule
+		chromoStationLength = Blueprint.townToMappingIP(Simulation.testTown3x3()).size(); // Calculates street count
+		chromoScheduleCount = 1; // Maximum number of Schedules in a Town
+		chromoScheduleStationLength = 5; // Maximum number of stations per Schedule
+		chromoScheduleStartTimeLength = 5 * 2; // Maximum number of start times per Schedule
 		chromoScheduleLength = chromoScheduleStationLength + chromoScheduleStartTimeLength; // Number of genes in one Schedule
 		chromoLength = chromoStationLength + chromoScheduleCount * chromoScheduleLength; // Number of genes in one whole chromosome
 
 		// Create our genetic algorithm
-		ga = new GenericAlgorithm(this, 5, 0.05, 0.95, 2);
+		ga = new GenericAlgorithm(this, 1, 0.05, 0.95, 2);
 
 		// Initialize population
 		Population population = ga.initPopulation(chromoLength);
+		Individual i = population.getIndividuals()[0];
+		int[] c = i.getChromosome();
+		
+		//TODO ENTFERNEN!
+		int[] a = {1, 2, 3, 0, 10004, 
+				-1, 1, 2, 3, 3, 
+				100, 10, 
+				-1, -17, 
+				-1, -2, 
+				-100, 0, 
+				0, 1};
+		i.setChromosome(a);
+		
 		
 		// Set the gaframelauncher's ga
 		gaFrameLauncher.setGenericAlgorithm(ga);
@@ -165,14 +178,14 @@ public class FrameLauncher implements Simulator {
 	public double simulate(Individual individual) {
 		Simulation simulation;
 		Town town;
-		float[][][] map = Simulation.testTown();
+		float[][][] map = Simulation.testTown3x3();
 
 		Random r = new Random();
 		
 		try {
 			// Create a town simulation
 			// TODO Make the real chromosom to town conversion
-			simulation = new Simulation(new Town(10, 10, r));
+			simulation = new Simulation(new Town(map.length, map[0].length, r));
 			town = simulation.getTown();
 			town.generateTiles(map); // Landschaftskarte
 

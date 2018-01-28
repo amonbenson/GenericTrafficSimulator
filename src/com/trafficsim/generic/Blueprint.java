@@ -164,8 +164,8 @@ public class Blueprint {
 		Map<Integer, Point> back = new HashMap<Integer, Point>();
 		int counter = 0;
 		
-		for (int x = 0; x < town.length; x++) {
-			for (int y = 0; y < town[0].length; y++) {
+		for (int y = 0; y < town[0].length; y++) {
+			for (int x = 0; x < town.length; x++) {
 				if (town[x][y][0] == 0) {
 					back.put(counter, new Point(x, y));
 					counter++;
@@ -188,8 +188,8 @@ public class Blueprint {
 		
 		int counter = 0;
 		
-		for (int x = 0; x < town.length; x++) {
-			for (int y = 0; y < town[0].length; y++) {
+		for (int y = 0; y < town[0].length; y++) {
+			for (int x = 0; x < town.length; x++) {
 				if (town[x][y][0] == 0) {
 					back.put(new Point(x, y), counter);
 					counter++;

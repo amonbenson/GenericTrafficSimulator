@@ -21,9 +21,6 @@ public class Statistics {
 	public Statistics() {
 		noStationNearby = new HashSet<Tile>();
 		travelTimes = new ArrayList<RouteTime>();
-		travelTimes.add(new RouteTime(null, 0, 2));
-		travelTimes.add(new RouteTime(null, 0, 4));
-		travelTimes.add(new RouteTime(null, 0, 1000));
 	}
 	
 	public void export(String fileName) {
