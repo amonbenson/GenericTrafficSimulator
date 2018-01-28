@@ -3,30 +3,6 @@ package com.trafficsim.genericalgorithm;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * The GeneticAlgorithm class is our main abstraction for managing the
- * operations of the genetic algorithm. This class is meant to be
- * problem-specific, meaning that (for instance) the "calcFitness" method may
- * need to change from problem to problem.
- * 
- * This class concerns itself mostly with population-level operations, but also
- * problem-specific operations such as calculating fitness, testing for
- * termination criteria, and managing mutation and crossover operations (which
- * generally need to be problem-specific as well).
- * 
- * Generally, GeneticAlgorithm might be better suited as an abstract class or an
- * interface, rather than a concrete class as below. A GeneticAlgorithm
- * interface would require implementation of methods such as
- * "isTerminationConditionMet", "calcFitness", "mutatePopulation", etc, and a
- * concrete class would be defined to solve a particular problem domain. For
- * instance, the concrete class "TravelingSalesmanGeneticAlgorithm" would
- * implement the "GeneticAlgorithm" interface. This is not the approach we've
- * chosen, however, so that we can keep each chapter's examples as simple and
- * concrete as possible.
- * 
- * @author bkanber
- *
- */
 public class GenericAlgorithm {
 
 	private Simulator simulator;
