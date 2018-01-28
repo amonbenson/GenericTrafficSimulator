@@ -516,10 +516,10 @@ public class Town implements Updateable {
 				events.add(re);
 				return true;
 			}
-			System.out.println("Origin:"+origin.getNextStation());
-			System.out.println("Target:"+target.getNextStation());
-			System.out.println("NULL:(");
-			System.out.println(path);
+			//System.out.println("Origin:"+origin.getNextStation());
+			//System.out.println("Target:"+target.getNextStation());
+			//System.out.println("NULL:(");
+			//System.out.println(path);
 			
 			return false;
 			
