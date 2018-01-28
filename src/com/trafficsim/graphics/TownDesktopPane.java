@@ -208,7 +208,7 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 				if (showNonCoveredTiles.isSelected()) {
 					g.setColor(new Color(230, 30, 0, 128));
 					
-					if (tile.getNextStation(town.getTiles()) == null) {
+					if (tile.getNextStation() == null) {
 						g.fillRect(dx, dy, ds, ds);
 					}
 				}

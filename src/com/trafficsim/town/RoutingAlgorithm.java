@@ -40,15 +40,18 @@ public class RoutingAlgorithm {
 	 * @param tileStart
 	 * @param tileEnd
 	 */
-	public static void generateRoutingForPerson(Person p, Tile tileStart, Tile tileEnd) {
+	private void generateRoutingForPerson(Person p, Tile tileStart, Tile tileEnd) {
 		/*
 		 * Als erstes muss für jede im Einzugsbereich liegende Station die beste Route berechnet werden.
 		 * Daraus kann ermittelt werden, welche Station verwendet werden soll (die Route mit der geringsten Länge ist die beste).
 		 * 
 		 * Auch das Ziel kann eventuell durch mehrere Stationen erreicht werden, also muss auch hier für jede die beste Route berechnet werden.
 		 */
-		ArrayList<StreetTile> allStationsStart = tileStart.getAllNextStations(tiles);
-		ArrayList<StreetTile> allStationsEnd = tileEnd.getAllNextStations(tiles);		
+		
+		ArrayList<StreetTile> allStationsStart = tileStart.getAllNextStations();
+		ArrayList<StreetTile> allStationsEnd = tileEnd.getAllNextStations();		
+		
+		System.out.println("ACHTUNG, KOMISCHE FUNKTION WIRD BENUTZT");
 		PathfindingResult bestResult = null;
 		
 		DijkstraAlgorithm algorithm = new DijkstraAlgorithm();

@@ -15,11 +15,11 @@ public class Statistics {
 	private int countRouteFound = 0;
 	//Fehler, wenn keine Route erzeugt wird, weil der Weg zu umständlich ist.
 	private int countCrypleErrors = 0;
-	private HashSet<Waypoint> noStationNearby;
+	private HashSet<Tile> noStationNearby;
 	
 	private ArrayList<RouteTime> travelTimes;
 	public Statistics() {
-		noStationNearby = new HashSet<Waypoint>();
+		noStationNearby = new HashSet<Tile>();
 		travelTimes = new ArrayList<RouteTime>();
 		travelTimes.add(new RouteTime(null, 0, 2));
 		travelTimes.add(new RouteTime(null, 0, 4));
@@ -37,10 +37,10 @@ public class Statistics {
 		System.out.println("Route same targets (counts as error): "+countRouteSameTargets + " ("+countRouteSameTargets/((float)errorNoRoute)*100f+"%)");
 		System.out.println("Cryple-Error: "+getCounterCrypleError());
 		System.out.println("All Errors: "+errorNoRoute+"("+(errorNoRoute/(float)(errorNoRoute+countRouteFound))*100f+"%)");
-		System.out.println("Koordinaten welche nicht abgedeckt sind: ");
-		for (Iterator<Waypoint> i = noStationNearby.iterator(); i.hasNext();) {
-			Waypoint w = i.next();
-			System.out.print(w);
+		System.out.println("Koordinaten welche nicht abgedeckt sind: (insgesamt "+noStationNearby.size()+")");
+		for (Iterator<Tile> i = noStationNearby.iterator(); i.hasNext();) {
+			Tile w = i.next();
+			System.out.print(w.getX()+":"+w.getY()+"\n");
 		}
 		System.out.println("Insgesamte Zeit für den Transport:");
 		System.out.println(getMedianTravelTime());
@@ -71,7 +71,7 @@ public class Statistics {
 		return countRouteSameTargets;
 	}
 
-	public HashSet<Waypoint> getNoStationNearby() {
+	public HashSet<Tile> getNoStationNearby() {
 		return noStationNearby;
 	}
 	
@@ -93,7 +93,7 @@ public class Statistics {
 	 * Logt den Fehler dass der Algorithmus keine Station gefunden hat mit dieser Position
 	 * @param w Position, auf welchen keine nahe Station gefunden werden konnte
 	 */
-	public void addNoStationFound(Waypoint w) {
+	public void addNoStationFound(Tile w) {
 		addNoStationFound();
 		noStationNearby.add(w);
 	}

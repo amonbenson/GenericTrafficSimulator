@@ -3,12 +3,12 @@ package com.trafficsim.graphics;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
+import java.util.Random;
 
 import javax.swing.AbstractAction;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
-import javax.swing.UIManager;
 
 import com.trafficsim.generic.Blueprint;
 import com.trafficsim.graphics.consolepane.InfoConsolePane;
@@ -39,9 +39,10 @@ public class SimulationFrameLauncher {
 	public SimulationFrameLauncher() {
 		// TOWN ERSTELLEN
 		
+		Random random = new Random(); //Seed ist optional
 		
 		float[][][] townLandscape = Simulation.testTown();
-		Town town = new Town(townLandscape.length, townLandscape[0].length);
+		Town town = new Town(townLandscape.length, townLandscape[0].length, random);
 		simulation = new Simulation(town);
 		town.generateTiles(townLandscape);
 		Blueprint blueprint = new Blueprint(townLandscape);
@@ -51,19 +52,29 @@ public class SimulationFrameLauncher {
 		Waypoint w1 = new Waypoint(1.5, 1.5); //WICHTIG: Die Koordinaten müssen mit .5 aufhören. Ist einfach so.
 		Waypoint w2 = new Waypoint(3.5, 1.5);
 		Waypoint w3 = new Waypoint(3.5, 4.5);
-		Waypoint w4 = new Waypoint(9.5, 4.5);
+		Waypoint w4 = new Waypoint(8.5, 4.5);
+		Waypoint w5 = new Waypoint(2.5, 7.5);
+		Waypoint w6 = new Waypoint(7.5, 1.5);
+		Waypoint w7 = new Waypoint(7.5, 7.5);
+		Waypoint w8 = new Waypoint(1.5, 4.5);
+		
 		waypoints.add(w1); //Das Zufügen dient nur zur Hilfe und ist optional
 		waypoints.add(w2);
 		waypoints.add(w3);
 		waypoints.add(w4);
+		waypoints.add(w5);
+		waypoints.add(w6);
 		
 		Schedule s1 = null; //s1 steht für "schedule1"
 		ArrayList<BusStartTime> s1StartTimes = new ArrayList<BusStartTime>();
 		ArrayList<Waypoint> s1Stations = new ArrayList<Waypoint>();
 		s1StartTimes.add(new BusStartTime(0, BusDirection.NORMAL));
 		s1Stations.add(w1); //Hier MUSS auf die zuvor erzeugten Wegpunkte zurückgegriffen werden
+		s1Stations.add(w2);
 		s1Stations.add(w3);
 		s1Stations.add(w4);
+		s1Stations.add(w5);
+		s1Stations.add(w6);
 		s1 = new Schedule(s1Stations, s1StartTimes, 0, "1");
 		schedules.add(s1);
 		
@@ -74,6 +85,8 @@ public class SimulationFrameLauncher {
 		s2Stations.add(w1); //Hier MUSS auf die zuvor erzeugten Wegpunkte zurückgegriffen werden
 		s2Stations.add(w3);
 		s2Stations.add(w4);
+		//s2Stations.add(w7);
+		s2Stations.add(w8);
 		s2 = new Schedule(s2Stations, s2StartTimes, 0, "2");
 		schedules.add(s2);
 		
@@ -81,12 +94,16 @@ public class SimulationFrameLauncher {
 		stations.add(w2);
 		stations.add(w3);
 		stations.add(w4);
+		stations.add(w5);
+		stations.add(w6);
+		stations.add(w7);
+		stations.add(w8);
 		blueprint.setSchedules(schedules); //Alle Linien setzen
-		blueprint.setStations(waypoints); //Alle Punkte setzen, auf welchen Straßen zu Stationen umgewandelt werden sollen
+		blueprint.setStations(stations); //Alle Punkte setzen, auf welchen Straßen zu Stationen umgewandelt werden sollen
 		town.setBlueprint(blueprint);
 		blueprint.generate(town);
 		town.applyBlueprint();
-		
+		town.getStatistics().print();
 		// Create all components
 		frame = new JFrame("Generic Traffic Simulator");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

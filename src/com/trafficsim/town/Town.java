@@ -37,6 +37,11 @@ public class Town implements Updateable {
 	private ArrayList<Person> persons; //alle Personen der Stadt
 	private long time; //aktuelle Zeit der Stadt
 	private Random random; //jede Stadt besitzt einen eigenen Randomgenerator (so können bestimmte Szenarien erneut simuliert werden)
+	/**
+	 * Einstellung für das Erzeugung von Routen von Personen.
+	 * @see PersonRoutingOptions.getDefault
+	 */
+	private PersonRoutingOption personRoutingOption;
 	
 	//Wegfindungszeug für Busse:
 	private GridCell[][] pathfindingMap = null; //die aktuelle Pathfindingkarte, wird bei applyBlueprint erzeugt
@@ -44,6 +49,8 @@ public class Town implements Updateable {
 	private GridFinderOptions opt = null;
 	AStarGridFinder<GridCell> finder = null;
 	
+	//Hilfsarray für generateRoutingForPerson, wird in applyBlueprint erzeugt
+	private ArrayList<Tile> tilesNearStations;
 	//Wegfindungszeug für Personen:
 	private SimpleDirectedWeightedGraph<Waypoint, DefaultWeightedEdge> stationGraph = null;
 	
@@ -51,16 +58,29 @@ public class Town implements Updateable {
 		this(sizeX, sizeY, null, null, new Random());
 	}
 	
+	public Town(int sizeX, int sizeY, PersonRoutingOption p) {
+		this(sizeX, sizeY, null, null, new Random(), p);
+	}
+	
 	public Town(int sizeX, int sizeY, Random random) {
 		this(sizeX, sizeY, null, null, random);
 	}
 	
+	public Town(int sizeX, int sizeY, Random random, PersonRoutingOption p) {
+		this(sizeX, sizeY, null, null, random, p);
+	}
+	
 	public Town(int sizeX, int sizeY, Tile[][] tiles, Blueprint blueprint, Random random) {
+		this(sizeX, sizeY, tiles, blueprint, random, PersonRoutingOption.getDefault());
+	}
+	
+	public Town(int sizeX, int sizeY, Tile[][] tiles, Blueprint blueprint, Random random, PersonRoutingOption p) {
 		this.sizeX = sizeX;
 		this.sizeY = sizeY;
 		this.tiles = tiles;
 		this.blueprint = blueprint;
 		this.random = random;
+		this.personRoutingOption = p;
 		
 		events = new ArrayList<Event>();
 		busses = new ArrayList<Bus>();
@@ -111,6 +131,10 @@ public class Town implements Updateable {
 		return persons;
 	}
 	
+	public PersonRoutingOption getPersonRoutingOption() {
+		return personRoutingOption;
+	}
+	
 	public long getTime() {
 		return time;
 	}
@@ -155,7 +179,13 @@ public class Town implements Updateable {
 	public Tile getRandomTile() {
 		return tiles[random.nextInt(tiles.length)][random.nextInt(tiles[0].length)];
 	}
-
+	/**
+	 * Gibt ein zufälliges Tiles zurück, welches in der Nähe einer Station ist.
+	 */
+	public Tile getRandomTileNearStation() {
+		return tilesNearStations.get(random.nextInt(tilesNearStations.size()));
+	}
+	
 	/**
 	 * Gibt ein zufälliges Tile, exklusive dem Parameter, zurück.
 	 * Exklusives Item wird hier immer mithilfe des Pointers betrachtet, nicht nach Inhalt.
@@ -310,6 +340,7 @@ public class Town implements Updateable {
 					street.setToStation();
 				}
 			}
+
 			//Buslinien einfügen:
 			for ( Schedule schedule : blueprint.getSchedules()) {
 				schedule.calcWaypoints(this); //kreiert die internen Wegpunkte TODO eventuell muss auf eine Kopie zugegriffen werden
@@ -326,8 +357,23 @@ public class Town implements Updateable {
 					}
 				}
 			}
+			//Die Tiles wissen lassen, wo ihre nächste Station ist
+			for (int x=0;x<tiles.length;x++) {
+				for (int y=0;y<tiles[0].length;y++) {
+					tiles[x][y].calcNextStation(getTiles());
+				}
+			}
 			
-
+			//Erzeugt noch ein Hilfsarray mit allen verfügbaren Tiles mit Stationen für generateRoutingForPerson:
+			tilesNearStations = new ArrayList<Tile>();
+			for (int x=0;x<tiles.length;x++) {
+				for (int y=0;y<tiles[0].length;y++) {
+					if (tiles[x][y].getNextStation() != null) {
+						tilesNearStations.add(tiles[x][y]);
+					}
+				}
+			}
+			
 			RoutingAlgorithm.init(tiles);
 			
 
@@ -338,7 +384,8 @@ public class Town implements Updateable {
 			//Sortiert schließlich die fertige Eventliste:
 			sortEvents();
 			
-			//statistics.print();
+
+			
 		}
 	}
 	
@@ -433,28 +480,56 @@ public class Town implements Updateable {
 	 */
 	private boolean generateRoutingForPerson(Person p, ArrayList<Event> list) {
 		
-		Tile origin = getRandomTileWithExclude(p.getHouse());
-		/*int newX = random.nextInt(sizeX-(StreetTile.AREA_STATION*2+1) );
-		if (newX >= origin.getX()-(StreetTile.AREA_STATION*2+1)) {
-			newX += StreetTile.AREA_STATION*2+1;
+		if (personRoutingOption == PersonRoutingOption.RANDOM_START_RANDOM_END) {
+			Tile origin = getRandomTile();
+			Tile target = getRandomTileWithExclude(origin);
+
+			//Wenn der Start oder Ende schiefgegangen ist, wird davon ausgegangen, dass der Mensch nie ein Ziel findet.
+			if (origin.getNextStation() == null || target.getNextStation() == null) {
+				List<DefaultWeightedEdge> path = getPathForPerson(origin, target);
+				Route r = pathToRoute(path); //Nochmal machen, um Fehler zu loggen
+				if (r!=null) {
+					Simulation.logger.warning("Komischer Fehler, sollte nie passieren");
+				}
+				return false;
+			}
+			
+			/**
+			 * Wenn Start und Ziel die gleiche Station anfahren wollen muss erneut ein Ziel ausgewählt werden.
+			 * Das gleiche Auswählen ist kein Fehler, muss jedoch einfach erneut ausprobiert werden.
+			 * Dafür wird jedoch einfach ein anderes Ziel anvisiert, es wird NICHT als Fehler geloggt.
+			 * ACHTUNG: HIER KÖNNTE DER ALGORITHMUS HÄNGEN BLEIBEN
+			 */
+			while ( true ) {
+				if (origin.getNextStation().getX() == target.getNextStation().getX() &&
+					origin.getNextStation().getY() == target.getNextStation().getY() ) {
+					target = getRandomTileNearStation();
+				} else { //sonst ist alles super, Schleife abbrechen
+					break;
+				}
+			}
+
+			List<DefaultWeightedEdge> path = getPathForPerson(origin, target);
+			Route r = pathToRoute(path);
+			if (r != null) {
+				RoutingEvent re = new RoutingEvent(0, p, r);
+				events.add(re);
+				return true;
+			}
+			System.out.println("Origin:"+origin.getNextStation());
+			System.out.println("Target:"+target.getNextStation());
+			System.out.println("NULL:(");
+			System.out.println(path);
+			
+			return false;
+			
+		} else {
+			Simulation.logger.severe("Routing Option is invalid!");
+			throw new java.lang.Error("Routing Option can not processed..");
 		}
-		int newY = random.nextInt(sizeY-(StreetTile.AREA_STATION*2+1) );
-		if (newY >= origin.getY()-(StreetTile.AREA_STATION*2+1)) {
-			newY += StreetTile.AREA_STATION*2+1;
-		}*/
-		int newX = random.nextInt(sizeX);
-		int newY = random.nextInt(sizeY);
 		
-		Tile target = tiles[newX][newY];
 		
-		List<DefaultWeightedEdge> path = getPathForPerson(origin, target);
-		Route r = pathToRoute(path);
-		if (r != null) {
-			RoutingEvent re = new RoutingEvent(0, p, r);
-			events.add(re);
-			return true;
-		}
-		return false;
+
 	}
 	
 	/**
@@ -484,14 +559,16 @@ public class Town implements Updateable {
 		StreetTile originNextStation;
 		StreetTile targetNextStation;
 		
-		originNextStation = origin.getNextStation(tiles);
-		targetNextStation = target.getNextStation(tiles);
+		originNextStation = origin.getNextStation();
+		targetNextStation = target.getNextStation();
 		
-		if (originNextStation == targetNextStation) {
-			statistics.addRouteSameTargets();
-			return null;
-		}
+
 		if (originNextStation != null && targetNextStation != null) {
+			
+			if (originNextStation == targetNextStation) {
+				statistics.addRouteSameTargets();
+				return null;
+			}
 			
 			Waypoint start = findWaypointInBlueprint((int) originNextStation.getX(), (int) originNextStation.getY());
 			Waypoint end = findWaypointInBlueprint((int) targetNextStation.getX(), (int) targetNextStation.getY());
@@ -510,7 +587,12 @@ public class Town implements Updateable {
 			return shortest_path;
 			
 		} else {
-			statistics.addNoStationFound(origin.toWaypoint());
+			if (originNextStation == null) {
+				statistics.addNoStationFound(origin);
+			} 
+			if (targetNextStation == null) {
+				statistics.addNoStationFound(target);
+			}
 		}
 		
 		return null;
@@ -549,81 +631,6 @@ public class Town implements Updateable {
 			return null;
 		}
 	}
-	
-	/**
-	 * Kann <code>null</code> zurückgeben, wenn <code>null</code> der Parameter ist.
-	 * Generiert anhand der algorithmischen Lösung die spezifische Route.
-	 * 
-	 * @param path
-	 * @return
-	 *
-	private Route pathToRoute(List<DefaultWeightedEdge> path) {
-		if (path == null) return null;
-		Waypoint startW = stationGraph.getEdgeSource(path.get(0));
-		Waypoint endW = stationGraph.getEdgeTarget(path.get(path.size()-1));
-		StreetTile origin = findStationInBlueprint(startW);
-		StreetTile target = findStationInBlueprint(endW);		
-		ArrayList<ChangeStation> stations = new ArrayList<ChangeStation>();
-		
-		ArrayList<Schedule> lastSchedules = findStationInBlueprint(stationGraph.getEdgeSource(path.get(0))).getSchedules();
-		
-		SpecificSchedule first = null;
-		
-		Waypoint lastChangeStation = startW; //Die letzte Station ist am Anfang immer die Startstations
-		
-		//Als erstes die Buslinie finden, welche am weitesten zum Ziel kommt:
-		for ( int i=0;i<path.size();i++) {
-			StreetTile nextStation = findStationInBlueprint(stationGraph.getEdgeTarget(path.get(i)));
-			System.out.println(nextStation);
-			ArrayList<Schedule> hs1 = new ArrayList<Schedule>(lastSchedules); //Start
-			HashSet<Schedule> hs2 = new HashSet<Schedule>(nextStation.getSchedules());
-			hs1.retainAll(hs2); //Schnittmenge mit Stationen, welche in beiden Listen vorhanden sind
-			if (hs1.isEmpty()) { //Alle Buslinien enden auf einmal.. also eine zufällige auswählen
-				Schedule selected = lastSchedules.get(random.nextInt(lastSchedules.size()));
-				
-				if (selected.whichDirectionIsFaster(lastChangeStation, stationGraph.getEdgeSource(path.get(i))) == BusDirection.NORMAL ) {
-					first = selected.getScheduleNormal();
-				} else { //REVERSE
-					first = selected.getScheduleReverse();
-				}
-				stations.add(new ChangeStation(startW, first)); //Anfangsrichtung hinzufügen
-				lastChangeStation = findWaypointInBlueprint(nextStation.getX(), nextStation.getY());
-			}
-			
-			if (hs1.size() == 1) { //letzte Busstation gefunden!
-				Schedule selected = hs1.get(0);
-				if (selected.whichDirectionIsFaster(lastChangeStation, stationGraph.getEdgeTarget(path.get(i))) == BusDirection.NORMAL ) {
-					first = selected.getScheduleNormal();
-				} else { //REVERSE
-					first = selected.getScheduleReverse();
-				}
-				stations.add(new ChangeStation(lastChangeStation, first)); //Anfangsrichtung hinzufügen
-				lastChangeStation = findWaypointInBlueprint(nextStation.getX(), nextStation.getY());
-			
-			lastSchedules = new ArrayList<Schedule>(nextStation.getSchedules());
-			}
-		}
-			
-	
-		stations.add(new ChangeStation(endW, target.getSchedules().get(0).getScheduleReverse())); //Ende hinzufügen
-		if (stations.size() >= 2) {
-			Route r = new Route(origin, target, stations);
-			return r;
-		} else {
-			Simulation.logger.warning("Pfad:"+path.toString());
-			Simulation.logger.warning("Start:"+startW.toString());
-			Simulation.logger.warning("Ende:"+endW.toString());
-			Simulation.logger.warning("Start in B:"+origin.getX()+":"+origin.getY());
-			Simulation.logger.warning("Ende in B:"+target.getX()+":"+target.getY());
-			for ( ChangeStation s : stations ) {
-				Simulation.logger.warning("ChangeStation:" + s+"\n\n");
-				
-			}
-			Simulation.logger.warning("------------Stationsende------------");
-			Simulation.logger.warning("Stationsgröße zu klein, bitte beheben");
-			return null;
-		}
-	}*/
 
 	
 	private Route pathToRoute(List<DefaultWeightedEdge> path) {
@@ -638,8 +645,7 @@ public class Town implements Updateable {
 		int lastStationIndex = 0;
 		ArrayList<Schedule> possibleLines = origin.getSchedules(); //Mögliche Linien vom letzten Einstieg
 		SpecificSchedule sSchedule = null;
-		
-		for ( int i=lastStationIndex;i<path.size();i++) {
+		for ( lastStationIndex=0;lastStationIndex<=path.size();lastStationIndex++) {
 			
 			//Führt diese Station direkt zum Ziel?
 			ArrayList<Schedule> cutSet = new ArrayList<Schedule>(possibleLines);			
@@ -655,12 +661,10 @@ public class Town implements Updateable {
 				stations.add(new ChangeStation(lastChangeStation, sSchedule));
 				break;
 			}
-			
 			//Schnittmenge zur nächsten Station bilden, um zu prüfen, welche Linien weiterhin angefahren werden können
 			cutSet = new ArrayList<Schedule>(possibleLines);
 			cutSet.retainAll(findStationInBlueprint(stationGraph.getEdgeTarget(path.get(lastStationIndex))).getSchedules());
 			if (cutSet.isEmpty()) { //Schnittmenge leer, Zeit umzusteigen!
-
 				//Umsteigestation hinzufügen:
 				//Dafür eine mögliche Linie aussuchen:
 				Schedule schedule = possibleLines.get(random.nextInt(possibleLines.size()));
@@ -682,6 +686,7 @@ public class Town implements Updateable {
 		if (sSchedule == null) {
 			//Das kann passieren, wenn der Weg zu umständlich ist. Also ein Cryple Error
 			statistics.addCrypleError();
+			System.out.println("CRYPLEEE");
 			return null;
 		}
 		stations.add(new ChangeStation(endW, sSchedule));

@@ -8,6 +8,12 @@ public abstract class Tile {
 	//in welchem quadratischen Bereich die Person eine Station finden kann, bei 1 beträgt diese 3x3, bei 2 5x5 usw
 	public static int AREA_STATION=2;
 	
+	/**
+	 * Muss zur Benutzung initialisiert sein
+	 */
+	private StreetTile nextStation;
+	private ArrayList<StreetTile> allNextStations;
+	
 	public Tile(int x, int y) {
 		this.x = x;
 		this.y = y;
@@ -26,14 +32,39 @@ public abstract class Tile {
 
 	/**
 	 * Gibt die nächste beste Station (mit den meisten Buslinien) zurück
-	 * @param map
 	 * @return die "beste" nächste Station, wenn keine vorhanden ist <code>null</code>
 	 */
-	public StreetTile getNextStation(Tile[][] map) {
-		ArrayList<StreetTile> all = getAllNextStations(map);
+	public StreetTile getNextStation() {
+		return nextStation;
+	}
+	
+	public ArrayList<StreetTile> getAllNextStations() {
+		return allNextStations;
+	}
+	
+	/**
+	 * Vor dem richtigen Benutzen MUSS diese Funktion aufgerufen werden, die Generierung von PersonRouts
+	 * ruft nämlich getNextStation() ab.
+	 * 
+	 * @param map
+	 */
+	public void calcNextStation(Tile[][] map) {
+		ArrayList<StreetTile> all = new ArrayList<StreetTile>();
+		for (int x2=x-AREA_STATION;x2<=x+AREA_STATION;x2++) {
+			for (int y2=y-AREA_STATION;y2<=y+AREA_STATION;y2++) {
+				if (x2 >= 0 && x2 < map.length && y2 >= 0 && y2 < map[0].length ) { //Koordinaten müssen im Bereich liegen
+					if (map[x2][y2] instanceof StreetTile) {
+						if (((StreetTile) map[x2][y2]).isStation()) {
+							all.add((StreetTile)map[x2][y2]);
+						}
+					}
+				}
+			}
+		}
+		allNextStations = all;
 		StreetTile best = null;
 		int numberLines = 1;
-		int distance = 9;
+		int distance = 10;
 		for (StreetTile t : all) {
 			if ( (Math.abs(t.getX()-x)+Math.abs(t.getY()-y)) < distance &&
 				t.getSchedules().size() >= numberLines) {
@@ -46,30 +77,8 @@ public abstract class Tile {
 				best = t;
 				distance = Math.abs(t.getX()-x)+Math.abs(t.getY()-y);
 			}
-			
 		}
-		return best;
-	}
-	
-	/**
-	 * Gibt alle verfügbaren Stationen dieser Person zurück.
-	 * Falls es keine gibt, wird <code>null</code>zurückgegeben.
-	 * @param map die Karte der Stadt
-	 */
-	public ArrayList<StreetTile> getAllNextStations(Tile[][] map) {
-		ArrayList<StreetTile> back = new ArrayList<StreetTile>();
-		for (int x2=x-AREA_STATION;x2<=x+AREA_STATION;x2++) {
-			for (int y2=y-AREA_STATION;y2<=y+AREA_STATION;y2++) {
-				if (x2 >= 0 && x2 < map.length && y2 >= 0 && y2 < map[0].length ) { //Koordinaten müssen im Bereich liegen
-					if (map[x2][y2] instanceof StreetTile) {
-						if (((StreetTile) map[x2][y2]).isStation()) {
-							back.add((StreetTile)map[x2][y2]);
-						}
-					}
-				}
-			}
-		}
-		return back;
+		nextStation = best;
 	}
 	
 	public Waypoint toWaypoint() {

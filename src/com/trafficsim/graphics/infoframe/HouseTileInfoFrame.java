@@ -21,7 +21,7 @@ public class HouseTileInfoFrame extends InfoFrame {
 	public HouseTileInfoFrame(TownDesktopPane rootDesktop, HouseTile tile, int dx, int dy) {
 		super(rootDesktop, null, dx, dy);
 		this.tile = tile;
-		nextStation = tile.getNextStation(rootDesktop.getTown().getTiles());
+		nextStation = tile.getNextStation();
 
 		setTitle("House Tile");
 		

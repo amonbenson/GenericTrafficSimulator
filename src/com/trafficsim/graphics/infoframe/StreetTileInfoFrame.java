@@ -24,7 +24,7 @@ public class StreetTileInfoFrame extends InfoFrame {
 	public StreetTileInfoFrame(TownDesktopPane rootDesktop, StreetTile tile, int dx, int dy) {
 		super(rootDesktop, null, dx, dy);
 		this.tile = tile;
-		nextStation = tile.getNextStation(rootDesktop.getTown().getTiles());
+		nextStation = tile.getNextStation();
 
 		setTitle("Street Tile");
 		
