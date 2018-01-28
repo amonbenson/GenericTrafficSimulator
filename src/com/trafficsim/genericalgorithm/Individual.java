@@ -1,5 +1,7 @@
 package com.trafficsim.genericalgorithm;
 
+import java.util.Random;
+
 public class Individual {
 	public static long CURRENT_ID = 0;
 
@@ -22,17 +24,13 @@ public class Individual {
 	 * @param chromosomeLength
 	 *            The length of the individuals chromosome
 	 */
-	public Individual(int chromosomeLength) {
-		this(null); // We can do this, because we'll overwrite the chromosome in
+	public Individual(Random random, int chromosomeLength) {
+		this(random, null); // We can do this, because we'll overwrite the chromosome in
 					// the next step. Apart from that, this is no good practice.
 
 		this.chromosome = new int[chromosomeLength];
 		for (int gene = 0; gene < chromosomeLength; gene++) {
-			if (0.5 < Math.random()) {
-				this.setGene(gene, 1);
-			} else {
-				this.setGene(gene, 0);
-			}
+			this.setGene(gene, random.nextInt());
 		}
 
 	}
@@ -43,7 +41,7 @@ public class Individual {
 	 * @param chromosome
 	 *            The chromosome to give individual
 	 */
-	public Individual(int[] chromosome) {
+	public Individual(Random random, int[] chromosome) {
 		id = getNextID();
 		// Create individual chromosome
 		this.chromosome = chromosome;

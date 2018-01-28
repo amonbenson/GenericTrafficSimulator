@@ -28,6 +28,23 @@ public class PersonConsolePane extends ConsolePane {
 	public void paintComponent(Graphics g) {
 		clear();
 		
+		// List all busses
+		append("%A0A0A0Bus List (" + town.getBusses().size() + ")");
+		lineBusList = getNumLines();
+		
+		if (town.getBusses().isEmpty()) append("-");
+		Iterator<Bus> busIt = town.getBusses().iterator();
+		try {
+			while (busIt.hasNext()) {
+				Bus bus = busIt.next();
+				append(bus.getSchedule().getSchedule().getName());
+			}
+		} catch (ConcurrentModificationException ex) {
+			// Just pass on and add nothing
+		}
+
+		append("");
+		
 		// List all persons
 		append("%A0A0A0Person List (" + town.getPersons().size() + ")");
 		append("ID\tName");
@@ -39,22 +56,6 @@ public class PersonConsolePane extends ConsolePane {
 			while (personIt.hasNext()) {
 				Person person = personIt.next();
 				append(person.getID() + "\t" + person.getName());
-			}
-		} catch (ConcurrentModificationException ex) {
-			// Just pass on and add nothing
-		}
-		append("");
-		
-		// List all busses
-		append("%A0A0A0Bus List (" + town.getBusses().size() + ")");
-		lineBusList = getNumLines();
-		
-		if (town.getBusses().isEmpty()) append("-");
-		Iterator<Bus> busIt = town.getBusses().iterator();
-		try {
-			while (busIt.hasNext()) {
-				Bus bus = busIt.next();
-				append(bus.getSchedule().getSchedule().getName());
 			}
 		} catch (ConcurrentModificationException ex) {
 			// Just pass on and add nothing

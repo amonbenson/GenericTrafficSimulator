@@ -2,6 +2,7 @@ package com.trafficsim.genericalgorithm;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class GenericAlgorithm {
 
@@ -16,13 +17,26 @@ public class GenericAlgorithm {
 
 	private int generation;
 
+	private Random random;
+
 	public GenericAlgorithm(Simulator simulator, int populationSize, double mutationRate, double crossoverRate,
 			int elitismCount) {
+		this(simulator, populationSize, mutationRate, crossoverRate, elitismCount, new Random());
+	}
+
+	public GenericAlgorithm(Simulator simulator, int populationSize, double mutationRate, double crossoverRate,
+			int elitismCount, long seed) {
+		this(simulator, populationSize, mutationRate, crossoverRate, elitismCount, new Random(seed));
+	}
+
+	public GenericAlgorithm(Simulator simulator, int populationSize, double mutationRate, double crossoverRate,
+			int elitismCount, Random random) {
 		this.simulator = simulator;
 		this.populationSize = populationSize;
 		this.mutationRate = mutationRate;
 		this.crossoverRate = crossoverRate;
 		this.elitismCount = elitismCount;
+		this.random = random;
 
 		watchers = new ArrayList<GenericAlgorithmWatcher>();
 		generation = 0;
@@ -37,7 +51,7 @@ public class GenericAlgorithm {
 	 */
 	public Population initPopulation(int chromosomeLength) {
 		// Initialize population
-		Population population = new Population(this.populationSize, chromosomeLength);
+		Population population = new Population(random, this.populationSize, chromosomeLength);
 		return population;
 	}
 
@@ -112,7 +126,7 @@ public class GenericAlgorithm {
 
 		// Spin roulette wheel
 		double populationFitness = population.getPopulationFitness();
-		double rouletteWheelPosition = Math.random() * populationFitness;
+		double rouletteWheelPosition = random.nextFloat() * populationFitness;
 
 		// Find parent
 		double spinWheel = 0;
@@ -156,9 +170,9 @@ public class GenericAlgorithm {
 			Individual parent1 = population.getFittest(populationIndex);
 
 			// Apply crossover to this individual?
-			if (this.crossoverRate > Math.random() && populationIndex >= this.elitismCount) {
+			if (this.crossoverRate > random.nextFloat() && populationIndex >= this.elitismCount) {
 				// Initialize offspring
-				Individual offspring = new Individual(parent1.getChromosomeLength());
+				Individual offspring = new Individual(random, parent1.getChromosomeLength());
 
 				// Find second parent
 				Individual parent2 = selectParent(population);
@@ -166,7 +180,7 @@ public class GenericAlgorithm {
 				// Loop over genome
 				for (int geneIndex = 0; geneIndex < parent1.getChromosomeLength(); geneIndex++) {
 					// Use half of parent1's genes and half of parent2's genes
-					if (0.5 > Math.random()) {
+					if (0.5 > random.nextFloat()) {
 						offspring.setGene(geneIndex, parent1.getGene(geneIndex));
 					} else {
 						offspring.setGene(geneIndex, parent2.getGene(geneIndex));
@@ -176,21 +190,21 @@ public class GenericAlgorithm {
 				// Call the watcher
 				for (GenericAlgorithmWatcher watcher : watchers)
 					watcher.crossover(population, newPopulation, parent1, parent2, offspring);
-				
+
 				// Set the parent ids
-				offspring.setParentIDs(new long[] {parent1.getID(), parent2.getID()});
+				offspring.setParentIDs(new long[] { parent1.getID(), parent2.getID() });
 
 				// Add offspring to new population
 				newPopulation.setIndividual(populationIndex, offspring);
 			} else {
 				// Set the parent to itself
-				parent1.setParentIDs(new long[] {parent1.getID()});
-				
+				parent1.setParentIDs(new long[] { parent1.getID() });
+
 				// Add individual to new population without applying crossover
 				newPopulation.setIndividual(populationIndex, parent1);
 			}
 		}
-		
+
 		// Call the watcher and return
 		for (GenericAlgorithmWatcher watcher : watchers)
 			watcher.crossoverDone(population, newPopulation);
@@ -226,16 +240,13 @@ public class GenericAlgorithm {
 				// Skip mutation if this is an elite individual
 				if (populationIndex > this.elitismCount) {
 					// Does this gene need mutation?
-					if (this.mutationRate > Math.random()) {
+					if (this.mutationRate > random.nextFloat()) {
 						// Get new gene
-						int newGene = 1;
-						if (individual.getGene(geneIndex) == 1) {
-							newGene = 0;
-						}
-						
+						int newGene = random.nextInt();
+
 						// Mutate gene
 						individual.setGene(geneIndex, newGene);
-						
+
 						// Call the watcher
 						for (GenericAlgorithmWatcher watcher : watchers)
 							watcher.mutation(population, populationIndex, geneIndex);
