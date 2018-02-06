@@ -111,7 +111,6 @@ public class Simulation {
 			townList[6+x][7][0] = 0;
 			townList[6+x][7][1] = 0.25f;
 		}
-		townList[9][9][2] = 5000;
 		return townList;
 	}
 	
