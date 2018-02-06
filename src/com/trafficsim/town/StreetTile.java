@@ -1,6 +1,9 @@
 package com.trafficsim.town;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Queue;
 
 /**
  * Repräsentiert ein Straßenstück.
@@ -16,8 +19,6 @@ public class StreetTile extends Tile {
 	private boolean isStation;
 	private ArrayList<Person> waitingPersons;
 	private ArrayList<Schedule> schedules; //gibt die hier fahrenden Linien an, wie z.B. 187 und 282
-	
-
 
 	public StreetTile(int x, int y, double maxSpeed) {
 		super(x, y);
@@ -64,6 +65,7 @@ public class StreetTile extends Tile {
 		return isStation;
 	}
 	
+	
 	/**
 	 * Fügt die Person <code>p</code> zu den wartenden Personen hinzu.
 	 */
@@ -84,6 +86,8 @@ public class StreetTile extends Tile {
 		return schedules;
 	}
 
+
+	
 	public void setSchedules(ArrayList<Schedule> schedules) {
 		this.schedules = schedules;
 	}

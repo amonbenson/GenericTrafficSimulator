@@ -208,18 +208,20 @@ public class Town implements Updateable {
 	 * Gibt ein Haus zurück, wobei ein Haus mit höherer Anzahl an numberPersons häufiger zurückgegeben wird.
 	 */
 	public Tile getHouseTileWithProbability_NumberPersons() {
-		float whichTile = random.nextFloat();
+		float whichTile = random.nextFloat()*getLastAllNumberOfPersons();
 		float probabilityCounter = 0;
 		Tile selected = null;
+		a:
 		for (int x=0;x<tiles.length;x++) {
 			for (int y=0;y<tiles[0].length;y++) {
 				if (tiles[x][y] instanceof HouseTile) {
-					float probability = ((HouseTile)tiles[x][y]).getNumberPersons() / (float)getLastAllNumberOfPersons();
-					if (whichTile <= probability+probabilityCounter && whichTile >= probabilityCounter) {
+					float probability = ((HouseTile)tiles[x][y]).getNumberPersons();
+					probabilityCounter += probability;
+					if (whichTile <= probabilityCounter) {
 						selected = tiles[x][y];
-						break;
+						break a;
 					}
-					probabilityCounter+=probability;
+					selected = tiles[x][y];
 				}
 			}
 		}
@@ -231,21 +233,24 @@ public class Town implements Updateable {
 	
 
 	public Tile getHouseTileWithProbability_InterestFactor() {
-		float whichTile = random.nextFloat();
+		float whichTile = random.nextFloat()*getLastAllInterest();
 		float probabilityCounter = 0;
 		Tile selected = null;
+		a:
 		for (int x=0;x<tiles.length;x++) {
 			for (int y=0;y<tiles[0].length;y++) {
 				if (tiles[x][y] instanceof HouseTile) {
-					float probability = ((HouseTile)tiles[x][y]).getFactorInterest() / getLastAllInterest();
-					if (whichTile <= probability+probabilityCounter && whichTile >= probabilityCounter) {
+					float probability = ((HouseTile)tiles[x][y]).getFactorInterest();
+					probabilityCounter += probability;
+					if (whichTile <= probabilityCounter) {
 						selected = tiles[x][y];
-						break;
+						break a;
 					}
-					probabilityCounter+=probability;
+					selected = tiles[x][y];
 				}
 			}
 		}
+
 		if (selected == null) {
 			Simulation.logger.warning("getHouseTileWithProbability_InterestFactor hat nichts gefunden! Komischer Fehler, untersuchen.");
 		}
@@ -849,13 +854,27 @@ public class Town implements Updateable {
 			if (cutSet.isEmpty()) { //Schnittmenge leer, Zeit umzusteigen!
 				//Umsteigestation hinzufügen:
 				//Dafür eine mögliche Linie aussuchen:
-				Schedule schedule = possibleLines.get(random.nextInt(possibleLines.size()));
-				BusDirection d = schedule.whichDirectionIsFaster(lastChangeStation, stationGraph.getEdgeSource(path.get(lastStationIndex)));
+				int warn_counter = 0;
+				doo:
+				do {
+					Schedule schedule = possibleLines.get(random.nextInt(possibleLines.size()));
+					BusDirection d = schedule.whichDirectionIsFaster(lastChangeStation, stationGraph.getEdgeSource(path.get(lastStationIndex)));
+				
 				if (d == BusDirection.NORMAL) {
 					sSchedule = schedule.getScheduleNormal();
-				} else {
+					break doo;
+				} else if (d == BusDirection.REVERSE){
 					sSchedule = schedule.getScheduleReverse();
+					break doo;
+				} else if (d == null) {
+					//Falsche Schedule wurde ausgewählt
+					possibleLines.remove(schedule);
+					warn_counter++;
+					if (warn_counter>1000) {
+						System.err.println("LOOP DETECTED in pathToRoute!!");
+					}
 				}
+				} while (true);
 				stations.add(new ChangeStation(lastChangeStation, sSchedule));
 				lastChangeStation = stationGraph.getEdgeSource(path.get(lastStationIndex));
 				possibleLines = findStationInBlueprint(stationGraph.getEdgeTarget(path.get(lastStationIndex))).getSchedules();
@@ -886,9 +905,10 @@ public class Town implements Updateable {
 	 * Gibt die kürzeste SpecificSchedule zwischen zwei Stationen zurück (müssen nicht nebeneinander sein)
 	 * @param station1
 	 * @param station2
-	 * @return
+	 * @return ALLLLLLLLLLLLLLLLLLLLLT
 	 */
 	private SpecificSchedule getSpecificScheduleOfTwoStations(StreetTile station1, StreetTile station2) {
+		/////////////////////////////ALT/////////////////////////////////////
 		HashSet<Schedule> hs1 = new HashSet<Schedule>(station1.getSchedules());
 		HashSet<Schedule> hs2 = new HashSet<Schedule>(station2.getSchedules());
 		hs1.retainAll(hs2);

@@ -117,6 +117,10 @@ public class Statistics {
 		travelTimes.add(r);
 	}
 	
+	public int getCounterRouteDone() {
+		return travelTimes.size();
+	}
+	
 	/**
 	 * Gibt das arithmetische Mittel aller benötigten Reisezeiten von angekommenden Menschen zurück.
 	 * In TravelTime sind nur die erfolgreichen Transporte geloggt, daher müssen noch die Fehler+
