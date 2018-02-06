@@ -12,6 +12,8 @@ import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 
 import com.trafficsim.generic.Blueprint;
+import com.trafficsim.genericalgorithm.BlueprintConverter;
+import com.trafficsim.genericalgorithm.FrameLauncher;
 import com.trafficsim.graphics.consolepane.InfoConsolePane;
 import com.trafficsim.graphics.consolepane.PersonConsolePane;
 import com.trafficsim.sim.Simulation;
@@ -36,6 +38,8 @@ public class SimulationFrameLauncher {
 	private PersonConsolePane personConsolePane;
 	
 	public Simulation simulation;
+	
+	private Town town;
 	
 	public SimulationFrameLauncher() {
 		// TOWN ERSTELLEN
@@ -136,20 +140,40 @@ public class SimulationFrameLauncher {
 		town.applyBlueprint();
 		town.getStatistics().print();*/
 		
+		
+		float[][][] townLandscape = Simulation.testTown3x3();
+		town = new Town(townLandscape.length, townLandscape[0].length, random);
+		simulation = new Simulation(town);
+		town.generateTiles(townLandscape);
+		
+		int[] chromo = {1, 2, 3, 0, 10004, 
+			-1, 1, 2, 3, 3, 
+			100, 10, 
+			-1, -17, 
+			-1, -2, 
+			-100, 0, 
+			0, 1};
+		
+		Blueprint testing = BlueprintConverter.convertStandard(chromo, townLandscape);
+		System.out.println(testing);
+		town.setBlueprint(testing);
+		testing.generate(town);
+		town.applyBlueprint();
+		
 		// Create all components
 		frame = new JFrame("Generic Traffic Simulator");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		townDesktopPane = new TownDesktopPane(this, null);
+		townDesktopPane = new TownDesktopPane(this, town);
 		frame.add(townDesktopPane);
 		
-		personConsolePane = new PersonConsolePane(this, null);
+		personConsolePane = new PersonConsolePane(this, town);
 		JScrollPane pcScroll = new JScrollPane(personConsolePane);
 		pcScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		pcScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		frame.add(BorderLayout.EAST, pcScroll);
 		
-		infoConsolePane = new InfoConsolePane(this, null);
+		infoConsolePane = new InfoConsolePane(this, town);
 		JScrollPane ecScroll = new JScrollPane(infoConsolePane);
 		ecScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		ecScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -196,7 +220,7 @@ public class SimulationFrameLauncher {
 		});
 		townDesktopPane.getActionMap().put("print statistics", new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
-				simulation.getTown().getStatistics().print();
+				simulation.getTown().getStatistics().print(town);
 			}
 		});
 		

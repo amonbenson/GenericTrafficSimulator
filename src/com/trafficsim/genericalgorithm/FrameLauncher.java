@@ -198,7 +198,6 @@ public class FrameLauncher implements Simulator {
 			town.generateTiles(map); // Landschaftskarte
 
 			Blueprint testing = BlueprintConverter.convert(individual.getChromosome(), map);
-
 			town.setBlueprint(testing);
 			
 			testing.generate(simulation.getTown());
@@ -237,7 +236,7 @@ public class FrameLauncher implements Simulator {
 
 		// Return the inverted average travel time as fitness TODO Don't do
 		// that.
-		double fitness = 1000.0 / town.getStatistics().getAverageTravelTime();
+		double fitness = 1000.0 / town.getStatistics().getAverageTravelTime(currentTown);
 		return fitness;
 	}
 

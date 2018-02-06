@@ -120,7 +120,11 @@ public class Person {
 	public String getName() {
 		return name;
 	}
-
+	
+	public long getTimeStart() {
+		return timeStart;
+	}
+	
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -139,6 +143,7 @@ public class Person {
 	
 	public void start(long ticks) {
 		timeStart = ticks;
+		System.out.println("Started mit"+ticks);
 	}
 	
 	public void done(long ticks) {
