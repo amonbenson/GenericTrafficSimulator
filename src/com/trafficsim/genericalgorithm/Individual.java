@@ -7,6 +7,8 @@ public class Individual {
 
 	private long id;
 	private int[] chromosome;
+	private int geneMin, geneMax;
+
 	private double fitness = -1;
 
 	private long[] parentIDs;
@@ -24,27 +26,28 @@ public class Individual {
 	 * @param chromosomeLength
 	 *            The length of the individuals chromosome
 	 */
-	public Individual(Random random, int chromosomeLength) {
-		this(random, null); // We can do this, because we'll overwrite the chromosome in
-					// the next step. Apart from that, this is no good practice.
-
+	public Individual(Random random, int chromosomeLength, int geneMin, int geneMax) {
+		this(null, geneMin, geneMax); // We can do this, because we'll overwrite
+										// the chromosome in
+		// the next step. Apart from that, this is no good practice.
 		this.chromosome = new int[chromosomeLength];
 		for (int gene = 0; gene < chromosomeLength; gene++) {
-			this.setGene(gene, random.nextInt());
+			this.setGene(gene, geneMin + random.nextInt(geneMax - geneMin));
 		}
 
 	}
 
 	/**
-	 * Initializes individual with specific chromosome
+	 * Initializes individual with that specific chromosome
 	 * 
 	 * @param chromosome
 	 *            The chromosome to give individual
 	 */
-	public Individual(Random random, int[] chromosome) {
+	public Individual(int[] chromosome, int geneMin, int geneMax) {
 		id = getNextID();
-		// Create individual chromosome
 		this.chromosome = chromosome;
+		this.geneMin = geneMin;
+		this.geneMax = geneMax;
 
 		parentIDs = new long[0];
 	}
@@ -60,13 +63,14 @@ public class Individual {
 
 	/**
 	 * USE WITH CARE
+	 * 
 	 * @param data
 	 * @return
 	 */
 	public void setChromosome(int[] data) {
 		chromosome = data;
 	}
-	
+
 	/**
 	 * Gets individual's chromosome length
 	 * 
@@ -84,6 +88,8 @@ public class Individual {
 	 * @return gene
 	 */
 	public void setGene(int offset, int gene) {
+		if (gene < geneMin || gene >= geneMax)
+			throw new IllegalArgumentException("Gene must be in bounds (" + geneMin + " to " + (geneMax - 1) + ")");
 		this.chromosome[offset] = gene;
 	}
 
@@ -115,15 +121,17 @@ public class Individual {
 	public double getFitness() {
 		return this.fitness;
 	}
-	
-	
+
 	public void setParentIDs(long[] parentIDs) {
-		if (parentIDs == null) throw new NullPointerException("Parent ids cannot be null");
-		if (parentIDs.length > 2) throw new IllegalArgumentException("Individual can't have more than 2 parents (" + parentIDs.length + " given)");
-		
+		if (parentIDs == null)
+			throw new NullPointerException("Parent ids cannot be null");
+		if (parentIDs.length > 2)
+			throw new IllegalArgumentException(
+					"Individual can't have more than 2 parents (" + parentIDs.length + " given)");
+
 		this.parentIDs = parentIDs;
 	}
-	
+
 	public long[] getParentIDs() {
 		return parentIDs;
 	}
@@ -139,6 +147,22 @@ public class Individual {
 			output += this.chromosome[gene];
 		}
 		return output;
+	}
+
+	public int getGeneMin() {
+		return geneMin;
+	}
+
+	public void setGeneMin(int geneMin) {
+		this.geneMin = geneMin;
+	}
+
+	public int getGeneMax() {
+		return geneMax;
+	}
+
+	public void setGeneMax(int geneMax) {
+		this.geneMax = geneMax;
 	}
 
 	public long getID() {

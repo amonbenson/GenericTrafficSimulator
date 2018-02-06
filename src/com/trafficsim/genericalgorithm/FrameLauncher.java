@@ -55,6 +55,9 @@ public class FrameLauncher implements Simulator {
 	public static int chromoScheduleLength;
 	public static int chromoLength;
 
+	public static int chromoGeneMin;
+	public static int chromoGeneMax;
+
 	/**
 	 * Represents the currently simulated town. The simulation will take place
 	 * in a different thread, so the main thread can concentrate on drawing the
@@ -117,9 +120,9 @@ public class FrameLauncher implements Simulator {
 		gaFrameLauncher.getFrame().setLocation(gaFrameLauncher.getFrame().getX() + GraphicsFX.highDPI(500), gaFrameLauncher.getFrame().getY() + GraphicsFX.highDPI(100));
 		simFrameLauncher.getFrame().setLocation(simFrameLauncher.getFrame().getX(), GraphicsFX.highDPI(10));
 
-		gaRuntime = 1; // Terminate after n generations
-		townRuntime = 5000; // Calc fitness after n ticks of simulation
-		simulationTickSpeed = -1; // DEBUGGING ONLY! Time bfor one simulation
+		gaRuntime = 10; // Terminate after n generations
+		townRuntime = 100; // Calc fitness after n ticks of simulation
+		simulationTickSpeed = 1; // DEBUGGING ONLY! Time for one simulation
 									// tick
 		
 		// Init the chromosome length values
@@ -129,12 +132,16 @@ public class FrameLauncher implements Simulator {
 		chromoScheduleStartTimeLength = 5 * 2; // Maximum number of start times per Schedule
 		chromoScheduleLength = chromoScheduleStationLength + chromoScheduleStartTimeLength; // Number of genes in one Schedule
 		chromoLength = chromoStationLength + chromoScheduleCount * chromoScheduleLength; // Number of genes in one whole chromosome
-
+		
+		chromoGeneMin = -1; // Minimal value for a gene
+		chromoGeneMax = chromoStationLength * 2; // The maximum allowed number will be the number of streets times 2 (may be changed)
+		
 		// Create our genetic algorithm
-		ga = new GenericAlgorithm(this, 1, 0.05, 0.95, 2);
+		Random random = new Random(93827);
+		ga = new GenericAlgorithm(this, 6, 0.05, 0.95, 2, random);
 
 		// Initialize population
-		Population population = ga.initPopulation(chromoLength);
+		Population population = ga.initPopulation(chromoLength, chromoGeneMin, chromoGeneMax);
 		Individual i = population.getIndividuals()[0];
 		int[] c = i.getChromosome();
 		
