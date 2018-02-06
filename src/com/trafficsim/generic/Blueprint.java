@@ -314,4 +314,19 @@ public class Blueprint {
 		return b.toString();
 	}
 	
+	public int getNumberBusses() {
+		int busses = 0;
+		for (BlueprintSchedule s : schedules) {
+			busses += s.busStartTimes.size();
+		}
+		return busses;
+	}
+	
+	public int getNumberStations() {
+		int stations = 0;
+		for (int i=0;i<isStation.length;i++) {
+			if (isStation[i]) stations++;
+		}
+		return stations;
+	}
 }
