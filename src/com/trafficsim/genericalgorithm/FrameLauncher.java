@@ -198,7 +198,7 @@ public class FrameLauncher implements Simulator {
 	public double simulate(Individual individual) {
 		Simulation simulation;
 		Town town;
-		float[][][] map = Simulation.testTown3x3();
+		float[][][] map = Simulation.testTown();
 
 		Random r = new Random();
 
@@ -245,8 +245,10 @@ public class FrameLauncher implements Simulator {
 
 		// Return the inverted average travel time as fitness TODO Don't do
 		// that.
-		double fitness = 1000.0 / town.getStatistics().getAverageTravelTime(currentTown);
+		double fitness = 1 / town.getStatistics().getAverageTravelTime(currentTown);
 
+		System.out.println(fitness);
+		
 		currentTown = null;
 		return fitness;
 	}
