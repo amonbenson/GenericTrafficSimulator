@@ -78,7 +78,7 @@ public class InfoConsolePane extends ConsolePane {
 		append("");
 
 		// Draw the statistics
-		append("%A0A0A0Statistics");
+		/*append("%A0A0A0Statistics");
 
 		Statistics s = town.getStatistics();
 		append("Route found:\t" + s.getCounterRouteFound());
@@ -95,7 +95,7 @@ public class InfoConsolePane extends ConsolePane {
 				+ GraphicsFX.round(
 						(s.getErrorNoRoute() / (float) (s.getErrorNoRoute() + s.getCounterRouteFound())) * 100, 2)
 				+ "%)");
-		append("Transport Time:\t" + s.getAverageTravelTime(town));
+		append("Transport Time:\t" + s.getAverageTravelTime(town));*/
 
 		// Repaint the super class
 		super.paintComponent(g);

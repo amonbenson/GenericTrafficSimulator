@@ -117,14 +117,16 @@ public class DescendantTreePane extends JComponent implements MouseListener, Mou
 						(int) (ny + (NODE_HEIGHT + g.getFontMetrics().getHeight() * 0.6) / 2));
 			}
 		}
+		
+		// Update preferred size
 	}
 
 	private int getNodeX(int indexX) {
-		return (indexX + 1) * (NODE_WIDTH + NODE_MARGIN_X);
+		return (indexX + 1) * (NODE_WIDTH + NODE_MARGIN_X) + NODE_MARGIN_X;
 	}
 
 	private int getNodeY(int indexY) {
-		return (history.getPopulationCount() - indexY - 1) * (NODE_HEIGHT + NODE_MARGIN_Y);
+		return (history.getPopulationCount() - indexY - 1) * (NODE_HEIGHT + NODE_MARGIN_Y) + NODE_MARGIN_X;
 	}
 
 	private String chromosomesToString(List<Chromosome> chromosomes) {
