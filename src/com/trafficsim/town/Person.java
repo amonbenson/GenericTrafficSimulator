@@ -143,7 +143,6 @@ public class Person {
 	
 	public void start(long ticks) {
 		timeStart = ticks;
-		System.out.println("Started mit"+ticks);
 	}
 	
 	public void done(long ticks) {
