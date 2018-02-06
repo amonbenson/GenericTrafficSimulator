@@ -228,6 +228,9 @@ public class FrameLauncher implements Simulator {
 			testing.generate(simulation.getTown());
 			town.applyBlueprint();
 
+			System.out.println(testing.getNumberBusses());
+			System.out.println(testing.getNumberStations());
+			
 		} catch (Exception ex) {
 			// Town generation not possible. return fitness of -1.
 			Simulation.logger.severe("Town creation failed! returning -1 for fitness");
@@ -259,7 +262,7 @@ public class FrameLauncher implements Simulator {
 		// Return the inverted average travel time as fitness TODO Don't do
 		// that.
 		double fitness = 1 / town.getStatistics().getAverageTravelTime(currentTown);
-		
+
 		currentTown = null;
 		return fitness;
 	}

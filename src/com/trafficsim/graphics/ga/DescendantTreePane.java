@@ -198,7 +198,7 @@ public class DescendantTreePane extends JComponent implements MouseListener, Mou
 		if (nodeY > history.getPopulationCount() - 1) return;
 		
 		// Get the corresponding h-individual
-		HPopulation p = history.getNthPopulation(history.getMaxPopulationCount() - nodeY - 1);
+		HPopulation p = history.getNthPopulation(history.getPopulationCount() - nodeY - 1);
 		HIndividual i = p.getIndividual(nodeX);
 		
 		// Pause ga
