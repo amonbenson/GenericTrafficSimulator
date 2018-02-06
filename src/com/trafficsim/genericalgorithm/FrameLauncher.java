@@ -81,7 +81,7 @@ public class FrameLauncher implements Simulator {
 	 */
 	private GAFrameLauncher gaFrameLauncher;
 
-	public FrameLauncher() {
+	public FrameLauncher() throws InterruptedException {
 
 		random = new Random(1);
 		
@@ -188,6 +188,9 @@ public class FrameLauncher implements Simulator {
 		ga.evalPopulation(population);
 
 		while (ga.isTerminationConditionMet(population) == false) {
+			// Check if the execution is beeing blocked
+			while (gaFrameLauncher.isBlockGA()) Thread.sleep(200);
+			
 			// Apply crossover
 			population = ga.crossoverPopulation(population);
 
@@ -265,7 +268,7 @@ public class FrameLauncher implements Simulator {
 		return ga.getGeneration() >= gaRuntime;
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws InterruptedException {
 		new FrameLauncher();
 	}
 }
