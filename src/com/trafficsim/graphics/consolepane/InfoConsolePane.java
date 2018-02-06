@@ -21,6 +21,13 @@ public class InfoConsolePane extends ConsolePane {
 	@Override
 	public void paintComponent(Graphics g) {
 		clear();
+		
+		// Don't draw console if town is null
+		if (town == null) {
+			append("No town.");
+			super.paintComponent(g);
+			return;
+		}
 
 		// Write the global time
 		append("%A0A0A0Info");
@@ -37,7 +44,7 @@ public class InfoConsolePane extends ConsolePane {
 		append("");
 
 		// Get all events and write them into the lines array
-		append("%A0A0A0Event List");
+		append("%A0A0A0Event List (" + town.getEvents().size() + ")");
 		append("Time\tType");
 		if (town.getEvents().isEmpty())
 			append("-\t-");
@@ -55,7 +62,7 @@ public class InfoConsolePane extends ConsolePane {
 				duplicateEventCount++;
 			} else {
 				if (duplicateEventCount > 0)
-					append("%a0a0a0\t\t\tx" + (duplicateEventCount + 1));
+					getLines().set(getLines().size() - 1, getLines().get(getLines().size() - 1) + "  x" + (duplicateEventCount + 1));
 				duplicateEventCount = 0;
 
 				if (town.getTime() > event.getStartTime())

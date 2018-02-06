@@ -1,55 +1,31 @@
 package com.trafficsim.genericalgorithm;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 public class Individual {
 	public static long CURRENT_ID = 0;
 
 	private long id;
-	private int[] chromosome;
-	private int geneMin, geneMax;
-
-	private double fitness = -1;
-
 	private long[] parentIDs;
+	
+	private List<Chromosome> chromosomes;
 
-	/**
-	 * Initializes random individual.
-	 * 
-	 * This constructor assumes that the chromosome is made entirely of 0s and
-	 * 1s, which may not always be the case, so make sure to modify as
-	 * necessary. This constructor also assumes that a "random" chromosome means
-	 * simply picking random zeroes and ones, which also may not be the case
-	 * (for instance, in a traveling salesman problem, this would be an invalid
-	 * solution).
-	 * 
-	 * @param chromosomeLength
-	 *            The length of the individuals chromosome
-	 */
-	public Individual(Random random, int chromosomeLength, int geneMin, int geneMax) {
-		this(null, geneMin, geneMax); // We can do this, because we'll overwrite
-										// the chromosome in
-		// the next step. Apart from that, this is no good practice.
-		this.chromosome = new int[chromosomeLength];
-		for (int gene = 0; gene < chromosomeLength; gene++) {
-			this.setGene(gene, geneMin + random.nextInt(geneMax - geneMin));
-		}
+	private double fitness;
 
+	public Individual(Random random, int[][] chromosomes, int[] minGenes, int[] maxGenes) {
+		this(null);
 	}
 
-	/**
-	 * Initializes individual with that specific chromosome
-	 * 
-	 * @param chromosome
-	 *            The chromosome to give individual
-	 */
-	public Individual(int[] chromosome, int geneMin, int geneMax) {
+	public Individual(Chromosome[] chromosomes) {
 		id = getNextID();
-		this.chromosome = chromosome;
-		this.geneMin = geneMin;
-		this.geneMax = geneMax;
-
 		parentIDs = new long[0];
+		
+		this.chromosomes = Arrays.asList(chromosomes);
+		
+		fitness = -1;
 	}
 
 	/**

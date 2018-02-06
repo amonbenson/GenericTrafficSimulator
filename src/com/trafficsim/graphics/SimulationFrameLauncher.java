@@ -49,9 +49,9 @@ public class SimulationFrameLauncher {
 		town.generateTiles(townLandscape);
 		Blueprint blueprint = new Blueprint(townLandscape);
 		ArrayList<Schedule> schedules = new ArrayList<Schedule>(); //Liste mit allen Linien
-		ArrayList<Waypoint> waypoints = new ArrayList<Waypoint>(); //Alle jemals genutzten Punkte für Stationen dürfen nur einmal erzeugt werden! Dies ist ein Hilfsarray für die interne Erzeugung und wird später nicht benötigt (ist optional).
+		ArrayList<Waypoint> waypoints = new ArrayList<Waypoint>(); //Alle jemals genutzten Punkte fï¿½r Stationen dï¿½rfen nur einmal erzeugt werden! Dies ist ein Hilfsarray fï¿½r die interne Erzeugung und wird spï¿½ter nicht benï¿½tigt (ist optional).
 		ArrayList<Waypoint> stations = new ArrayList<Waypoint>(); //Liste mit allen Stationen, welche generell vom Chromosom erzeugt werden.
-		Waypoint w1 = new Waypoint(1.5, 1.5); //WICHTIG: Die Koordinaten müssen mit .5 aufhören. Ist einfach so.
+		Waypoint w1 = new Waypoint(1.5, 1.5); //WICHTIG: Die Koordinaten mï¿½ssen mit .5 aufhï¿½ren. Ist einfach so.
 		Waypoint w2 = new Waypoint(3.5, 1.5);
 		Waypoint w3 = new Waypoint(3.5, 4.5);
 		Waypoint w4 = new Waypoint(8.5, 4.5);
@@ -60,7 +60,7 @@ public class SimulationFrameLauncher {
 		Waypoint w7 = new Waypoint(7.5, 7.5);
 		Waypoint w8 = new Waypoint(1.5, 4.5);
 		
-		waypoints.add(w1); //Das Zufügen dient nur zur Hilfe und ist optional
+		waypoints.add(w1); //Das Zufï¿½gen dient nur zur Hilfe und ist optional
 		waypoints.add(w2);
 		waypoints.add(w3);
 		waypoints.add(w4);
@@ -69,11 +69,11 @@ public class SimulationFrameLauncher {
 		waypoints.add(w7);
 		waypoints.add(w8);
 		
-		Schedule s1 = null; //s1 steht für "schedule1"
+		Schedule s1 = null; //s1 steht fï¿½r "schedule1"
 		ArrayList<BusStartTime> s1StartTimes = new ArrayList<BusStartTime>();
 		ArrayList<Waypoint> s1Stations = new ArrayList<Waypoint>();
 		s1StartTimes.add(new BusStartTime(0, BusDirection.NORMAL));
-		s1Stations.add(w1); //Hier MUSS auf die zuvor erzeugten Wegpunkte zurückgegriffen werden
+		s1Stations.add(w1); //Hier MUSS auf die zuvor erzeugten Wegpunkte zurï¿½ckgegriffen werden
 		s1Stations.add(w2);
 		s1Stations.add(w3);
 		s1Stations.add(w4);
@@ -87,7 +87,7 @@ public class SimulationFrameLauncher {
 		ArrayList<BusStartTime> s2StartTimes = new ArrayList<BusStartTime>();
 		ArrayList<Waypoint> s2Stations = new ArrayList<Waypoint>();
 		s2StartTimes.add(new BusStartTime(5, BusDirection.NORMAL));
-		s2Stations.add(w1); //Hier MUSS auf die zuvor erzeugten Wegpunkte zurückgegriffen werden
+		s2Stations.add(w1); //Hier MUSS auf die zuvor erzeugten Wegpunkte zurï¿½ckgegriffen werden
 		s2Stations.add(w3);
 		s2Stations.add(w4);
 		s2Stations.add(w8);
@@ -100,7 +100,7 @@ public class SimulationFrameLauncher {
 		ArrayList<BusStartTime> s3StartTimes = new ArrayList<BusStartTime>();
 		ArrayList<Waypoint> s3Stations = new ArrayList<Waypoint>();
 		s3StartTimes.add(new BusStartTime(5, BusDirection.NORMAL));
-		s3Stations.add(w7); //Hier MUSS auf die zuvor erzeugten Wegpunkte zurückgegriffen werden
+		s3Stations.add(w7); //Hier MUSS auf die zuvor erzeugten Wegpunkte zurï¿½ckgegriffen werden
 		s3Stations.add(w8);
 		s3Stations.add(w1);
 		s3 = new Schedule(s3Stations, s3StartTimes, 0, "3");
@@ -130,11 +130,12 @@ public class SimulationFrameLauncher {
 		stations.add(w7);
 		stations.add(w8);
 		blueprint.setSchedules(schedules); //Alle Linien setzen
-		blueprint.setStations(stations); //Alle Punkte setzen, auf welchen Straßen zu Stationen umgewandelt werden sollen
+		blueprint.setStations(stations); //Alle Punkte setzen, auf welchen Straï¿½en zu Stationen umgewandelt werden sollen
 		town.setBlueprint(blueprint);
 		blueprint.generate(town);
 		town.applyBlueprint();
 		town.getStatistics().print();*/
+		
 		// Create all components
 		frame = new JFrame("Generic Traffic Simulator");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

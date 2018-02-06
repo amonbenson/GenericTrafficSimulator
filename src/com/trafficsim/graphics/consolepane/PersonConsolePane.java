@@ -28,6 +28,13 @@ public class PersonConsolePane extends ConsolePane {
 	public void paintComponent(Graphics g) {
 		clear();
 		
+		// Don't draw console if town is null
+		if (town == null) {
+			append("No town.");
+			super.paintComponent(g);
+			return;
+		}
+		
 		// List all busses
 		append("%A0A0A0Bus List (" + town.getBusses().size() + ")");
 		lineBusList = getNumLines();
