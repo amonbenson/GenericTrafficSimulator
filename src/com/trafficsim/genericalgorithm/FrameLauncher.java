@@ -25,6 +25,8 @@ import com.trafficsim.town.Town;
  */
 public class FrameLauncher implements Simulator {
 
+	private Random random;
+	
 	private GenericAlgorithm ga;
 
 	/**
@@ -81,6 +83,8 @@ public class FrameLauncher implements Simulator {
 
 	public FrameLauncher() {
 
+		random = new Random(123);
+		
 		// Logger stuff
 		Simulation.logger.setLevel(Level.ALL);
 		GAFrameLauncher.logger.setLevel(Level.ALL);
@@ -121,9 +125,9 @@ public class FrameLauncher implements Simulator {
 				gaFrameLauncher.getFrame().getY() + GraphicsFX.highDPI(100));
 		simFrameLauncher.getFrame().setLocation(GraphicsFX.highDPI(10), GraphicsFX.highDPI(10));
 
-		gaRuntime = 100; // Terminate after n generations
+		gaRuntime = 10; // Terminate after n generations
 		gaPopSize = 10; // Individuals per population
-		townRuntime = 1000; // Calc fitness after n ticks of simulation
+		townRuntime = 100; // Calc fitness after n ticks of simulation
 		simulationTickSpeed = -1; // DEBUGGING ONLY! Time for one simulation
 									// tick
 
@@ -169,7 +173,7 @@ public class FrameLauncher implements Simulator {
 		}
 
 		// Create our genetic algorithm
-		Random random = new Random(93827);
+		
 		ga = new GenericAlgorithm(this, gaPopSize, 0.05, 0.95, 2, random);
 
 		// Initialize population
@@ -206,16 +210,14 @@ public class FrameLauncher implements Simulator {
 		Town town;
 		float[][][] map = Simulation.testTown();
 
-		Random r = new Random();
-
 		try {
 			// Create a town simulation
 			// TODO Make the real chromosom to town conversion
-			simulation = new Simulation(new Town(map.length, map[0].length, r));
+			simulation = new Simulation(new Town(map.length, map[0].length, random));
 			town = simulation.getTown();
 			town.generateTiles(map); // Landschaftskarte
 
-			Blueprint testing = BlueprintConverter.convert(individual.getChromosomes(), map, r);
+			Blueprint testing = BlueprintConverter.convert(individual.getChromosomes(), map, random);
 			town.setBlueprint(testing);
 
 			testing.generate(simulation.getTown());
