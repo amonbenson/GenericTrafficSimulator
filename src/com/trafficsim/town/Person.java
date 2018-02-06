@@ -120,7 +120,11 @@ public class Person {
 	public String getName() {
 		return name;
 	}
-
+	
+	public long getTimeStart() {
+		return timeStart;
+	}
+	
 	public void setName(String name) {
 		this.name = name;
 	}

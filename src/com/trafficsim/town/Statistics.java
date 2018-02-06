@@ -27,7 +27,7 @@ public class Statistics {
 		
 	}
 	
-	public void print() {
+	public void print(Town t) {
 		System.out.println("Route found: "+countRouteFound);
 		System.out.println("No Station found: "+countNoStationFound + " ("+countNoStationFound/((float)errorNoRoute+countRouteFound)*100f+"%)");
 		System.out.println("No Route found: "+countNoRouteFound + " ("+countNoRouteFound/((float)errorNoRoute)*100f+"%)");
@@ -40,7 +40,7 @@ public class Statistics {
 			System.out.print(w.getX()+":"+w.getY()+"\n");
 		}
 		System.out.println("Insgesamte Zeit für den Transport:");
-		System.out.println(getMedianTravelTime());
+		System.out.println(getAverageTravelTime(t));
 	}
 	
 	
@@ -118,48 +118,100 @@ public class Statistics {
 	}
 	
 	/**
-	 * Gibt das arithmetische Mittel aller benötigten Reisezeiten von angekommenden Menschen zurück
+	 * Gibt das arithmetische Mittel aller benötigten Reisezeiten von angekommenden Menschen zurück.
+	 * In TravelTime sind nur die erfolgreichen Transporte geloggt, daher müssen noch die Fehler+
+	 * nicht transportierten Personen hinzugefügt werden.
 	 * @return
 	 */
-	public float getAverageTravelTime() {
+	public float getAverageTravelTime(Town t) {
 		long sum = 0;
-		for (RouteTime r : travelTimes) {
+		for (RouteTime r : travelTimes) { //Erfolgreiche Transporte hinzufügen
 			sum += r.getDuration();
 		}
-		return (float)sum/(float)travelTimes.size();
+		sum += errorNoRoute*Integer.MAX_VALUE; //Fehler betrachten und mitzählen
+		
+		//Personen hinzuzählen, die irgendwo noch rumstehen:
+			//in Bussen:
+		ArrayList<Bus> busses = t.getBusses();
+		int personCounter=0;
+		for ( Bus b : busses ) {
+			ArrayList<Person> persons = b.getPersons();
+			for ( Person p : persons ) {
+				sum += t.getTime() - p.getTimeStart(); //Fügt die Differenz hinzu, wie lange der Mensch schon wartet
+				personCounter++;
+			}
+		}
+			//in Stationen:
+		ArrayList<StreetTile> streets = t.getStreetTiles();
+		for ( StreetTile street : streets ) {
+			if (street.isStation()) {
+				ArrayList<Person> persons = street.getPersons();
+				for ( Person p : persons ) {
+					sum += (t.getTime() - p.getTimeStart()); //Fügt die Differenz hinzu, wie lange der Mensch schon wartet
+					personCounter++;
+				}
+			}
+		}
+		return (float)sum/(float)(travelTimes.size() + errorNoRoute + personCounter);
 	}
 	/**
 	 * Gibt den Median der benötigten Reisezeit aller gereisten (angekommenden) Menschen zurück
 	 * @return
 	 */
-	public float getMedianTravelTime() {
-		if (travelTimes.size() <= 1) {
-			if (travelTimes.size() == 1) {
-				return travelTimes.get(0).getDuration();
+	public float getMedianTravelTime(Town t) {
+		ArrayList<Long> times = new ArrayList<Long>();
+		//TravelTimes (erfolgreiche Transporte) hinzufügen
+		for ( RouteTime r : travelTimes ) {
+			times.add(r.getDuration());
+		}
+		//Fehler hinzufügen
+		for (int i=0;i<errorNoRoute;i++) {
+			times.add(Long.MAX_VALUE);
+		}
+		
+		//Personen hinzuzählen, die irgendwo noch rumstehen:
+		//in Bussen:
+		ArrayList<Bus> busses = t.getBusses();
+		for ( Bus b : busses ) {
+			ArrayList<Person> persons = b.getPersons();
+			for ( Person p : persons ) {
+				times.add(t.getTime() - p.getTimeStart()); //Fügt die Differenz hinzu, wie lange der Mensch schon wartet
+			}
+		}
+		//in Stationen:
+		ArrayList<StreetTile> streets = t.getStreetTiles();
+		for ( StreetTile street : streets ) {
+			if (street.isStation()) {
+				ArrayList<Person> persons = street.getPersons();
+				for ( Person p : persons ) {
+					times.add(t.getTime() - p.getTimeStart()); //Fügt die Differenz hinzu, wie lange der Mensch schon wartet
+				}
+			}
+		}
+		
+		//Und sortieren (klein nach groß)
+		Collections.sort(times);
+		
+		if (times.size() <= 1) {
+			if (times.size() == 1) {
+				return times.get(0);
 			} else {
 				return Integer.MAX_VALUE;
 			}
 		}
-		ArrayList<RouteTime> copy = new ArrayList<RouteTime>(travelTimes);
-		Collections.sort(copy, new Comparator<RouteTime>() {
-		    public int compare(RouteTime o1, RouteTime o2) {
-		    	if (o1.getDuration() == o2.getDuration() ) return 0;
-		        return (o1.getDuration() < o2.getDuration() ? -1 : 1);
-		    }
-		});
 		
-		if (travelTimes.size() % 2 == 0) { //gerade Anzahl, arithmetisches Mittel vom Unter und Obermedian wird benötigt
+		if (times.size() % 2 == 0) { //gerade Anzahl, arithmetisches Mittel vom Unter und Obermedian wird benötigt
 			long lower, upper;
-			if (travelTimes.size() == 2) {
-				lower = copy.get(0).getDuration();
-				upper = copy.get(1).getDuration();
+			if (times.size() == 2) {
+				lower = times.get(0);
+				upper = times.get(1);
 			} else {
-				lower = copy.get(copy.size()/2).getDuration();
-				upper = copy.get(copy.size()/2+1).getDuration();
+				lower = times.get(times.size()/2);
+				upper = times.get(times.size()/2+1);
 			}
 			return (lower+upper)/2f;
 		} else { //einfach das mittlere Element picken
-			return copy.get((int)(copy.size()-1)/2).getDuration();
+			return times.get((int)(times.size()-1)/2);
 		}
 	}
 }

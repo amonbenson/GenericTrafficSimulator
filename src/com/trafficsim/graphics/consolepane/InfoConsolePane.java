@@ -95,7 +95,7 @@ public class InfoConsolePane extends ConsolePane {
 				+ GraphicsFX.round(
 						(s.getErrorNoRoute() / (float) (s.getErrorNoRoute() + s.getCounterRouteFound())) * 100, 2)
 				+ "%)");
-		append("Transport Time:\t" + s.getMedianTravelTime());
+		append("Transport Time:\t" + s.getAverageTravelTime(town));
 
 		// Repaint the super class
 		super.paintComponent(g);
