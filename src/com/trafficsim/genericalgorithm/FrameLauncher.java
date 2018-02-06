@@ -227,9 +227,6 @@ public class FrameLauncher implements Simulator {
 			town.setBlueprint(testing);
 			testing.generate(simulation.getTown());
 			town.applyBlueprint();
-
-			System.out.println(testing.getNumberBusses());
-			System.out.println(testing.getNumberStations());
 			
 		} catch (Exception ex) {
 			// Town generation not possible. return fitness of -1.
