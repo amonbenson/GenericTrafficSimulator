@@ -198,12 +198,16 @@ public class DescendantTreePane extends JComponent implements MouseListener, Mou
 		if (nodeY > history.getPopulationCount() - 1) return;
 		
 		// Get the corresponding h-individual
-		HPopulation p = history.getNthPopulation(history.getMaxPopulationCount() - nodeY - 1);
+		HPopulation p = history.getNthPopulation(history.getPopulationCount() - nodeY - 1);
 		HIndividual i = p.getIndividual(nodeX);
 		
-		// Pause ga
-		frameLauncherContext.gaFrameLauncher.pauseButton.setSelected(true);
+		// Pause GA
+		frameLauncherContext.gaFrameLauncher.playGA.setSelected(false);
 		frameLauncherContext.gaFrameLauncher.blockGA();
+
+		// Pause Sim
+		frameLauncherContext.gaFrameLauncher.playSim.setSelected(false);
+		frameLauncherContext.simFrameLauncher.updater.stop();
 		
 		// Load the town
 		Simulation simulation = new Simulation(new Town(frameLauncherContext.map.length, frameLauncherContext.map[0].length, frameLauncherContext.random));

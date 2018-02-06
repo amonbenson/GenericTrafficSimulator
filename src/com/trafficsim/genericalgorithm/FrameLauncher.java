@@ -104,7 +104,7 @@ public class FrameLauncher implements Simulator {
 
 		// Create the generic algorithm frame launcher
 		gaFrameLauncher = new GAFrameLauncher();
-		gaFrameLauncher.descendantTreePane.setFrameLauncherContext(this);
+		gaFrameLauncher.setFrameLauncherContext(this);
 
 		// Create the simulation frame launcher and create an automatic update thread
 		simFrameLauncher = new SimulationFrameLauncher();

@@ -11,6 +11,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 
+import com.trafficsim.genericalgorithm.FrameLauncher;
 import com.trafficsim.genericalgorithm.GenericAlgorithm;
 import com.trafficsim.genericalgorithm.GenericAlgorithmWatcher;
 import com.trafficsim.genericalgorithm.Individual;
@@ -29,12 +30,15 @@ public class GAFrameLauncher implements GenericAlgorithmWatcher {
 	private GenericAlgorithm ga;
 	private GenerationHistory history;
 
+	private FrameLauncher frameLauncherContext;
+
 	private JFrame frame;
 	private JScrollPane dtPaneScroller;
 	public DescendantTreePane descendantTreePane;
 
 	private JToolBar toolBar;
-	public JToggleButton pauseButton;
+	public JToggleButton playGA;
+	public JToggleButton playSim;
 	
 	private volatile boolean blockGA; // If this is true, the execution of the generic
 								// algorithm will be blocked.
@@ -47,13 +51,35 @@ public class GAFrameLauncher implements GenericAlgorithmWatcher {
 		toolBar = new JToolBar();
 		toolBar.setFloatable(false);
 		
-		pauseButton = new JToggleButton("Pause");
-		pauseButton.addActionListener(new ActionListener() {
+		playGA = new JToggleButton("gen. Algo.");
+		playGA.setSelected(true);
+		playGA.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				blockGA = pauseButton.isSelected();
+				blockGA = !playGA.isSelected();
+				
+				// Pause simulation when GA started
+				if (playGA.isSelected()) {
+					frameLauncherContext.gaFrameLauncher.playSim.setSelected(false);
+					frameLauncherContext.simFrameLauncher.updater.stop();
+				}
 			}
 		});
-		toolBar.add(pauseButton);
+		toolBar.add(playGA);
+		
+		playSim = new JToggleButton("Simulation");
+		playSim.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (playSim.isSelected()) frameLauncherContext.simFrameLauncher.updater.start();
+				else frameLauncherContext.simFrameLauncher.updater.stop();
+				
+				// Pause GA when simulation started
+				if (playSim.isSelected()) {
+					frameLauncherContext.gaFrameLauncher.playGA.setSelected(false);
+					frameLauncherContext.gaFrameLauncher.blockGA();
+				}
+			}
+		});
+		toolBar.add(playSim);
 		
 		frame.add(BorderLayout.NORTH, toolBar);
 		
@@ -147,5 +173,10 @@ public class GAFrameLauncher implements GenericAlgorithmWatcher {
 
 	public GenerationHistory getGenerationHistory() {
 		return history;
+	}
+
+	public void setFrameLauncherContext(FrameLauncher frameLauncherContext) {
+		this.frameLauncherContext = frameLauncherContext;
+		descendantTreePane.setFrameLauncherContext(frameLauncherContext);
 	}
 }
