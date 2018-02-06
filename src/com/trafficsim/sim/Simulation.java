@@ -72,11 +72,12 @@ public class Simulation {
 	 * Gibt eine Teststadt zurück.
 	 */
 	public static float[][][] testTown() {
-		float[][][] townList = new float[10][10][2];
+		float[][][] townList = new float[10][10][3];
 		for (int x = 0; x < 10; x++) {
 			for (int y = 0; y < 10; y++) {
 				townList[x][y][0] = 1; //Haus
-				townList[x][y][1] = 10;
+				townList[x][y][1] = 10; //Anzahl Bewohner
+				townList[x][y][2] = 5; //Interessenfaktor, wie viele Leute wollen hier hin
 			}
 		}
 		//Hauptstraße:
@@ -115,11 +116,12 @@ public class Simulation {
 	}
 	
 	public static float[][][] testTown3x3() {
-		float[][][] townList = new float[3][3][2];
+		float[][][] townList = new float[3][3][3];
 		for (int x = 0; x < 3; x++) {
 			for (int y = 0; y < 3; y++) {
 				townList[x][y][0] = 1; //Haus
 				townList[x][y][1] = 10; //10 Einwohner
+				townList[x][y][2] = 5; //Interessenfaktor, wie viele Leute wollen hier hin
 			}
 		}
 		

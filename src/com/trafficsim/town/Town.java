@@ -36,6 +36,8 @@ public class Town implements Updateable {
 	private ArrayList<Bus> busses; //alle Busse der Stadt
 	private ArrayList<Person> persons; //alle Personen der Stadt
 	private long time; //aktuelle Zeit der Stadt
+	private int allNumberOfPersons; //Die zuletzt berechnete Gesamtanzahl an Personen
+	private float allInterestFactor; //Der zuletzt berechnete Faktor aller Interessenfaktoren aller Häuser
 	private Random random; //jede Stadt besitzt einen eigenen Randomgenerator (so können bestimmte Szenarien erneut simuliert werden)
 	/**
 	 * Einstellung für das Erzeugung von Routen von Personen.
@@ -86,6 +88,8 @@ public class Town implements Updateable {
 		busses = new ArrayList<Bus>();
 		persons = new ArrayList<Person>();
 		time = 0;
+		allInterestFactor = Float.NaN;
+		allNumberOfPersons = -1;
 		
 		statistics = new Statistics();
 	}
@@ -115,12 +119,14 @@ public class Town implements Updateable {
 				if (list[x][y][0] == 0) { //Straße
 					tiles[x][y] = new StreetTile(x, y, list[x][y][1]);
 				} else if (list[x][y][0] == 1) { //Haus
-					tiles[x][y] = new HouseTile(x, y, (int) list[x][y][1]);
+					tiles[x][y] = new HouseTile(x, y, (int) list[x][y][1], list[x][y][2]);
 				} else {
 					Simulation.logger.warning("Liste["+x+"]["+y+"][0] ist kein gültiger Typ! ("+list[x][y][0]+")");
 				}
 			}
 		}
+		calcAllInterest();
+		calcAllNumberOfPersons();
 	}
 
 	public ArrayList<Bus> getBusses() {
@@ -198,6 +204,54 @@ public class Town implements Updateable {
 		return back;
 	}
 	
+	/**
+	 * Gibt ein Haus zurück, wobei ein Haus mit höherer Anzahl an numberPersons häufiger zurückgegeben wird.
+	 */
+	public Tile getHouseTileWithProbability_NumberPersons() {
+		float whichTile = random.nextFloat();
+		float probabilityCounter = 0;
+		Tile selected = null;
+		for (int x=0;x<tiles.length;x++) {
+			for (int y=0;y<tiles[0].length;y++) {
+				if (tiles[x][y] instanceof HouseTile) {
+					float probability = ((HouseTile)tiles[x][y]).getNumberPersons() / (float)getLastAllNumberOfPersons();
+					if (whichTile <= probability+probabilityCounter && whichTile >= probabilityCounter) {
+						selected = tiles[x][y];
+						break;
+					}
+					probabilityCounter+=probability;
+				}
+			}
+		}
+		if (selected == null) {
+			Simulation.logger.warning("getHouseTileWithProbability_NumberPersons hat nichts gefunden! Komischer Fehler, untersuchen.");
+		}
+		return selected;
+	}
+	
+
+	public Tile getHouseTileWithProbability_InterestFactor() {
+		float whichTile = random.nextFloat();
+		float probabilityCounter = 0;
+		Tile selected = null;
+		for (int x=0;x<tiles.length;x++) {
+			for (int y=0;y<tiles[0].length;y++) {
+				if (tiles[x][y] instanceof HouseTile) {
+					float probability = ((HouseTile)tiles[x][y]).getFactorInterest() / getLastAllInterest();
+					if (whichTile <= probability+probabilityCounter && whichTile >= probabilityCounter) {
+						selected = tiles[x][y];
+						break;
+					}
+					probabilityCounter+=probability;
+				}
+			}
+		}
+		if (selected == null) {
+			Simulation.logger.warning("getHouseTileWithProbability_InterestFactor hat nichts gefunden! Komischer Fehler, untersuchen.");
+		}
+		return selected;
+	}
+	
 	public ArrayList<Event> getEvents() {
 		return events;
 	}
@@ -219,6 +273,51 @@ public class Town implements Updateable {
 	
 	public Blueprint getBlueprint() {
 		return blueprint;
+	}
+	
+	public int calcAllNumberOfPersons() {
+		allNumberOfPersons = 0;
+		for (int x=0;x<tiles.length;x++) {
+			for (int y=0;y<tiles[0].length;y++) {
+				if (tiles[x][y] instanceof HouseTile) {
+					allNumberOfPersons += ((HouseTile) tiles[x][y]).getNumberPersons();
+				}
+			}
+		}
+		return getLastAllNumberOfPersons();
+	}
+	
+	public int getLastAllNumberOfPersons() {
+		if (allNumberOfPersons == -1) {
+			Simulation.logger.warning("allNumberOfPersons wurde noch nicht berechnet, richtiges PersonenRouting kann nicht klappen.");
+		}
+		return allNumberOfPersons;
+	}
+	
+	/**
+	 * Gibt die Summe aller Interessenfaktoren aller Häuser zurück.
+	 * Diese ist sehr wichtig, um die Wahrscheinlichkeit für die Ankunft in einem Haus zu berechnen.
+	 */
+	public float calcAllInterest() {
+		allInterestFactor = 0;
+		for (int x=0;x<tiles.length;x++) {
+			for (int y=0;y<tiles[0].length;y++) {
+				if (tiles[x][y] instanceof HouseTile) {
+					allInterestFactor += ((HouseTile) tiles[x][y]).getFactorInterest();
+				}
+			}
+		}
+		return getLastAllInterest();
+	}
+	/**
+	 * Ist dieser Float.NaN, wurde dieser noch nicht berechnet.
+	 * @return
+	 */
+	public float getLastAllInterest() {
+		if (allInterestFactor == Float.NaN) {
+			Simulation.logger.warning("AllInterestFactor wurde noch nicht berechnet, richtiges PersonenRouting kann nicht klappen.");
+		}
+		return allInterestFactor;
 	}
 	
 	/**
@@ -516,13 +615,96 @@ public class Town implements Updateable {
 				events.add(re);
 				return true;
 			}
-			//System.out.println("Origin:"+origin.getNextStation());
-			//System.out.println("Target:"+target.getNextStation());
-			//System.out.println("NULL:(");
-			//System.out.println(path);
 			
 			return false;
 			
+		} else if (personRoutingOption == PersonRoutingOption.HOUSE_START_RANDOM_END) {
+			Tile origin = getHouseTileWithProbability_NumberPersons();
+			Tile target = getRandomTileWithExclude(origin);
+			
+			//Wenn der Start oder Ende schiefgegangen ist, wird davon ausgegangen, dass der Mensch nie ein Ziel findet.
+			if (origin.getNextStation() == null || target.getNextStation() == null) {
+				List<DefaultWeightedEdge> path = getPathForPerson(origin, target);
+				Route r = pathToRoute(path); //Nochmal machen, um Fehler zu loggen
+				if (r!=null) {
+					Simulation.logger.warning("Komischer Fehler, sollte nie passieren");
+				}
+				return false;
+			}
+			
+			/**
+			 * Wenn Start und Ziel die gleiche Station anfahren wollen muss erneut ein Ziel ausgewählt werden.
+			 * Das gleiche Auswählen ist kein Fehler, muss jedoch einfach erneut ausprobiert werden.
+			 * Dafür wird jedoch einfach ein anderes Ziel anvisiert, es wird NICHT als Fehler geloggt.
+			 * ACHTUNG: HIER KÖNNTE DER ALGORITHMUS HÄNGEN BLEIBEN
+			 */
+			while ( true ) {
+				if (origin.getNextStation().getX() == target.getNextStation().getX() &&
+					origin.getNextStation().getY() == target.getNextStation().getY() ) {
+					target = getRandomTileNearStation();
+				} else { //sonst ist alles super, Schleife abbrechen
+					break;
+				}
+			}
+
+			List<DefaultWeightedEdge> path = getPathForPerson(origin, target);
+			Route r = pathToRoute(path);
+			if (r != null) {
+				RoutingEvent re = new RoutingEvent(0, p, r);
+				events.add(re);
+				return true;
+			}
+			
+			return false;
+			
+		} else if (personRoutingOption == PersonRoutingOption.HOUSE_START_HOUSE_END) {
+			Tile origin = getHouseTileWithProbability_NumberPersons();
+			Tile target = getHouseTileWithProbability_InterestFactor();
+			int warn_counter=0;
+			while (!(origin.getX() == target.getX() && origin.getY() == target.getY())) {
+				target = getHouseTileWithProbability_InterestFactor();
+				warn_counter++;
+				if (warn_counter > 10000) {
+					Simulation.logger.warning("HOUSE_START_HOUSE_END loop detected. Please fix");
+					return false;
+				}
+			}
+			
+			
+			//Wenn der Start oder Ende schiefgegangen ist, wird davon ausgegangen, dass der Mensch nie ein Ziel findet.
+			if (origin.getNextStation() == null || target.getNextStation() == null) {
+				List<DefaultWeightedEdge> path = getPathForPerson(origin, target);
+				Route r = pathToRoute(path); //Nochmal machen, um Fehler zu loggen
+				if (r!=null) {
+					Simulation.logger.warning("Komischer Fehler, sollte nie passieren");
+				}
+				return false;
+			}
+			
+			/**
+			 * Wenn Start und Ziel die gleiche Station anfahren wollen muss erneut ein Ziel ausgewählt werden.
+			 * Das gleiche Auswählen ist kein Fehler, muss jedoch einfach erneut ausprobiert werden.
+			 * Dafür wird jedoch einfach ein anderes Ziel anvisiert, es wird NICHT als Fehler geloggt.
+			 * ACHTUNG: HIER KÖNNTE DER ALGORITHMUS HÄNGEN BLEIBEN
+			 */
+			while ( true ) {
+				if (origin.getNextStation().getX() == target.getNextStation().getX() &&
+					origin.getNextStation().getY() == target.getNextStation().getY() ) {
+					target = getRandomTileNearStation();
+				} else { //sonst ist alles super, Schleife abbrechen
+					break;
+				}
+			}
+
+			List<DefaultWeightedEdge> path = getPathForPerson(origin, target);
+			Route r = pathToRoute(path);
+			if (r != null) {
+				RoutingEvent re = new RoutingEvent(0, p, r);
+				events.add(re);
+				return true;
+			}
+			
+			return false;
 		} else {
 			Simulation.logger.severe("Routing Option is invalid!");
 			throw new java.lang.Error("Routing Option can not processed..");

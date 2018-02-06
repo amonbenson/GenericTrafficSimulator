@@ -79,7 +79,7 @@ public class FrameLauncher implements Simulator {
 	public FrameLauncher() {
 
 		// Logger stuff
-		Simulation.logger.setLevel(Level.SEVERE);
+		Simulation.logger.setLevel(Level.ALL);
 		GAFrameLauncher.logger.setLevel(Level.ALL);
 		
 		// Set laf
@@ -139,6 +139,7 @@ public class FrameLauncher implements Simulator {
 		int[] c = i.getChromosome();
 		
 		//TODO ENTFERNEN!
+		/*
 		int[] a = {1, 2, 3, 0, 10004, 
 				-1, 1, 2, 3, 3, 
 				100, 10, 
@@ -147,7 +148,7 @@ public class FrameLauncher implements Simulator {
 				-100, 0, 
 				0, 1};
 		i.setChromosome(a);
-		
+		*/
 		
 		// Set the gaframelauncher's ga
 		gaFrameLauncher.setGenericAlgorithm(ga);
@@ -190,6 +191,7 @@ public class FrameLauncher implements Simulator {
 			town.generateTiles(map); // Landschaftskarte
 
 			Blueprint testing = BlueprintConverter.convert(individual.getChromosome(), map);
+
 			town.setBlueprint(testing);
 			
 			testing.generate(simulation.getTown());

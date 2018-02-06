@@ -42,7 +42,8 @@ public class SimulationFrameLauncher {
 		
 		Random random = new Random(); //Seed ist optional
 		
-		float[][][] townLandscape = Simulation.testTown();
+		/*
+		float[][][] townLandscape = Simulation.testTown3x3();
 		Town town = new Town(townLandscape.length, townLandscape[0].length, random);
 		simulation = new Simulation(town);
 		town.generateTiles(townLandscape);
@@ -119,7 +120,7 @@ public class SimulationFrameLauncher {
 
 		schedules.add(s3);
 		*/
-
+/*
 		stations.add(w1); //WICHTIG: dieser Punkt muss zuvor bereits erzeugt worden sein (siehe Schritt 6.2). Deswegen wird hier w1 verwendet.
 		stations.add(w2);
 		stations.add(w3);
@@ -133,21 +134,21 @@ public class SimulationFrameLauncher {
 		town.setBlueprint(blueprint);
 		blueprint.generate(town);
 		town.applyBlueprint();
-		town.getStatistics().print();
+		town.getStatistics().print();*/
 		// Create all components
 		frame = new JFrame("Generic Traffic Simulator");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		townDesktopPane = new TownDesktopPane(this, simulation.getTown());
+		townDesktopPane = new TownDesktopPane(this, null);
 		frame.add(townDesktopPane);
 		
-		personConsolePane = new PersonConsolePane(this, simulation.getTown());
+		personConsolePane = new PersonConsolePane(this, null);
 		JScrollPane pcScroll = new JScrollPane(personConsolePane);
 		pcScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		pcScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		frame.add(BorderLayout.EAST, pcScroll);
 		
-		infoConsolePane = new InfoConsolePane(this, simulation.getTown());
+		infoConsolePane = new InfoConsolePane(this, null);
 		JScrollPane ecScroll = new JScrollPane(infoConsolePane);
 		ecScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		ecScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);

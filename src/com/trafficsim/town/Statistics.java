@@ -137,7 +137,7 @@ public class Statistics {
 			if (travelTimes.size() == 1) {
 				return travelTimes.get(0).getDuration();
 			} else {
-				return -1;
+				return Integer.MAX_VALUE;
 			}
 		}
 		ArrayList<RouteTime> copy = new ArrayList<RouteTime>(travelTimes);
