@@ -3,6 +3,7 @@ package com.trafficsim.graphics.ga;
 import java.util.logging.Logger;
 
 import javax.swing.JFrame;
+import javax.swing.JScrollPane;
 
 import com.trafficsim.genericalgorithm.GenericAlgorithm;
 import com.trafficsim.genericalgorithm.GenericAlgorithmWatcher;
@@ -23,6 +24,7 @@ public class GAFrameLauncher implements GenericAlgorithmWatcher {
 	private GenerationHistory history;
 
 	private JFrame frame;
+	private JScrollPane dtPaneScroller;
 	private DescendantTreePane descendantTreePane;
 	
 	private boolean blockGA; // If this is true, the execution of the generic
@@ -33,7 +35,10 @@ public class GAFrameLauncher implements GenericAlgorithmWatcher {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		descendantTreePane = new DescendantTreePane();
-		frame.add(descendantTreePane);
+		dtPaneScroller = new JScrollPane(descendantTreePane);
+		dtPaneScroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		dtPaneScroller.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		frame.add(dtPaneScroller);
 
 		frame.setAlwaysOnTop(true);
 		frame.setSize(GraphicsFX.highDPI(400), GraphicsFX.highDPI(300));
@@ -101,6 +106,7 @@ public class GAFrameLauncher implements GenericAlgorithmWatcher {
 		
 		// Update the descendant tree
 		descendantTreePane.repaint();
+		dtPaneScroller.revalidate();
 	}
 
 	public JFrame getFrame() {

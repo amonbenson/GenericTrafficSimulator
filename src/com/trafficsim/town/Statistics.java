@@ -15,7 +15,7 @@ public class Statistics {
 	private int countRouteSameTargets = 0; //"Fehler", wenn Start und Ziel gleich sind
 	private int errorNoRoute = 0; //insgesamte Fehler wenn irgendwie keine Route gefunden wurden konnte
 	private int countRouteFound = 0;
-	//Fehler, wenn keine Route erzeugt wird, weil der Weg zu umständlich ist.
+	//Fehler, wenn keine Route erzeugt wird, weil der Weg zu umstï¿½ndlich ist.
 	private int countCrypleErrors = 0;
 	private HashSet<Tile> noStationNearby;
 	
@@ -41,7 +41,7 @@ public class Statistics {
 			Tile w = i.next();
 			System.out.print(w.getX()+":"+w.getY()+"\n");
 		}
-		System.out.println("Insgesamte Zeit für den Transport:");
+		System.out.println("Insgesamte Zeit fï¿½r den Transport:");
 		System.out.println(getAverageTravelTime(t));
 	}
 	
@@ -98,7 +98,7 @@ public class Statistics {
 	}
 
 	/**
-	 * Zählt nicht als Fehler, der Algorithmus ist ja nicht Schuld
+	 * Zï¿½hlt nicht als Fehler, der Algorithmus ist ja nicht Schuld
 	 */
 	public void addRouteSameTargets() {
 		countRouteSameTargets++;
@@ -124,25 +124,25 @@ public class Statistics {
 	}
 	
 	/**
-	 * Gibt das arithmetische Mittel aller benötigten Reisezeiten von angekommenden Menschen zurück.
-	 * In TravelTime sind nur die erfolgreichen Transporte geloggt, daher müssen noch die Fehler+
-	 * nicht transportierten Personen hinzugefügt werden.
+	 * Gibt das arithmetische Mittel aller benï¿½tigten Reisezeiten von angekommenden Menschen zurï¿½ck.
+	 * In TravelTime sind nur die erfolgreichen Transporte geloggt, daher mï¿½ssen noch die Fehler+
+	 * nicht transportierten Personen hinzugefï¿½gt werden.
 	 * @return
 	 */
 	public float getAverageTravelTime(Town t) {
 		BigDecimal sumBig = new BigDecimal(0);
 		long sum = 0;
-		for (RouteTime r : travelTimes) { //Erfolgreiche Transporte hinzufügen
+		for (RouteTime r : travelTimes) { //Erfolgreiche Transporte hinzufï¿½gen
 			sumBig = sumBig.add(new BigDecimal(r.getDuration()));
 			sum += r.getDuration();
 		}
 
-		sum += errorNoRoute*Integer.MAX_VALUE; //Fehler betrachten und mitzählen
+		sum += errorNoRoute*Integer.MAX_VALUE; //Fehler betrachten und mitzï¿½hlen
 		BigDecimal a = new BigDecimal(errorNoRoute);
 		BigDecimal mul = a.multiply(new BigDecimal(Integer.MAX_VALUE));
 
 		sumBig = sumBig.add(mul);
-		//Personen hinzuzählen, die irgendwo noch rumstehen:
+		//Personen hinzuzï¿½hlen, die irgendwo noch rumstehen:
 			//in Bussen:
 		ArrayList<Bus> busses = t.getBusses();
 		int personCounter=0;
@@ -150,7 +150,7 @@ public class Statistics {
 			ArrayList<Person> persons = b.getPersons();
 			for ( Person p : persons ) {
 				sumBig = sumBig.add(new BigDecimal(t.getTime() - p.getTimeStart()));
-				sum += (t.getTime() - p.getTimeStart()); //Fügt die Differenz hinzu, wie lange der Mensch schon wartet
+				sum += (t.getTime() - p.getTimeStart()); //Fï¿½gt die Differenz hinzu, wie lange der Mensch schon wartet
 				personCounter++;
 			}
 		}
@@ -161,7 +161,7 @@ public class Statistics {
 				ArrayList<Person> persons = street.getPersons();
 				for ( Person p : persons ) {
 					sumBig = sumBig.add(new BigDecimal(t.getTime() - p.getTimeStart()));
-					sum += (t.getTime() - p.getTimeStart()); //Fügt die Differenz hinzu, wie lange der Mensch schon wartet
+					sum += (t.getTime() - p.getTimeStart()); //Fï¿½gt die Differenz hinzu, wie lange der Mensch schon wartet
 					personCounter++;
 				}
 			}
@@ -183,27 +183,27 @@ public class Statistics {
 		return (float)sum/(float)(elems);*/
 	}
 	/**
-	 * Gibt den Median der benötigten Reisezeit aller gereisten (angekommenden) Menschen zurück
+	 * Gibt den Median der benï¿½tigten Reisezeit aller gereisten (angekommenden) Menschen zurï¿½ck
 	 * @return
 	 */
 	public float getMedianTravelTime(Town t) {
 		ArrayList<Long> times = new ArrayList<Long>();
-		//TravelTimes (erfolgreiche Transporte) hinzufügen
+		//TravelTimes (erfolgreiche Transporte) hinzufï¿½gen
 		for ( RouteTime r : travelTimes ) {
 			times.add(r.getDuration());
 		}
-		//Fehler hinzufügen
+		//Fehler hinzufï¿½gen
 		for (int i=0;i<errorNoRoute;i++) {
 			times.add(Long.MAX_VALUE);
 		}
 		
-		//Personen hinzuzählen, die irgendwo noch rumstehen:
+		//Personen hinzuzï¿½hlen, die irgendwo noch rumstehen:
 		//in Bussen:
 		ArrayList<Bus> busses = t.getBusses();
 		for ( Bus b : busses ) {
 			ArrayList<Person> persons = b.getPersons();
 			for ( Person p : persons ) {
-				times.add(t.getTime() - p.getTimeStart()); //Fügt die Differenz hinzu, wie lange der Mensch schon wartet
+				times.add(t.getTime() - p.getTimeStart()); //Fï¿½gt die Differenz hinzu, wie lange der Mensch schon wartet
 			}
 		}
 		//in Stationen:
@@ -212,12 +212,12 @@ public class Statistics {
 			if (street.isStation()) {
 				ArrayList<Person> persons = street.getPersons();
 				for ( Person p : persons ) {
-					times.add(t.getTime() - p.getTimeStart()); //Fügt die Differenz hinzu, wie lange der Mensch schon wartet
+					times.add(t.getTime() - p.getTimeStart()); //Fï¿½gt die Differenz hinzu, wie lange der Mensch schon wartet
 				}
 			}
 		}
 		
-		//Und sortieren (klein nach groß)
+		//Und sortieren (klein nach groï¿½)
 		Collections.sort(times);
 		
 		if (times.size() <= 1) {
@@ -228,7 +228,7 @@ public class Statistics {
 			}
 		}
 		
-		if (times.size() % 2 == 0) { //gerade Anzahl, arithmetisches Mittel vom Unter und Obermedian wird benötigt
+		if (times.size() % 2 == 0) { //gerade Anzahl, arithmetisches Mittel vom Unter und Obermedian wird benï¿½tigt
 			long lower, upper;
 			if (times.size() == 2) {
 				lower = times.get(0);
