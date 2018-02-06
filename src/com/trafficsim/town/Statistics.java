@@ -169,7 +169,6 @@ public class Statistics {
 		int elems = travelTimes.size() + errorNoRoute + personCounter;
 		if (elems != 0) {
 			sumBig = sumBig.divide(new BigDecimal(elems), 50, RoundingMode.CEILING);
-			System.out.println("Returning "+sumBig.floatValue());
 			return sumBig.floatValue();
 		} else {
 			return 9999999f;
