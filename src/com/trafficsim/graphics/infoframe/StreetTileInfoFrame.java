@@ -17,6 +17,7 @@ public class StreetTileInfoFrame extends InfoFrame {
 	private StreetTile tile, nextStation;
 	
 	private JButton openNextStation;
+	private JLabel busTime;
 	
 	private PersonList personList;
 	private BusScheduleList busList;
@@ -35,6 +36,7 @@ public class StreetTileInfoFrame extends InfoFrame {
 		add(openNextStation);
 
 		add(new JLabel("Speed: " + GraphicsFX.round(tile.getMaxSpeed(), 3)));
+
 		
 		personList = new PersonList();
 		JScrollPane personS = new JScrollPane(personList);

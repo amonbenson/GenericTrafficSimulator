@@ -46,9 +46,9 @@ public class SimulationFrameLauncher {
 		
 		Random random = new Random(); //Seed ist optional
 		
-		/*
-		float[][][] townLandscape = Simulation.testTown3x3();
-		Town town = new Town(townLandscape.length, townLandscape[0].length, random);
+		
+		float[][][] townLandscape = Simulation.testTown();
+		town = new Town(townLandscape.length, townLandscape[0].length, random);
 		simulation = new Simulation(town);
 		town.generateTiles(townLandscape);
 		Blueprint blueprint = new Blueprint(townLandscape);
@@ -109,22 +109,7 @@ public class SimulationFrameLauncher {
 		s3Stations.add(w1);
 		s3 = new Schedule(s3Stations, s3StartTimes, 0, "3");
 		schedules.add(s3);
-		
-		/*
-		Schedule s3 = null;
 
-		Schedule s3 = null;
-		ArrayList<BusStartTime> s3StartTimes = new ArrayList<BusStartTime>();
-		ArrayList<Waypoint> s3Stations = new ArrayList<Waypoint>();
-		s3StartTimes.add(new BusStartTime(20, BusDirection.NORMAL));
-		s3Stations.add(w7);
-		s3Stations.add(w8);
-		s3Stations.add(w1);
-		s3 = new Schedule(s3Stations, s3StartTimes, 0, "3");
-
-		schedules.add(s3);
-		*/
-/*
 		stations.add(w1); //WICHTIG: dieser Punkt muss zuvor bereits erzeugt worden sein (siehe Schritt 6.2). Deswegen wird hier w1 verwendet.
 		stations.add(w2);
 		stations.add(w3);
@@ -138,28 +123,28 @@ public class SimulationFrameLauncher {
 		town.setBlueprint(blueprint);
 		blueprint.generate(town);
 		town.applyBlueprint();
-		town.getStatistics().print();*/
+		town.getStatistics().print(town);
 		
-		
-		float[][][] townLandscape = Simulation.testTown3x3();
+		/*
+		float[][][] townLandscape = Simulation.testTown();
 		town = new Town(townLandscape.length, townLandscape[0].length, random);
 		simulation = new Simulation(town);
 		town.generateTiles(townLandscape);
 		
 		int[] chromo = {1, 2, 3, 0, 10004, 
 			-1, 1, 3, 3, 1, //Stationen, die angefahren werden
-			100, 10, //Startzeit, Richtung
-			-1, -17, 
+			0, 10, //Startzeit, Richtung
+			1, 10, 
 			-1, -2, 
 			-100, 0, 
-			0, 1};
+			-1, 1};
 		
 		Blueprint testing = BlueprintConverter.convertStandard(chromo, townLandscape);
 		System.out.println(testing);
 		town.setBlueprint(testing);
 		testing.generate(town);
 		town.applyBlueprint();
-		
+		*/
 		// Create all components
 		frame = new JFrame("Generic Traffic Simulator");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

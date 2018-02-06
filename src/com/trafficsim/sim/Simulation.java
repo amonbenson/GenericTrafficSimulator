@@ -111,9 +111,13 @@ public class Simulation {
 			townList[6+x][7][0] = 0;
 			townList[6+x][7][1] = 0.25f;
 		}
-		
+		townList[9][9][2] = 5000;
 		return townList;
 	}
+	
+	/*public static float[][][] testTownManhatten() {
+		float[][][] town = new float[25][2][3];
+	}*/
 	
 	public static float[][][] testTown3x3() {
 		float[][][] townList = new float[3][3][3];

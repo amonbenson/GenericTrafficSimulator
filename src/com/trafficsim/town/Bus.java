@@ -36,6 +36,7 @@ public class Bus extends Entity {
 		this.schedule = schedule;
 		this.town = town;
 		this.currentWaypoint = 0;
+		
 	}
 	
 	
@@ -89,21 +90,13 @@ public class Bus extends Entity {
 			}
 
 			
-			//Halte den Wegpunkt immer im richtigen Bereich: (Rotationsprinzip)
-			currentWaypoint++;
-			if (currentWaypoint>=schedule.getSchedule().getWaypointSize()) { //Hier wird die Richtung geändert, da die Endhaltestelle erreicht ist
-				if (schedule.isNormal()) {
-					schedule = schedule.getSchedule().getScheduleReverse();
-				} else {
-					schedule = schedule.getSchedule().getScheduleNormal();					
-				}
-				currentWaypoint = 0;
-			}
+
 			
 			
 			//Es wird immer davon ausgegangen, dass die aktuelle Koordinate eine Straße ist:
 			StreetTile st = (StreetTile) town.getTiles()[(int)getX()][(int)getY()];
 			if ( st.isStation() ) {
+				
 				//Personen umsteigen lassen: (oder aussteigen lassen)
 				for (Iterator<Person> iterator = persons.iterator(); iterator.hasNext();) {
 				    Person p = iterator.next();
@@ -139,9 +132,25 @@ public class Bus extends Entity {
 				}
 			}
 			
-			calcSpeed();
+				//Halte den Wegpunkt immer im richtigen Bereich: (Rotationsprinzip)
+				currentWaypoint++;
+				
+				if (currentWaypoint>=schedule.getSchedule().getWaypointSize()) { //Hier wird die Richtung geändert, da die Endhaltestelle erreicht ist
+					if (schedule.isNormal()) {
+						schedule = schedule.getSchedule().getScheduleReverse();
+						//Wenn der Switch dazu resultiert, dass die gleiche Station nochmal angefahren wird, currentWaypoint++ machen
+					} else {
+						schedule = schedule.getSchedule().getScheduleNormal();						
+					}
+					currentWaypoint = 1;
+				}
+
+				calcSpeed();
+			} else {
+				//Darf sich nicht bewegen
+			}
 		}
-	}
+	
 	
 	/**
 	 * Prüft, ob nächster Wegpunkt erreicht wurde ( Vergleich mithilfe genauer Koordinaten )

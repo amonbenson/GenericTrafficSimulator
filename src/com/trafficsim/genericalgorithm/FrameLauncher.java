@@ -251,9 +251,10 @@ public class FrameLauncher implements Simulator {
 
 		// Return the inverted average travel time as fitness TODO Don't do
 		// that.
-		double fitness = 1000.0 / town.getStatistics().getAverageTravelTime(currentTown);
-		if (fitness < 0) fitness = 0;
+		double fitness = 1 / town.getStatistics().getAverageTravelTime(currentTown);
 
+		System.out.println(fitness);
+		
 		currentTown = null;
 		return fitness;
 	}

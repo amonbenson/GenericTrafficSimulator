@@ -21,7 +21,7 @@ public enum PersonRoutingOption {
 	HOUSE_START_HOUSE_END;
 	
 	public static PersonRoutingOption getDefault() {
-		return HOUSE_START_RANDOM_END;
+		return HOUSE_START_HOUSE_END;
 	}
 	
 }

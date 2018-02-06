@@ -47,6 +47,7 @@ public class Schedule {
 	private SpecificSchedule scheduleNormal, scheduleReverse;
 	
 
+	public static final int FLAG_NO_INDEX=1234567890;
 	
 	public Schedule(ArrayList<Waypoint> stations, ArrayList<BusStartTime> busStartTimes, int minDelay, String name) {
 		this.stations = stations;
@@ -58,6 +59,7 @@ public class Schedule {
 		scheduleNormal = new SpecificSchedule(this, BusDirection.NORMAL);
 		scheduleReverse = new SpecificSchedule(this, BusDirection.REVERSE);
 		
+		this.minDelay = 10;
 		
 	}
 	
@@ -81,7 +83,7 @@ public class Schedule {
 				for (GridCell c : result) {
 					waypoints.add(new Waypoint(c.x+0.5, c.y+0.5));
 				}
-				waypoints.add(end);
+				//waypoints.add(end);
 				
 				start = stations.get(i);
 			}
@@ -254,12 +256,15 @@ public class Schedule {
 
 	/**
 	 * Gibt zurück, mit welcher Richtung der Bus schneller zur angegebenden Station kommt.
+	 * NULL wird zurückgegeben, falls einmal der Fehler no index auftratt.
 	 */
 	public BusDirection whichDirectionIsFaster(Waypoint start, Waypoint end) {
 		float timeNormal, timeReverse;
 		timeNormal = getTimeForBusDirectionNormal(start, end);
 		timeReverse = getTimeForBusDirectionReverse(start, end);
-		
+		if (timeNormal == FLAG_NO_INDEX || timeNormal == FLAG_NO_INDEX) {
+			return null;
+		}
 		return ( timeNormal <= timeReverse ? BusDirection.NORMAL : BusDirection.REVERSE );
 	}
 	
@@ -271,8 +276,8 @@ public class Schedule {
 		int indexEnd = getStationIndex((int) end.getX(), (int) end.getY());
 		
 		if (indexStart == -1 || indexEnd == -1) {
-			Simulation.logger.warning("Linie: " + name + " indexStart oder indexEnd konnte nicht gefunden werden! Start: "+start+",dessen Index:"+indexStart+":Ende:"+end+"dessen Index:"+indexEnd);
-			return 99999;
+			//Simulation.logger.warning("Linie: " + name + " indexStart oder indexEnd konnte nicht gefunden werden! Start: "+start+",dessen Index:"+indexStart+":Ende:"+end+"dessen Index:"+indexEnd);
+			return FLAG_NO_INDEX;
 		} else if (indexStart == indexEnd) {
 			Simulation.logger.warning("Start und End ist eine Station?"+start+":"+end);
 		}
@@ -303,8 +308,8 @@ public class Schedule {
 		int indexEnd = getStationIndex((int) end.getX(), (int) end.getY());
 		
 		if (indexStart == -1 || indexEnd == -1) {
-			Simulation.logger.warning(name + " indexStart oder indexEnd konnte nicht gefunden werden! Start: "+start+",dessen Index:"+indexStart+":Ende:"+end+"dessen Index:"+indexEnd);
-			return 99999;
+			//Simulation.logger.warning(name + " indexStart oder indexEnd konnte nicht gefunden werden! Start: "+start+",dessen Index:"+indexStart+":Ende:"+end+"dessen Index:"+indexEnd);
+			return FLAG_NO_INDEX;
 		} else if (indexStart == indexEnd) {
 			Simulation.logger.warning("Start und End ist eine Station?"+start+":"+end);
 		}

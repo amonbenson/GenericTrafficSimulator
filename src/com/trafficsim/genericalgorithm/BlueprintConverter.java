@@ -216,7 +216,7 @@ public class BlueprintConverter {
 				currentIndex=scheduleIndex+chromoScheduleStationLength+startTimeIndex;
 				int startTime = chromosome[currentIndex];
 				int direction = chromosome[currentIndex+1];
-				if (startTime>0) { //Wenn die Startzeit kleiner 0 ist soll sie nicht hinzugefügt werden
+				if (startTime>=0) { //Wenn die Startzeit kleiner 0 ist soll sie nicht hinzugefügt werden
 					BusDirection d;
 					if (direction % 2 == 0) { //Bei gerader Zahl soll die Richtung NORMAL sein
 						d = BusDirection.NORMAL;

@@ -1,5 +1,7 @@
 package com.trafficsim.town;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -117,6 +119,10 @@ public class Statistics {
 		travelTimes.add(r);
 	}
 	
+	public int getCounterRouteDone() {
+		return travelTimes.size();
+	}
+	
 	/**
 	 * Gibt das arithmetische Mittel aller benötigten Reisezeiten von angekommenden Menschen zurück.
 	 * In TravelTime sind nur die erfolgreichen Transporte geloggt, daher müssen noch die Fehler+
@@ -124,12 +130,18 @@ public class Statistics {
 	 * @return
 	 */
 	public float getAverageTravelTime(Town t) {
+		BigDecimal sumBig = new BigDecimal(0);
 		long sum = 0;
 		for (RouteTime r : travelTimes) { //Erfolgreiche Transporte hinzufügen
+			sumBig = sumBig.add(new BigDecimal(r.getDuration()));
 			sum += r.getDuration();
 		}
+
 		sum += errorNoRoute*Integer.MAX_VALUE; //Fehler betrachten und mitzählen
-		
+		BigDecimal a = new BigDecimal(errorNoRoute);
+		BigDecimal mul = a.multiply(new BigDecimal(Integer.MAX_VALUE));
+
+		sumBig = sumBig.add(mul);
 		//Personen hinzuzählen, die irgendwo noch rumstehen:
 			//in Bussen:
 		ArrayList<Bus> busses = t.getBusses();
@@ -137,7 +149,8 @@ public class Statistics {
 		for ( Bus b : busses ) {
 			ArrayList<Person> persons = b.getPersons();
 			for ( Person p : persons ) {
-				sum += t.getTime() - p.getTimeStart(); //Fügt die Differenz hinzu, wie lange der Mensch schon wartet
+				sumBig = sumBig.add(new BigDecimal(t.getTime() - p.getTimeStart()));
+				sum += (t.getTime() - p.getTimeStart()); //Fügt die Differenz hinzu, wie lange der Mensch schon wartet
 				personCounter++;
 			}
 		}
@@ -147,12 +160,28 @@ public class Statistics {
 			if (street.isStation()) {
 				ArrayList<Person> persons = street.getPersons();
 				for ( Person p : persons ) {
+					sumBig = sumBig.add(new BigDecimal(t.getTime() - p.getTimeStart()));
 					sum += (t.getTime() - p.getTimeStart()); //Fügt die Differenz hinzu, wie lange der Mensch schon wartet
 					personCounter++;
 				}
 			}
 		}
-		return (float)sum/(float)(travelTimes.size() + errorNoRoute + personCounter);
+		int elems = travelTimes.size() + errorNoRoute + personCounter;
+		if (elems != 0) {
+			sumBig = sumBig.divide(new BigDecimal(elems), 50, RoundingMode.CEILING);
+			System.out.println("Returning "+sumBig.floatValue());
+			return sumBig.floatValue();
+		} else {
+			return 9999999f;
+		}/*
+		float value = (float)sum/(long)(elems);
+		if (value < 0 ) {
+			System.out.println("SUM: "+sum);
+			System.out.println(sumBig);
+			System.out.println("ER:" +value);
+		}
+		//System.out.println((float)sum/(float)(travelTimes.size() + errorNoRoute + personCounter));
+		return (float)sum/(float)(elems);*/
 	}
 	/**
 	 * Gibt den Median der benötigten Reisezeit aller gereisten (angekommenden) Menschen zurück
