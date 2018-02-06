@@ -5,16 +5,16 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import com.trafficsim.generic.Blueprint;
-import com.trafficsim.sim.Simulation;
 import com.trafficsim.town.BusDirection;
 import com.trafficsim.town.BusStartTime;
 import com.trafficsim.town.Schedule;
 import com.trafficsim.town.Waypoint;
 
 public class BlueprintConverter {
-	public static Blueprint convert(List<Chromosome> chromosomes, float[][][] map) {
+	public static Blueprint convert(List<Chromosome> chromosomes, float[][][] map, Random r) {
 		Blueprint back = new Blueprint(map);
 
 		ArrayList<Schedule> schedules = new ArrayList<Schedule>();
@@ -120,7 +120,7 @@ public class BlueprintConverter {
 			// Schedule nur erzeugen, wenn zwei Stationen angefahren werden und es
 			// mindestens eine Startzeit gibt.
 			if (usedStations.size() >= 2 && busStartTimes.size() >= 1) {
-				s = new Schedule(usedStations, busStartTimes, minDelay, "NAME einfï¿½gen, bitte :/");
+				s = new Schedule(usedStations, busStartTimes, minDelay, String.valueOf(r.nextInt(1000)));
 				schedules.add(s);
 			} else {
 
@@ -138,7 +138,7 @@ public class BlueprintConverter {
 	 * @param map
 	 * @return
 	 */
-	public static Blueprint convertStandard(int[] chromosome, float[][][] map) {
+	public static Blueprint convertStandard(int[] chromosome, float[][][] map, Random r) {
 		
 		int chromoStationLength = Blueprint.townToMappingIP(map).size();
 		int chromoScheduleCount = 1; // Maximum number of Schedules in a Town
@@ -249,7 +249,7 @@ public class BlueprintConverter {
 			
 			//Schedule nur erzeugen, wenn zwei Stationen angefahren werden und es mindestens eine Startzeit gibt.
 			if (usedStations.size()>=2 && busStartTimes.size()>=1 ) {
-				s = new Schedule(usedStations, busStartTimes, 0, "NAME einfügen, bitte :/");
+				s = new Schedule(usedStations, busStartTimes, 0, String.valueOf(r.nextInt(1000)) );
 				schedules.add(s);
 			} else {
 
