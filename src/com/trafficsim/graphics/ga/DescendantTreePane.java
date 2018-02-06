@@ -12,10 +12,15 @@ import java.awt.event.MouseMotionListener;
 import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 
+import com.trafficsim.generic.Blueprint;
+import com.trafficsim.genericalgorithm.BlueprintConverter;
+import com.trafficsim.genericalgorithm.FrameLauncher;
 import com.trafficsim.graphics.GraphicsFX;
 import com.trafficsim.graphics.ga.history.GenerationHistory;
 import com.trafficsim.graphics.ga.history.HIndividual;
 import com.trafficsim.graphics.ga.history.HPopulation;
+import com.trafficsim.sim.Simulation;
+import com.trafficsim.town.Town;
 
 public class DescendantTreePane extends JComponent implements MouseListener, MouseMotionListener {
 
@@ -32,6 +37,8 @@ public class DescendantTreePane extends JComponent implements MouseListener, Mou
 	public static final int NODE_MARGIN_Y = GraphicsFX.highDPI(70);
 	public static final int NODE_ARC = GraphicsFX.highDPI(10);
 
+	private FrameLauncher frameLauncherContext;
+	
 	private GenerationHistory history;
 	private JScrollPane scroller;
 
@@ -163,8 +170,14 @@ public class DescendantTreePane extends JComponent implements MouseListener, Mou
 		this.history = history;
 	}
 
+	public void setFrameLauncherContext(FrameLauncher frameLauncherContext) {
+		this.frameLauncherContext = frameLauncherContext;
+	}
+
 	public void mouseDragged(MouseEvent e) {
-		System.out.println("drag");
+		if (scroller == null) return;
+		
+		// TODO: Scroll
 	}
 
 	public void mouseMoved(MouseEvent e) {
@@ -172,7 +185,38 @@ public class DescendantTreePane extends JComponent implements MouseListener, Mou
 	}
 
 	public void mouseClicked(MouseEvent e) {
-		System.out.println("click");
+		// Return if we have no frame launcher
+		if (frameLauncherContext == null) return;
+		
+		// Get our node position
+		int nodeX = (e.getX() - PANEL_MARGIN) / (NODE_WIDTH + NODE_MARGIN_X) - 1;
+		int nodeY = (e.getY() - PANEL_MARGIN) / (NODE_HEIGHT + NODE_MARGIN_Y);
+		
+		if (nodeX < 0) return;
+		if (nodeX > history.getPopulationSize() - 1) return;
+		if (nodeY < 0) return;
+		if (nodeY > history.getPopulationCount() - 1) return;
+		
+		// Get the corresponding h-individual
+		HPopulation p = history.getNthPopulation(history.getMaxPopulationCount() - nodeY - 1);
+		HIndividual i = p.getIndividual(nodeX);
+		
+		// Pause ga
+		frameLauncherContext.gaFrameLauncher.pauseButton.setSelected(true);
+		frameLauncherContext.gaFrameLauncher.blockGA();
+		
+		// Load the town
+		Simulation simulation = new Simulation(new Town(frameLauncherContext.map.length, frameLauncherContext.map[0].length, frameLauncherContext.random));
+		Town town = simulation.getTown();
+		town.generateTiles(frameLauncherContext.map);
+		
+		Blueprint testing = BlueprintConverter.convert(i.getChromosomes(), frameLauncherContext.map, frameLauncherContext.random);
+		town.setBlueprint(testing);
+
+		testing.generate(simulation.getTown());
+		town.applyBlueprint();
+		
+		frameLauncherContext.simFrameLauncher.setSimulation(simulation);
 	}
 
 	public void mousePressed(MouseEvent e) {

@@ -25,7 +25,7 @@ import com.trafficsim.town.Town;
  */
 public class FrameLauncher implements Simulator {
 
-	private Random random;
+	public Random random;
 	
 	private GenericAlgorithm ga;
 
@@ -73,13 +73,15 @@ public class FrameLauncher implements Simulator {
 	/**
 	 * The simulation framelauncher will create a jframe to show the current town.
 	 */
-	private SimulationFrameLauncher simFrameLauncher;
+	public SimulationFrameLauncher simFrameLauncher;
 
 	/**
 	 * The generic algorithm frame launcher will take care of showing the current
 	 * ga's process and displaying a nice family tree of the individuals.
 	 */
-	private GAFrameLauncher gaFrameLauncher;
+	public GAFrameLauncher gaFrameLauncher;
+	
+	public static float[][][] map = Simulation.testTown();
 
 	public FrameLauncher() throws InterruptedException {
 
@@ -102,6 +104,7 @@ public class FrameLauncher implements Simulator {
 
 		// Create the generic algorithm frame launcher
 		gaFrameLauncher = new GAFrameLauncher();
+		gaFrameLauncher.descendantTreePane.setFrameLauncherContext(this);
 
 		// Create the simulation frame launcher and create an automatic update thread
 		simFrameLauncher = new SimulationFrameLauncher();
@@ -125,14 +128,14 @@ public class FrameLauncher implements Simulator {
 				gaFrameLauncher.getFrame().getY() + GraphicsFX.highDPI(100));
 		simFrameLauncher.getFrame().setLocation(GraphicsFX.highDPI(10), GraphicsFX.highDPI(10));
 
-		gaRuntime = 30; // Terminate after n generations
+		gaRuntime = 300; // Terminate after n generations
 		gaPopSize = 10; // Individuals per population
 		townRuntime = 100; // Calc fitness after n ticks of simulation
 		simulationTickSpeed = -1; // DEBUGGING ONLY! Time for one simulation
 									// tick
 
 		// Init the chromosome length values
-		chromoStationLength = Blueprint.townToMappingIP(Simulation.testTown()).size(); // Calculates street count
+		chromoStationLength = Blueprint.townToMappingIP(map).size(); // Calculates street count
 		chromoScheduleCount = 1; // Maximum number of Schedules in a Town
 		chromoScheduleStationLength = 5; // Maximum number of stations per Schedule
 		chromoScheduleStartTimeLength = 20 * 2; // Maximum number of start times per Schedule
@@ -212,7 +215,6 @@ public class FrameLauncher implements Simulator {
 	public double simulate(Individual individual) {
 		Simulation simulation;
 		Town town;
-		float[][][] map = Simulation.testTown();
 
 		try {
 			// Create a town simulation
