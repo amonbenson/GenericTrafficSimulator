@@ -125,7 +125,7 @@ public class FrameLauncher implements Simulator {
 				gaFrameLauncher.getFrame().getY() + GraphicsFX.highDPI(100));
 		simFrameLauncher.getFrame().setLocation(GraphicsFX.highDPI(10), GraphicsFX.highDPI(10));
 
-		gaRuntime = 10; // Terminate after n generations
+		gaRuntime = 30; // Terminate after n generations
 		gaPopSize = 10; // Individuals per population
 		townRuntime = 100; // Calc fitness after n ticks of simulation
 		simulationTickSpeed = -1; // DEBUGGING ONLY! Time for one simulation
