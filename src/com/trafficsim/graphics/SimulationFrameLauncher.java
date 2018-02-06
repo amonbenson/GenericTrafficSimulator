@@ -147,8 +147,8 @@ public class SimulationFrameLauncher {
 		town.generateTiles(townLandscape);
 		
 		int[] chromo = {1, 2, 3, 0, 10004, 
-			-1, 1, 2, 3, 3, 
-			100, 10, 
+			-1, 1, 3, 3, 1, //Stationen, die angefahren werden
+			100, 10, //Startzeit, Richtung
 			-1, -17, 
 			-1, -2, 
 			-100, 0, 

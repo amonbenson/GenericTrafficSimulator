@@ -232,6 +232,11 @@ public class BlueprintConverter {
 			    }
 			    last = element;
 			}
+			//Außerdem prüfen, ob erster und letzter Wegpunkt nicht gleich sind. Ansonsten letzten rausschmeißen
+			if (usedStations.get(0).isSame(usedStations.get(usedStations.size()-1))) {
+				//Gleich?
+				usedStations.remove(usedStations.size()-1);
+			}
 			
 			//Schedule nur erzeugen, wenn zwei Stationen angefahren werden und es mindestens eine Startzeit gibt.
 			if (usedStations.size()>=2 && busStartTimes.size()>=1 ) {
