@@ -15,7 +15,7 @@ import com.trafficsim.graphics.ga.history.HPopulation;
 
 public class GAFrameLauncher implements GenericAlgorithmWatcher {
 
-	public static final int HISTORY_LENGTH = 3;
+	public static final int HISTORY_LENGTH = 10;
 	
 	public static final Logger logger = Logger.getLogger(GAFrameLauncher.class.getName());
 
@@ -36,7 +36,7 @@ public class GAFrameLauncher implements GenericAlgorithmWatcher {
 		frame.add(descendantTreePane);
 
 		frame.setAlwaysOnTop(true);
-		frame.setSize(GraphicsFX.highDPI(800), GraphicsFX.highDPI(600));
+		frame.setSize(GraphicsFX.highDPI(400), GraphicsFX.highDPI(300));
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 	}
@@ -94,7 +94,8 @@ public class GAFrameLauncher implements GenericAlgorithmWatcher {
 			pop.addIndividual(i);
 		}
 		
-		// Update the population fitness and elite count
+		// Update the generation, population fitness and elite count
+		pop.setGeneration(generation);
 		pop.setFitness(population.getPopulationFitness());
 		pop.setEliteLimit(ga.getElitismCount());
 		

@@ -10,11 +10,13 @@ public class HPopulation {
 	private int eliteLimit;
 	private double fitness;
 	private int populationSize;
+	private int generation;
 
 	public HPopulation(int populationSize) {
+		this.eliteLimit = 0;
+		this.fitness = 0;
 		this.populationSize = populationSize;
-		this.fitness = fitness;
-		individuals = new ArrayList<HIndividual>();
+		this.individuals = new ArrayList<HIndividual>();
 	}
 
 	public void addIndividual(HIndividual individual) {
@@ -75,5 +77,13 @@ public class HPopulation {
 
 	public void setFitness(double fitness) {
 		this.fitness = fitness;
+	}
+
+	public int getGeneration() {
+		return generation;
+	}
+
+	public void setGeneration(int generation) {
+		this.generation = generation;
 	}
 }

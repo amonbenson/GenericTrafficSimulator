@@ -32,6 +32,11 @@ public class FrameLauncher implements Simulator {
 	 * it stops and returns the results.
 	 */
 	private int gaRuntime;
+	
+	/**
+	 * The number of individuals in each generated population.
+	 */
+	private int gaPopSize;
 
 	/**
 	 * The number of iterations, which a single town will be simulated. One
@@ -112,17 +117,18 @@ public class FrameLauncher implements Simulator {
 		}).start();
 
 		// Move the frames a bit arround
-		gaFrameLauncher.getFrame().setLocation(gaFrameLauncher.getFrame().getX() + GraphicsFX.highDPI(500),
+		gaFrameLauncher.getFrame().setLocation(gaFrameLauncher.getFrame().getX() + GraphicsFX.highDPI(300),
 				gaFrameLauncher.getFrame().getY() + GraphicsFX.highDPI(100));
-		simFrameLauncher.getFrame().setLocation(simFrameLauncher.getFrame().getX(), GraphicsFX.highDPI(10));
+		simFrameLauncher.getFrame().setLocation(GraphicsFX.highDPI(10), GraphicsFX.highDPI(10));
 
-		gaRuntime = 10; // Terminate after n generations
-		townRuntime = 100; // Calc fitness after n ticks of simulation
-		simulationTickSpeed = 1; // DEBUGGING ONLY! Time for one simulation
+		gaRuntime = 100; // Terminate after n generations
+		gaPopSize = 1000; // Individuals per population
+		townRuntime = 1000; // Calc fitness after n ticks of simulation
+		simulationTickSpeed = -1; // DEBUGGING ONLY! Time for one simulation
 									// tick
 
 		// Init the chromosome length values
-		chromoStationLength = Blueprint.townToMappingIP(Simulation.testTown3x3()).size(); // Calculates street count
+		chromoStationLength = Blueprint.townToMappingIP(Simulation.testTown()).size(); // Calculates street count
 		chromoScheduleCount = 1; // Maximum number of Schedules in a Town
 		chromoScheduleStationLength = 5; // Maximum number of stations per Schedule
 		chromoScheduleStartTimeLength = 5 * 2; // Maximum number of start times per Schedule
@@ -164,7 +170,7 @@ public class FrameLauncher implements Simulator {
 
 		// Create our genetic algorithm
 		Random random = new Random(93827);
-		ga = new GenericAlgorithm(this, 6, 0.05, 0.95, 2, random);
+		ga = new GenericAlgorithm(this, gaPopSize, 0.05, 0.95, 2, random);
 
 		// Initialize population
 		Population population = ga.initPopulation(chromosomeLengths, minGenes, maxGenes);
@@ -193,12 +199,12 @@ public class FrameLauncher implements Simulator {
 
 	/**
 	 * This class handles the town simulation. We will first create a new town and
-	 * generate its blueprint from the cromosom. The chromosom is found in the
+	 * generate its blueprint from the chromosom. The chromosom is found in the
 	 */
 	public double simulate(Individual individual) {
 		Simulation simulation;
 		Town town;
-		float[][][] map = Simulation.testTown3x3();
+		float[][][] map = Simulation.testTown();
 
 		Random r = new Random();
 
@@ -246,6 +252,7 @@ public class FrameLauncher implements Simulator {
 		// Return the inverted average travel time as fitness TODO Don't do
 		// that.
 		double fitness = 1000.0 / town.getStatistics().getAverageTravelTime(currentTown);
+		if (fitness < 0) fitness = 0;
 
 		currentTown = null;
 		return fitness;
