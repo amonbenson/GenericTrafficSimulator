@@ -15,6 +15,8 @@ import com.trafficsim.graphics.ga.history.HPopulation;
 
 public class GAFrameLauncher implements GenericAlgorithmWatcher {
 
+	public static final int HISTORY_LENGTH = 3;
+	
 	public static final Logger logger = Logger.getLogger(GAFrameLauncher.class.getName());
 
 	private GenericAlgorithm ga;
@@ -47,7 +49,7 @@ public class GAFrameLauncher implements GenericAlgorithmWatcher {
 
 		this.ga = ga;
 		ga.addGenericAlgorithmWatcher(this);
-		history = new GenerationHistory(ga.getPopulationSize());
+		history = new GenerationHistory(ga.getPopulationSize(), HISTORY_LENGTH);
 		descendantTreePane.setHistory(history);
 	}
 
@@ -64,7 +66,7 @@ public class GAFrameLauncher implements GenericAlgorithmWatcher {
 		GAFrameLauncher.logger.fine("GAWatcher: done applying crossover");
 	}
 
-	public void mutation(Population population, int individualIndex, int geneIndex) {
+	public void mutation(Population population, int individualIndex, int chomosomeIndex, int geneIndex) {
 		GAFrameLauncher.logger.fine("GAWatcher: applying mutation");
 	}
 
@@ -88,7 +90,7 @@ public class GAFrameLauncher implements GenericAlgorithmWatcher {
 			if (prevPop != null) parentIndices = prevPop.idsToIndices(individual.getParentIDs());
 			
 			// Create a new hindividual (graphical representation of a ga individual)
-			HIndividual i = new HIndividual(individual.getID(), parentIndices, individual.getChromosome());
+			HIndividual i = new HIndividual(individual.getID(), parentIndices, individual.getChromosomes());
 			pop.addIndividual(i);
 		}
 		

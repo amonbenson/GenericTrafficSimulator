@@ -1,17 +1,21 @@
 package com.trafficsim.graphics.ga.history;
 
+import java.util.List;
+
+import com.trafficsim.genericalgorithm.Chromosome;
+
 public class HIndividual {
 	
 	private long id;
 	private int[] parentIndicies;
 	
-	private int[] chromosome;
+	private List<Chromosome> chromosomes;
 	private double fitness;
 	
-	public HIndividual(long id, int[] parentIndicies, int[] chromosome) {
+	public HIndividual(long id, int[] parentIndicies, List<Chromosome> chromosomes) {
 		this.id = id;
 		this.parentIndicies = parentIndicies;
-		this.chromosome = chromosome;
+		this.chromosomes = chromosomes;
 	}
 
 	public long getID() {
@@ -22,8 +26,8 @@ public class HIndividual {
 		return parentIndicies;
 	}
 
-	public int[] getChromosome() {
-		return chromosome;
+	public List<Chromosome> getChromosomes() {
+		return chromosomes;
 	}
 
 	public double getFitness() {

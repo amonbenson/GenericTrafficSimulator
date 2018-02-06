@@ -2,6 +2,7 @@ package com.trafficsim.genericalgorithm;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -10,90 +11,129 @@ public class Individual {
 
 	private long id;
 	private long[] parentIDs;
-	
+
 	private List<Chromosome> chromosomes;
 
 	private double fitness;
 
-	public Individual(Random random, int[][] chromosomes, int[] minGenes, int[] maxGenes) {
-		this(null);
+	public Individual(Random random, int[] chromosomeLengths, int[] minGenes, int[] maxGenes) {
+		this(new ArrayList<Chromosome>());
+		
+		if (chromosomeLengths.length != minGenes.length || minGenes.length != maxGenes.length)
+			throw new IllegalArgumentException("chromosome lengths, min gene and max gene must be the same length");
+		
+		// Add random chromosomes
+		for (int i = 0; i < chromosomeLengths.length; i++) {
+			Chromosome c = new Chromosome(random, chromosomeLengths[i], minGenes[i], maxGenes[i]);
+			addChromosome(c);
+		}
 	}
 
-	public Individual(Chromosome[] chromosomes) {
+	public Individual(List<Chromosome> chromosomes) {
 		id = getNextID();
 		parentIDs = new long[0];
-		
-		this.chromosomes = Arrays.asList(chromosomes);
-		
+
+		this.chromosomes = chromosomes;
+
 		fitness = -1;
 	}
 
-	/**
-	 * Gets individual's chromosome
-	 * 
-	 * @return The individual's chromosome
-	 */
-	public int[] getChromosome() {
-		return this.chromosome;
+	public List<Chromosome> getChromosomes() {
+		return chromosomes;
 	}
 
-	/**
-	 * USE WITH CARE
-	 * 
-	 * @param data
-	 * @return
-	 */
-	public void setChromosome(int[] data) {
-		chromosome = data;
+	public Chromosome getChromosome(int index) {
+		if (chromosomes == null)
+			throw new NullPointerException("Chromosomes list is null");
+		if (index < 0)
+			throw new ArrayIndexOutOfBoundsException("Chromosome index too small");
+		if (index >= chromosomes.size())
+			throw new ArrayIndexOutOfBoundsException("Chromosome index too big");
+
+		return chromosomes.get(index);
 	}
 
-	/**
-	 * Gets individual's chromosome length
-	 * 
-	 * @return The individual's chromosome length
-	 */
-	public int getChromosomeLength() {
-		return this.chromosome.length;
+	public Chromosome setChromosome(int index, Chromosome chromosome) {
+		if (chromosomes == null)
+			throw new NullPointerException("Chromosomes list is null");
+		if (chromosome == null)
+			throw new NullPointerException("Chromosome is null");
+		if (index < 0)
+			throw new ArrayIndexOutOfBoundsException("Chromosome index too small");
+		if (index >= chromosomes.size())
+			throw new ArrayIndexOutOfBoundsException("Chromosome index too big");
+
+		return chromosomes.set(index, chromosome);
 	}
 
-	/**
-	 * Set gene at offset
-	 * 
-	 * @param gene
-	 * @param offset
-	 * @return gene
-	 */
-	public void setGene(int offset, int gene) {
-		if (gene < geneMin || gene >= geneMax)
-			throw new IllegalArgumentException("Gene must be in bounds (" + geneMin + " to " + (geneMax - 1) + ")");
-		this.chromosome[offset] = gene;
+	public MarkedChromosome getChromosomeAt(int genePos) {
+		if (chromosomes == null)
+			throw new NullPointerException("Chromosomes list is null");
+		
+		if (genePos < 0) return null;
+
+		for (Iterator<Chromosome> it = chromosomes.iterator(); it.hasNext();) {
+			Chromosome c = it.next();
+			
+			if (genePos >= c.getLength()) {
+				genePos -= c.getLength();
+				continue;
+			}
+			
+			return new MarkedChromosome(c, genePos);
+		}
+		
+		return null;
 	}
 
-	/**
-	 * Get gene at offset
-	 * 
-	 * @param offset
-	 * @return gene
-	 */
-	public int getGene(int offset) {
-		return this.chromosome[offset];
+	public void addChromosome(Chromosome c) {
+		if (chromosomes == null)
+			throw new NullPointerException("Chromosomes list is null");
+
+		chromosomes.add(c);
 	}
 
-	/**
-	 * Store individual's fitness
-	 * 
-	 * @param fitness
-	 *            The individuals fitness
-	 */
+	public void removeChromosome(Chromosome c) {
+		if (chromosomes == null)
+			throw new NullPointerException("Chromosomes list is null");
+
+		chromosomes.remove(c);
+	}
+
+	public int getChromosomeCount() {
+		if (chromosomes == null)
+			throw new NullPointerException("Chromosomes list is null");
+
+		return chromosomes.size();
+	}
+
+	public void setGene(int genePos, int gene) {
+		MarkedChromosome mc = getChromosomeAt(genePos);
+		if (mc == null) throw new IndexOutOfBoundsException("no chromosomes at gene " + genePos);
+		
+		mc.setMarkedGene(gene);
+	}
+
+	public int getGene(int genePos) {
+		MarkedChromosome mc = getChromosomeAt(genePos);
+		if (mc == null) throw new IndexOutOfBoundsException("no chromosomes at gene " + genePos);
+		
+		return mc.getMarkedGene();
+	}
+	
+	public int getGeneCount() {
+		if (chromosomes == null)
+			throw new NullPointerException("Chromosomes list is null");
+		
+		int length = 0;
+		for (Chromosome chromosome : chromosomes) length += chromosome.getLength();
+		return length;
+	}
+
 	public void setFitness(double fitness) {
 		this.fitness = fitness;
 	}
 
-	/**
-	 * Gets individual's fitness
-	 * 
-	 * @return The individual's fitness
-	 */
 	public double getFitness() {
 		return this.fitness;
 	}
@@ -112,37 +152,34 @@ public class Individual {
 		return parentIDs;
 	}
 
-	/**
-	 * Display the chromosome as a string.
-	 * 
-	 * @return string representation of the chromosome
-	 */
 	public String toString() {
+		if (chromosomes == null) return "null";
+		
 		String output = "";
-		for (int gene = 0; gene < this.chromosome.length; gene++) {
-			output += this.chromosome[gene];
+		for (Chromosome c : chromosomes) {
+			if (c == null) output += "null";
+			else output += c;
+			
+			output += " ";
 		}
 		return output;
 	}
 
-	public int getGeneMin() {
-		return geneMin;
-	}
-
-	public void setGeneMin(int geneMin) {
-		this.geneMin = geneMin;
-	}
-
-	public int getGeneMax() {
-		return geneMax;
-	}
-
-	public void setGeneMax(int geneMax) {
-		this.geneMax = geneMax;
-	}
-
 	public long getID() {
 		return id;
+	}
+	
+	public Individual getStencil() {
+		List<Chromosome> chromosomes = new ArrayList<Chromosome>();
+		
+		// Copy each chromosome
+		for (int i = 0; i < getChromosomeCount(); i++) {
+			Chromosome c = getChromosome(i);
+			chromosomes.add(new Chromosome(new int[c.getLength()], c.getMinGene(), c.getMaxGene()));
+		}
+		
+		// Return a new individual from these chromosomes
+		return new Individual(chromosomes);
 	}
 
 	public static long getNextID() {
