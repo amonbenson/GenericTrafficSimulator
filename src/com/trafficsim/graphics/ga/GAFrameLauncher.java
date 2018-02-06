@@ -1,9 +1,15 @@
 package com.trafficsim.graphics.ga;
 
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.logging.Logger;
 
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JToggleButton;
+import javax.swing.JToolBar;
 
 import com.trafficsim.genericalgorithm.GenericAlgorithm;
 import com.trafficsim.genericalgorithm.GenericAlgorithmWatcher;
@@ -26,19 +32,37 @@ public class GAFrameLauncher implements GenericAlgorithmWatcher {
 	private JFrame frame;
 	private JScrollPane dtPaneScroller;
 	private DescendantTreePane descendantTreePane;
+
+	private JToolBar toolBar;
+	private JToggleButton pauseButton;
 	
-	private boolean blockGA; // If this is true, the execution of the generic
+	private volatile boolean blockGA; // If this is true, the execution of the generic
 								// algorithm will be blocked.
 
 	public GAFrameLauncher() {
 		frame = new JFrame("Generic Traffic Simulator");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
+		// Toolbar
+		toolBar = new JToolBar();
+		toolBar.setFloatable(false);
+		
+		pauseButton = new JToggleButton("Pause");
+		pauseButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				blockGA = pauseButton.isSelected();
+			}
+		});
+		toolBar.add(pauseButton);
+		
+		frame.add(BorderLayout.NORTH, toolBar);
+		
+		// Descendant Pane
 		descendantTreePane = new DescendantTreePane();
 		dtPaneScroller = new JScrollPane(descendantTreePane);
 		dtPaneScroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		dtPaneScroller.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		frame.add(dtPaneScroller);
+		frame.add(BorderLayout.CENTER, dtPaneScroller);
 
 		frame.setAlwaysOnTop(true);
 		frame.setSize(GraphicsFX.highDPI(400), GraphicsFX.highDPI(300));
@@ -115,5 +139,9 @@ public class GAFrameLauncher implements GenericAlgorithmWatcher {
 
 	public GenerationHistory getGenerationHistory() {
 		return history;
+	}
+
+	public boolean isBlockGA() {
+		return blockGA;
 	}
 }
