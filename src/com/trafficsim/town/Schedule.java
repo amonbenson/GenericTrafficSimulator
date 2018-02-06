@@ -260,6 +260,11 @@ public class Schedule {
 	 */
 	public BusDirection whichDirectionIsFaster(Waypoint start, Waypoint end) {
 		float timeNormal, timeReverse;
+		if (stations.contains(start)) {
+			if (stations.get(stations.size()-1).isSame(start)) {
+				return BusDirection.REVERSE;
+			}
+		}
 		timeNormal = getTimeForBusDirectionNormal(start, end);
 		timeReverse = getTimeForBusDirectionReverse(start, end);
 		if (timeNormal == FLAG_NO_INDEX || timeNormal == FLAG_NO_INDEX) {

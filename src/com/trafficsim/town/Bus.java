@@ -90,7 +90,18 @@ public class Bus extends Entity {
 			}
 
 			
-
+			//Halte den Wegpunkt immer im richtigen Bereich: (Rotationsprinzip)
+			currentWaypoint++;
+			
+			if (currentWaypoint>=schedule.getSchedule().getWaypointSize()) { //Hier wird die Richtung geändert, da die Endhaltestelle erreicht ist
+				if (schedule.isNormal()) {
+					schedule = schedule.getSchedule().getScheduleReverse();
+					//Wenn der Switch dazu resultiert, dass die gleiche Station nochmal angefahren wird, currentWaypoint++ machen
+				} else {
+					schedule = schedule.getSchedule().getScheduleNormal();						
+				}
+				currentWaypoint = 1;
+			}
 			
 			
 			//Es wird immer davon ausgegangen, dass die aktuelle Koordinate eine Straße ist:
@@ -132,18 +143,7 @@ public class Bus extends Entity {
 				}
 			}
 			
-				//Halte den Wegpunkt immer im richtigen Bereich: (Rotationsprinzip)
-				currentWaypoint++;
-				
-				if (currentWaypoint>=schedule.getSchedule().getWaypointSize()) { //Hier wird die Richtung geändert, da die Endhaltestelle erreicht ist
-					if (schedule.isNormal()) {
-						schedule = schedule.getSchedule().getScheduleReverse();
-						//Wenn der Switch dazu resultiert, dass die gleiche Station nochmal angefahren wird, currentWaypoint++ machen
-					} else {
-						schedule = schedule.getSchedule().getScheduleNormal();						
-					}
-					currentWaypoint = 1;
-				}
+
 
 				calcSpeed();
 			} else {
