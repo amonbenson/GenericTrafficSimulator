@@ -31,10 +31,10 @@ public class GAFrameLauncher implements GenericAlgorithmWatcher {
 
 	private JFrame frame;
 	private JScrollPane dtPaneScroller;
-	private DescendantTreePane descendantTreePane;
+	public DescendantTreePane descendantTreePane;
 
 	private JToolBar toolBar;
-	private JToggleButton pauseButton;
+	public JToggleButton pauseButton;
 	
 	private volatile boolean blockGA; // If this is true, the execution of the generic
 								// algorithm will be blocked.
@@ -84,6 +84,14 @@ public class GAFrameLauncher implements GenericAlgorithmWatcher {
 
 	public void blockGA() {
 		blockGA = true;
+	}
+
+	public void unblockGA() {
+		blockGA = false;
+	}
+
+	public boolean isBlockGA() {
+		return blockGA;
 	}
 
 	public void crossover(Population before, Population after, Individual parent1, Individual parent2,
@@ -139,9 +147,5 @@ public class GAFrameLauncher implements GenericAlgorithmWatcher {
 
 	public GenerationHistory getGenerationHistory() {
 		return history;
-	}
-
-	public boolean isBlockGA() {
-		return blockGA;
 	}
 }
