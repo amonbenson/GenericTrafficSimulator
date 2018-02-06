@@ -24,7 +24,10 @@ public class Test {
 		ga.addGenericAlgorithmWatcher(new BasicGenericAlgorithmWatcher());
 
 		// Initialize population
-		Population population = ga.initPopulation(5, 0, 1);
+		int[] chromosomeLengths = new int[] {2, 3, 6};
+		int[] minGenes = new int[] {-5, -10, 0};
+		int[] maxGenes = new int[] {8, 100, 1};
+		Population population = ga.initPopulation(chromosomeLengths, minGenes, maxGenes);
 
 		// Evaluate population for the first time
 		ga.evalPopulation(population);
@@ -49,7 +52,9 @@ public class Test {
 		public void crossover(Population before, Population after, Individual parent1, Individual parent2,
 				Individual offspring) {
 			System.out.println("We will now perform a crossover:");
-			System.out.println(parent1 + " + " + parent2 + " -> " + offspring);
+			System.out.println("   " + parent1);
+			System.out.println(" + " + parent2);
+			System.out.println("-> " + offspring);
 			System.out.println();
 		}
 
@@ -60,12 +65,10 @@ public class Test {
 			System.out.println();
 		}
 
-		public void mutation(Population population, int individualIndex, int geneIndex) {
+		public void mutation(Population population, int individualIndex, int chromosomeIndex, int geneIndex) {
 			System.out.println("We will now perform a mutation on individual no. " + individualIndex);
-			System.out.println("We will change gene no. " + geneIndex + ":");
+			System.out.println("We will change gene no. " + chromosomeIndex + "." + geneIndex + ":");
 			System.out.println(population.getIndividual(individualIndex));
-			for (int i = 0; i < geneIndex; i++) System.out.print(" ");
-			System.out.println("^");
 			System.out.println();
 		}
 
@@ -87,11 +90,11 @@ public class Test {
 	class BasicSimulator implements Simulator {
 		public double simulate(Individual individual) {
 			double sum = 0;
-			for (int i = 0; i < individual.getChromosomeLength(); i++) {
+			for (int i = 0; i < individual.getGeneCount(); i++) {
 				if (individual.getGene(i) == 1) sum++;
 			}
 			
-			return sum / individual.getChromosomeLength();
+			return sum / individual.getGeneCount();
 		}
 
 		public boolean isTerminationConditionMet(Population population) {

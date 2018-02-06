@@ -54,18 +54,18 @@ public class GenericAlgorithm {
 	 * 
 	 * @return population The initial population generated
 	 */
-	public Population initPopulation(int chromosomeLength, int geneMin, int geneMax) {
+	public Population initPopulation(int[] chromosomeLengths, int minGenes[], int maxGenes[]) {
 		// Initialize population
-		Population population = new Population(random, this.populationSize, chromosomeLength, geneMin, geneMax);
+		Population population = new Population(random, this.populationSize, chromosomeLengths, minGenes, maxGenes);
 		return population;
 	}
 
 	/**
 	 * Simulate an individual and return its fitness
 	 * 
-	 * The individual class will contain the chromosom, from which the
-	 * simulation can be generated. The simulation has to be ran on this thread
-	 * and return the fitness value, whenever it has finished simulating.
+	 * The individual class will contain the chromosom, from which the simulation
+	 * can be generated. The simulation has to be ran on this thread and return the
+	 * fitness value, whenever it has finished simulating.
 	 * 
 	 * @param individual
 	 *            the individual to evaluate
@@ -80,8 +80,8 @@ public class GenericAlgorithm {
 	 * 
 	 * Essentially, loop over the individuals in the population, calculate the
 	 * fitness for each, and then calculate the entire population's fitness. The
-	 * population's fitness may or may not be important, but what is important
-	 * here is making sure that each individual gets evaluated.
+	 * population's fitness may or may not be important, but what is important here
+	 * is making sure that each individual gets evaluated.
 	 * 
 	 * @param population
 	 *            the population to evaluate
@@ -144,28 +144,6 @@ public class GenericAlgorithm {
 		return individuals[population.size() - 1];
 	}
 
-	/**
-	 * Apply crossover to population
-	 * 
-	 * Crossover, more colloquially considered "mating", takes the population
-	 * and blends individuals to create new offspring. It is hoped that when two
-	 * individuals crossover that their offspring will have the strongest
-	 * qualities of each of the parents. Of course, it's possible that an
-	 * offspring will end up with the weakest qualities of each parent.
-	 * 
-	 * This method considers both the GeneticAlgorithm instance's crossoverRate
-	 * and the elitismCount.
-	 * 
-	 * The type of crossover we perform depends on the problem domain. We don't
-	 * want to create invalid solutions with crossover, so this method will need
-	 * to be changed for different types of problems.
-	 * 
-	 * This particular crossover method selects random genes from each parent.
-	 * 
-	 * @param population
-	 *            The population to apply crossover to
-	 * @return The new population
-	 */
 	public Population crossoverPopulation(Population population) {
 		// Create new population
 		Population newPopulation = new Population(population.size());
@@ -177,18 +155,26 @@ public class GenericAlgorithm {
 			// Apply crossover to this individual?
 			if (this.crossoverRate > random.nextFloat() && populationIndex >= this.elitismCount) {
 				// Initialize offspring
-				Individual offspring = new Individual(random, parent1.getChromosomeLength(), parent1.getGeneMin(), parent1.getGeneMax());
+				Individual offspring = parent1.getStencil();
 
 				// Find second parent
 				Individual parent2 = selectParent(population);
 
-				// Loop over genome
-				for (int geneIndex = 0; geneIndex < parent1.getChromosomeLength(); geneIndex++) {
-					// Use half of parent1's genes and half of parent2's genes
-					if (0.5 > random.nextFloat()) {
-						offspring.setGene(geneIndex, parent1.getGene(geneIndex));
-					} else {
-						offspring.setGene(geneIndex, parent2.getGene(geneIndex));
+
+				// Loop over individual's chromosomes
+				for (int chromosomeIndex = 0; chromosomeIndex < offspring.getChromosomeCount(); chromosomeIndex++) {
+					Chromosome chromosomePa1 = parent1.getChromosome(chromosomeIndex);
+					Chromosome chromosomePa2 = parent2.getChromosome(chromosomeIndex);
+					Chromosome chromosomeOff = offspring.getChromosome(chromosomeIndex);
+
+					// Loop over the chromosome's genes
+					for (int geneIndex = 0; geneIndex < chromosomeOff.getLength(); geneIndex++) {
+						// Use half of parent1's genes and half of parent2's genes
+						if (0.5 > random.nextFloat()) {
+							chromosomeOff.setGene(geneIndex, chromosomePa1.getGene(geneIndex));
+						} else {
+							chromosomeOff.setGene(geneIndex, chromosomePa2.getGene(geneIndex));
+						}
 					}
 				}
 
@@ -220,13 +206,13 @@ public class GenericAlgorithm {
 	 * Apply mutation to population
 	 * 
 	 * Mutation affects individuals rather than the population. We look at each
-	 * individual in the population, and if they're lucky enough (or unlucky, as
-	 * it were), apply some randomness to their chromosome. Like crossover, the
-	 * type of mutation applied depends on the specific problem we're solving.
-	 * In this case, we simply randomly flip 0s to 1s and vice versa.
+	 * individual in the population, and if they're lucky enough (or unlucky, as it
+	 * were), apply some randomness to their chromosome. Like crossover, the type of
+	 * mutation applied depends on the specific problem we're solving. In this case,
+	 * we simply randomly flip 0s to 1s and vice versa.
 	 * 
-	 * This method will consider the GeneticAlgorithm instance's mutationRate
-	 * and elitismCount
+	 * This method will consider the GeneticAlgorithm instance's mutationRate and
+	 * elitismCount
 	 * 
 	 * @param population
 	 *            The population to apply mutation to
@@ -236,25 +222,34 @@ public class GenericAlgorithm {
 		// Initialize new population
 		Population newPopulation = new Population(this.populationSize);
 
-		// Loop over current population by fitness
+		// Loop over current population by fitness (but start after elitism count to
+		// prevent the elite from mutating)
 		for (int populationIndex = 0; populationIndex < population.size(); populationIndex++) {
 			Individual individual = population.getFittest(populationIndex);
 
-			// Loop over individual's genes
-			for (int geneIndex = 0; geneIndex < individual.getChromosomeLength(); geneIndex++) {
-				// Skip mutation if this is an elite individual
-				if (populationIndex > this.elitismCount) {
-					// Does this gene need mutation?
-					if (this.mutationRate > random.nextFloat()) {
-						// Get new gene
-						int newGene = individual.getGeneMin() + random.nextInt(individual.getGeneMax() - individual.getGeneMin());
-
-						// Mutate gene
-						individual.setGene(geneIndex, newGene);
-
-						// Call the watcher
-						for (GenericAlgorithmWatcher watcher : watchers)
-							watcher.mutation(population, populationIndex, geneIndex);
+			// Only apply mutation if the index is over the elite (but still add the individual after the if clause)
+			if (populationIndex > elitismCount) {
+			
+				// Loop over individual's chromosomes
+				for (int chromosomeIndex = 0; chromosomeIndex < individual.getChromosomeCount(); chromosomeIndex++) {
+					Chromosome chromosome = individual.getChromosome(chromosomeIndex);
+	
+					// Loop over the chromosome's genes
+					for (int geneIndex = 0; geneIndex < chromosome.getLength(); geneIndex++) {
+	
+						// Does this gene need mutation?
+						if (this.mutationRate > random.nextFloat()) {
+							// Get new gene
+							int newGene = Chromosome.generateRandomGene(random, chromosome.getMinGene(),
+									chromosome.getMaxGene());
+	
+							// Mutate gene
+							chromosome.setGene(geneIndex, newGene);
+	
+							// Call the watcher
+							for (GenericAlgorithmWatcher watcher : watchers)
+								watcher.mutation(population, populationIndex, chromosomeIndex, geneIndex);
+						}
 					}
 				}
 			}
@@ -266,6 +261,7 @@ public class GenericAlgorithm {
 		// Call the watcher and return mutated population
 		for (GenericAlgorithmWatcher watcher : watchers)
 			watcher.mutationDone(population, newPopulation);
+		
 		return newPopulation;
 	}
 

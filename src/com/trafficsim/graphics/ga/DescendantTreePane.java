@@ -7,9 +7,11 @@ import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.util.List;
 
 import javax.swing.JComponent;
 
+import com.trafficsim.genericalgorithm.Chromosome;
 import com.trafficsim.graphics.GraphicsFX;
 import com.trafficsim.graphics.ga.history.GenerationHistory;
 import com.trafficsim.graphics.ga.history.HIndividual;
@@ -78,7 +80,7 @@ public class DescendantTreePane extends JComponent implements MouseListener, Mou
 				// Draw text
 				g.setColor(COL_FG);
 				g.drawString("ID: " + i.getID(), (int) (nx + nw * 0.05), (int) (ny + nh * 0.3));
-				g.drawString("" + chromosomeToString(i.getChromosome()), (int) (nx + nw * 0.05), (int) (ny + nh * 0.8));
+				g.drawString("" + chromosomesToString(i.getChromosomes()), (int) (nx + nw * 0.05), (int) (ny + nh * 0.8));
 				
 				// Draw parent connections
 				if (prevP != null) {
@@ -124,12 +126,17 @@ public class DescendantTreePane extends JComponent implements MouseListener, Mou
 		return (history.getPopulationCount() - indexY - 1) * (nodeHeight + NODE_MARGIN_Y) + (getHeight() - nodeHeight) / 2 + scrolly;
 	}
 
-	private String chromosomeToString(int[] chromosome) {
+	private String chromosomesToString(List<Chromosome> chromosomes) {
 		String s = "";
-		for (int i = 0; i < chromosome.length; i++) {
-			if (i > 0) s += ",";
-			String chromoStr = String.valueOf(chromosome[i]);
-			s += chromoStr.substring(0, Math.min(3, chromoStr.length()));
+		for (int j = 0; j < chromosomes.size(); j++) {
+			Chromosome chromosome = chromosomes.get(j);
+			if (j > 0) s += "_";
+			
+			for (int i = 0; i < chromosome.getLength(); i++) {
+				if (i > 0) s += ",";
+				String chromoStr = String.valueOf(chromosome.getGene(i));
+				s += chromoStr.substring(0, Math.min(3, chromoStr.length()));
+			}
 		}
 		return s;
 	}
