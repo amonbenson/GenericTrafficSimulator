@@ -2,6 +2,7 @@ package com.trafficsim.graphics.ga;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
@@ -53,11 +54,13 @@ public class DescendantTreePane extends JComponent implements MouseListener, Mou
 
 		for (int y = 0; y < history.getPopulationCount(); y++) {
 			ny = getNodeY(y);
-			
+
 			// Continue if offscreen
-			if (ny + NODE_HEIGHT + NODE_MARGIN_Y < 0) continue;
-			if (ny > getHeight()) continue;
-			
+			if (ny + NODE_HEIGHT + NODE_MARGIN_Y < 0)
+				continue;
+			if (ny > getHeight())
+				continue;
+
 			HPopulation p = history.getNthPopulation(y);
 
 			HPopulation prevP = null;
@@ -72,11 +75,11 @@ public class DescendantTreePane extends JComponent implements MouseListener, Mou
 				String txt = "";
 				if (x >= 0) {
 					HIndividual i = p.getIndividual(x);
-					
+
 					// Draw parent connections
 					if (prevP != null) {
-						g.setStroke(
-								new BasicStroke(GraphicsFX.highDPI(2), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0));
+						g.setStroke(new BasicStroke(GraphicsFX.highDPI(2), BasicStroke.CAP_ROUND,
+								BasicStroke.JOIN_ROUND, 0));
 						if (p.isElite(x))
 							g.setColor(COL_ACCENT_2);
 						else
@@ -84,7 +87,8 @@ public class DescendantTreePane extends JComponent implements MouseListener, Mou
 
 						int[] parentIndices = i.getParentIndicies();
 						if (parentIndices == null) {
-							GAFrameLauncher.logger.warning("parent indices are null, should be at least an empty array.");
+							GAFrameLauncher.logger
+									.warning("parent indices are null, should be at least an empty array.");
 						} else {
 							for (int parentIndex : parentIndices) {
 								if (parentIndex == -1) {
@@ -93,22 +97,23 @@ public class DescendantTreePane extends JComponent implements MouseListener, Mou
 								}
 
 								// Draw a line to connect our parent to this current node
-								g.drawLine(nx + NODE_WIDTH / 2, ny + NODE_HEIGHT, getNodeX(parentIndex) + NODE_WIDTH / 2, getNodeY(y - 1));
+								g.drawLine(nx + NODE_WIDTH / 2, ny + NODE_HEIGHT,
+										getNodeX(parentIndex) + NODE_WIDTH / 2, getNodeY(y - 1));
 							}
 						}
 					}
-					
+
 					// Draw node background
 					if (p.isElite(x))
 						g.setColor(COL_ACCENT_2);
 					else
 						g.setColor(COL_ACCENT);
 					g.fillRoundRect(nx, ny, NODE_WIDTH, NODE_HEIGHT, NODE_ARC, NODE_ARC);
-	
+
 					// Draw id text
 					txt = "" + i.getID();
 				} else {
-					
+
 					// Draw generation text
 					txt = "" + p.getGeneration();
 				}
@@ -117,8 +122,10 @@ public class DescendantTreePane extends JComponent implements MouseListener, Mou
 						(int) (ny + (NODE_HEIGHT + g.getFontMetrics().getHeight() * 0.6) / 2));
 			}
 		}
-		
+
 		// Update preferred size
+		setPreferredSize(new Dimension((history.getPopulationSize() + 1) * (NODE_WIDTH + NODE_MARGIN_X) + NODE_MARGIN_X,
+				history.getPopulationCount() * (NODE_HEIGHT + NODE_MARGIN_Y) - NODE_MARGIN_Y + NODE_MARGIN_X * 2));
 	}
 
 	private int getNodeX(int indexX) {
@@ -155,7 +162,7 @@ public class DescendantTreePane extends JComponent implements MouseListener, Mou
 	}
 
 	public void mouseDragged(MouseEvent e) {
-		
+
 	}
 
 	public void mouseMoved(MouseEvent e) {
@@ -167,7 +174,7 @@ public class DescendantTreePane extends JComponent implements MouseListener, Mou
 	}
 
 	public void mousePressed(MouseEvent e) {
-		
+
 	}
 
 	public void mouseReleased(MouseEvent e) {

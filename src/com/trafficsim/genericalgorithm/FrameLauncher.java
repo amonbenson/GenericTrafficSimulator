@@ -131,7 +131,7 @@ public class FrameLauncher implements Simulator {
 		chromoStationLength = Blueprint.townToMappingIP(Simulation.testTown()).size(); // Calculates street count
 		chromoScheduleCount = 1; // Maximum number of Schedules in a Town
 		chromoScheduleStationLength = 5; // Maximum number of stations per Schedule
-		chromoScheduleStartTimeLength = 5 * 2; // Maximum number of start times per Schedule
+		chromoScheduleStartTimeLength = 50 * 2; // Maximum number of start times per Schedule
 		chromoScheduleMinDelayLength = 1; // Min delay value (only one value)
 		chromoCount = 1 + chromoScheduleCount * 3; // Number of chromosomes per individual (1 for the station list, 2
 													// for each schedule)
@@ -149,6 +149,7 @@ public class FrameLauncher implements Simulator {
 		chromosomeLengths[0] = chromoStationLength;
 		minGenes[0] = Integer.MIN_VALUE;
 		maxGenes[0] = Integer.MAX_VALUE;
+		
 		for (int i = 1; i < chromoCount; i += 3) {
 			// Schedule station / start times lengths
 			chromosomeLengths[i] = chromoScheduleStationLength;
@@ -252,8 +253,6 @@ public class FrameLauncher implements Simulator {
 		// Return the inverted average travel time as fitness TODO Don't do
 		// that.
 		double fitness = 1 / town.getStatistics().getAverageTravelTime(currentTown);
-
-		System.out.println(fitness);
 		
 		currentTown = null;
 		return fitness;
