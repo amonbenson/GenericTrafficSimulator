@@ -85,7 +85,7 @@ public class FrameLauncher implements Simulator {
 
 	public FrameLauncher() throws InterruptedException {
 
-		random = new Random(123);
+		random = new Random(1);
 		
 		// Logger stuff
 		Simulation.logger.setLevel(Level.ALL);
@@ -128,7 +128,7 @@ public class FrameLauncher implements Simulator {
 				gaFrameLauncher.getFrame().getY() + GraphicsFX.highDPI(100));
 		simFrameLauncher.getFrame().setLocation(GraphicsFX.highDPI(10), GraphicsFX.highDPI(10));
 
-		gaRuntime = 300; // Terminate after n generations
+		gaRuntime = 150; // Terminate after n generations
 		gaPopSize = 10; // Individuals per population
 		townRuntime = 100; // Calc fitness after n ticks of simulation
 		simulationTickSpeed = -1; // DEBUGGING ONLY! Time for one simulation
@@ -136,7 +136,7 @@ public class FrameLauncher implements Simulator {
 
 		// Init the chromosome length values
 		chromoStationLength = Blueprint.townToMappingIP(map).size(); // Calculates street count
-		chromoScheduleCount = 1; // Maximum number of Schedules in a Town
+		chromoScheduleCount = 4; // Maximum number of Schedules in a Town
 		chromoScheduleStationLength = 5; // Maximum number of stations per Schedule
 		chromoScheduleStartTimeLength = 20 * 2; // Maximum number of start times per Schedule
 		chromoScheduleMinDelayLength = 1; // Min delay value (only one value)

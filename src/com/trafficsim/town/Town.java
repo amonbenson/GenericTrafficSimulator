@@ -832,6 +832,7 @@ public class Town implements Updateable {
 		int lastStationIndex = 0;
 		ArrayList<Schedule> possibleLines = origin.getSchedules(); //Mögliche Linien vom letzten Einstieg
 		SpecificSchedule sSchedule = null;
+
 		for ( lastStationIndex=0;lastStationIndex<=path.size();lastStationIndex++) {
 			
 			//Führt diese Station direkt zum Ziel?
@@ -849,8 +850,10 @@ public class Town implements Updateable {
 				break;
 			}
 			//Schnittmenge zur nächsten Station bilden, um zu prüfen, welche Linien weiterhin angefahren werden können
-			cutSet = new ArrayList<Schedule>(possibleLines);
-			cutSet.retainAll(findStationInBlueprint(stationGraph.getEdgeTarget(path.get(lastStationIndex))).getSchedules());
+
+					cutSet = new ArrayList<Schedule>(possibleLines);
+					cutSet.retainAll(findStationInBlueprint(stationGraph.getEdgeTarget(path.get(lastStationIndex))).getSchedules());
+
 			if (cutSet.isEmpty()) { //Schnittmenge leer, Zeit umzusteigen!
 				//Umsteigestation hinzufügen:
 				//Dafür eine mögliche Linie aussuchen:
@@ -868,7 +871,7 @@ public class Town implements Updateable {
 					break doo;
 				} else if (d == null) {
 					//Falsche Schedule wurde ausgewählt
-					possibleLines.remove(schedule);
+					//possibleLines.remove(schedule);
 					warn_counter++;
 					if (warn_counter>1000) {
 						System.err.println("LOOP DETECTED in pathToRoute!!");
@@ -877,8 +880,8 @@ public class Town implements Updateable {
 				} while (true);
 				stations.add(new ChangeStation(lastChangeStation, sSchedule));
 				lastChangeStation = stationGraph.getEdgeSource(path.get(lastStationIndex));
-				possibleLines = findStationInBlueprint(stationGraph.getEdgeTarget(path.get(lastStationIndex))).getSchedules();
-				
+				possibleLines = findStationInBlueprint(stationGraph.getEdgeSource(path.get(lastStationIndex))).getSchedules();
+				//possibleLines.retainAll(findStationInBlueprint(stationGraph.getEdgeSource(path.get(lastStationIndex))).getSchedules());
 			} else { //mögliche Linien müssen eingeschränkt werden
 				possibleLines = cutSet;
 			}
