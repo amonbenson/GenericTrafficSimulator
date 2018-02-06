@@ -10,6 +10,8 @@ import java.util.Iterator;
 
 public class Statistics {
 	
+	public static final float MAX_VALUE = 9999999f;
+	
 	private int countNoStationFound = 0;
 	private int countNoRouteFound = 0;
 	private int countRouteSameTargets = 0; //"Fehler", wenn Start und Ziel gleich sind
@@ -139,7 +141,7 @@ public class Statistics {
 
 		sum += errorNoRoute*Integer.MAX_VALUE; //Fehler betrachten und mitz�hlen
 		BigDecimal a = new BigDecimal(errorNoRoute);
-		BigDecimal mul = a.multiply(new BigDecimal(Integer.MAX_VALUE));
+		BigDecimal mul = a.multiply(new BigDecimal(MAX_VALUE));
 
 		sumBig = sumBig.add(mul);
 		//Personen hinzuz�hlen, die irgendwo noch rumstehen:
@@ -171,7 +173,7 @@ public class Statistics {
 			sumBig = sumBig.divide(new BigDecimal(elems), 50, RoundingMode.CEILING);
 			return sumBig.floatValue();
 		} else {
-			return 9999999f;
+			return MAX_VALUE;
 		}/*
 		float value = (float)sum/(long)(elems);
 		if (value < 0 ) {

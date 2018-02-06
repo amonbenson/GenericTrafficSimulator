@@ -130,7 +130,7 @@ public class FrameLauncher implements Simulator {
 
 		gaRuntime = 150; // Terminate after n generations
 		gaPopSize = 10; // Individuals per population
-		townRuntime = 100; // Calc fitness after n ticks of simulation
+		townRuntime = 1000; // Calc fitness after n ticks of simulation
 		simulationTickSpeed = -1; // DEBUGGING ONLY! Time for one simulation
 									// tick
 
@@ -256,9 +256,9 @@ public class FrameLauncher implements Simulator {
 			return -1;
 		}
 
-		// Return the inverted average travel time as fitness TODO Don't do
-		// that.
-		double fitness = 1 / town.getStatistics().getAverageTravelTime(currentTown);
+		// Get the fitness
+		double fitness = FitnessEvaluator.evaluate(town);
+		town = null;
 
 		currentTown = null;
 		return fitness;
