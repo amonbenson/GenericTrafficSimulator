@@ -11,6 +11,7 @@ import com.trafficsim.graphics.GraphicsFX;
 import com.trafficsim.graphics.SimulationFrameLauncher;
 import com.trafficsim.graphics.ga.GAFrameLauncher;
 import com.trafficsim.sim.Simulation;
+import com.trafficsim.town.Tile;
 import com.trafficsim.town.Town;
 
 /**
@@ -81,11 +82,15 @@ public class FrameLauncher implements Simulator {
 	 */
 	public GAFrameLauncher gaFrameLauncher;
 	
-	public static float[][][] map = Simulation.testTown();
+	public static float[][][] map;
 
 	public FrameLauncher() throws InterruptedException {
-
+		// Init random
 		random = new Random(1);
+		
+		// Load map and set area station
+		map = Simulation.loadHeatMap("res/heatmap.png", 0, 20, 0, 300, 0, 25);
+		Tile.AREA_STATION = 4;
 		
 		// Logger stuff
 		Simulation.logger.setLevel(Level.ALL);
@@ -112,7 +117,10 @@ public class FrameLauncher implements Simulator {
 			public void run() {
 				while (true) {
 					try {
-
+						// Check if the execution is beeing blocked
+						while (gaFrameLauncher.isBlockGA()) Thread.sleep(200);
+						
+						// Render town desktop pane in fixed time steps
 						simFrameLauncher.getTownDesktopPane().repaint();
 						Thread.sleep(simFrameLauncher.updater.getTickSpeed());
 
@@ -122,23 +130,29 @@ public class FrameLauncher implements Simulator {
 				}
 			}
 		}).start();
+		
+		// Create a dummy simulation to set the town's tile transform
+		Simulation dummyS = new Simulation(new Town(map.length, map[0].length, random));
+		Town dummyT = dummyS.getTown();
+		dummyT.generateTiles(map);
+		simFrameLauncher.setSimulation(dummyS);
 
 		// Move the frames a bit arround
 		gaFrameLauncher.getFrame().setLocation(gaFrameLauncher.getFrame().getX() + GraphicsFX.highDPI(300),
 				gaFrameLauncher.getFrame().getY() + GraphicsFX.highDPI(100));
 		simFrameLauncher.getFrame().setLocation(GraphicsFX.highDPI(10), GraphicsFX.highDPI(10));
 
-		gaRuntime = 150; // Terminate after n generations
-		gaPopSize = 10; // Individuals per population
-		townRuntime = 1000; // Calc fitness after n ticks of simulation
+		gaRuntime = 500; // Terminate after n generations
+		gaPopSize = 30; // Individuals per population
+		townRuntime = 2000; // Calc fitness after n ticks of simulation
 		simulationTickSpeed = -1; // DEBUGGING ONLY! Time for one simulation
 									// tick
 
 		// Init the chromosome length values
 		chromoStationLength = Blueprint.townToMappingIP(map).size(); // Calculates street count
-		chromoScheduleCount = 4; // Maximum number of Schedules in a Town
-		chromoScheduleStationLength = 5; // Maximum number of stations per Schedule
-		chromoScheduleStartTimeLength = 5 * 2; // Maximum number of start times per Schedule
+		chromoScheduleCount = 20; // Maximum number of Schedules in a Town
+		chromoScheduleStationLength = 10; // Maximum number of stations per Schedule
+		chromoScheduleStartTimeLength = 10 * 2; // Maximum number of start times per Schedule
 		chromoScheduleMinDelayLength = 1; // Min delay value (only one value)
 		chromoCount = 1 + chromoScheduleCount * 3; // Number of chromosomes per individual (1 for the station list, 2
 													// for each schedule)

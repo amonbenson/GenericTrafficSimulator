@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Random;
 
 import com.trafficsim.generic.Blueprint;
+import com.trafficsim.sim.Simulation;
 import com.trafficsim.town.BusDirection;
 import com.trafficsim.town.BusStartTime;
 import com.trafficsim.town.Schedule;
@@ -120,7 +121,7 @@ public class BlueprintConverter {
 			// Schedule nur erzeugen, wenn zwei Stationen angefahren werden und es
 			// mindestens eine Startzeit gibt.
 			if (usedStations.size() >= 2 && busStartTimes.size() >= 1) {
-				s = new Schedule(usedStations, busStartTimes, minDelay, String.valueOf(r.nextInt(1000)));
+				s = new Schedule(usedStations, busStartTimes, minDelay, Simulation.nameGenerator.getBusName());
 				schedules.add(s);
 			} else {
 
@@ -167,7 +168,7 @@ public class BlueprintConverter {
 					continue;
 				}
 				tmpWaypoints.add(new Waypoint(p.x+0.5, p.y+0.5)); //0.5 ist wichtig, muss so sein
-				stations.add(tmpWaypoints.get(tmpWaypoints.size()-1)); //diesen Wegpunkt hinzufügen
+				stations.add(tmpWaypoints.get(tmpWaypoints.size()-1)); //diesen Wegpunkt hinzufï¿½gen
 			} else { //Ungerade Zahl - keine Station setzen
 
 			}
@@ -180,11 +181,11 @@ public class BlueprintConverter {
 			ArrayList<Waypoint> usedStations = new ArrayList<Waypoint>();
 			ArrayList<BusStartTime> busStartTimes = new ArrayList<BusStartTime>();
 			
-			//usedStations hinzufügen
+			//usedStations hinzufï¿½gen
 			for ( int stationIndex=0;stationIndex<chromoScheduleStationLength;stationIndex++) {
 				currentIndex=scheduleIndex+stationIndex;
 				Point p = mappingIP.get(chromosome[currentIndex]);
-				//Prüfen, ob es diesen Punkt überhaupt gibt:
+				//Prï¿½fen, ob es diesen Punkt ï¿½berhaupt gibt:
 				if (p == null) {
 					//Gibts nicht.
 					continue;
@@ -192,7 +193,7 @@ public class BlueprintConverter {
 
 				}
 				
-				//Prüfen, ob dieser Wegpunkt auf eine wirkliche Station im Chromosom verweist
+				//Prï¿½fen, ob dieser Wegpunkt auf eine wirkliche Station im Chromosom verweist
 				if (tmpWaypoints.contains(new Waypoint(p.x+0.5, p.y+0.5))) { //Wenn der Punkt valid ist alles gut
 					//Diesen Punkt suchen:
 					Waypoint toAdd = null;
@@ -211,12 +212,12 @@ public class BlueprintConverter {
 					//Bisher wird die Station dann einfach ignoriert und nicht angefahren
 				}
 			}
-			//Startzeit hinzufügen
+			//Startzeit hinzufï¿½gen
 			for ( int startTimeIndex=0;startTimeIndex<chromoScheduleStartTimeLength;startTimeIndex+=2) {
 				currentIndex=scheduleIndex+chromoScheduleStationLength+startTimeIndex;
 				int startTime = chromosome[currentIndex];
 				int direction = chromosome[currentIndex+1];
-				if (startTime>=0) { //Wenn die Startzeit kleiner 0 ist soll sie nicht hinzugefügt werden
+				if (startTime>=0) { //Wenn die Startzeit kleiner 0 ist soll sie nicht hinzugefï¿½gt werden
 					BusDirection d;
 					if (direction % 2 == 0) { //Bei gerader Zahl soll die Richtung NORMAL sein
 						d = BusDirection.NORMAL;
@@ -225,7 +226,7 @@ public class BlueprintConverter {
 					}
 					busStartTimes.add(new BusStartTime(startTime, d));
 				} else {
-					//Nicht hinzufügen
+					//Nicht hinzufï¿½gen
 				}
 			}
 			
@@ -241,7 +242,7 @@ public class BlueprintConverter {
 			    }
 			    last = element;
 			}
-			//Außerdem prüfen, ob erster und letzter Wegpunkt nicht gleich sind. Ansonsten letzten rausschmeißen
+			//Auï¿½erdem prï¿½fen, ob erster und letzter Wegpunkt nicht gleich sind. Ansonsten letzten rausschmeiï¿½en
 			if (usedStations.get(0).isSame(usedStations.get(usedStations.size()-1))) {
 				//Gleich?
 				usedStations.remove(usedStations.size()-1);

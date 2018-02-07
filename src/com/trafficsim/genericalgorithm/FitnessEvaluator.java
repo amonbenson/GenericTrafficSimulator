@@ -16,8 +16,6 @@ public class FitnessEvaluator {
 		final int numStations = town.getBlueprint().getNumberStations();
 		final int numBusses = town.getBlueprint().getNumberBusses();
 		
-		System.out.println(travelTime + "; " + numStations + ", " + numBusses);
-		
 		return DIVIDEND / (travelTime + F_STATIONS_PENALTY * numStations + F_BUSSES_PENALTY * numBusses);
 	}
 

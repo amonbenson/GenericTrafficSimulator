@@ -22,13 +22,10 @@ import com.trafficsim.sim.Simulation;
 
 public class Town implements Updateable {
 	
-	// Generating person names
-	private static final PersonNameGenerator personNameGenerator = new PersonNameGenerator();
-	
 	private Statistics statistics;
 	
 	private Tile[][] tiles; //Die Karte der Start
-	private int sizeX, sizeY; //Größe der Stadt
+	private int sizeX, sizeY; //Grï¿½ï¿½e der Stadt
 	private Blueprint blueprint; //Blueprint, welches auf diese Stadt angewendet wurde.
 	private ArrayList<Event> events; //Liste aller Events
 
@@ -37,23 +34,23 @@ public class Town implements Updateable {
 	private ArrayList<Person> persons; //alle Personen der Stadt
 	private long time; //aktuelle Zeit der Stadt
 	private int allNumberOfPersons; //Die zuletzt berechnete Gesamtanzahl an Personen
-	private float allInterestFactor; //Der zuletzt berechnete Faktor aller Interessenfaktoren aller Häuser
-	private Random random; //jede Stadt besitzt einen eigenen Randomgenerator (so können bestimmte Szenarien erneut simuliert werden)
+	private float allInterestFactor; //Der zuletzt berechnete Faktor aller Interessenfaktoren aller Hï¿½user
+	private Random random; //jede Stadt besitzt einen eigenen Randomgenerator (so kï¿½nnen bestimmte Szenarien erneut simuliert werden)
 	/**
-	 * Einstellung für das Erzeugung von Routen von Personen.
+	 * Einstellung fï¿½r das Erzeugung von Routen von Personen.
 	 * @see PersonRoutingOptions.getDefault
 	 */
 	private PersonRoutingOption personRoutingOption;
 	
-	//Wegfindungszeug für Busse:
+	//Wegfindungszeug fï¿½r Busse:
 	private GridCell[][] pathfindingMap = null; //die aktuelle Pathfindingkarte, wird bei applyBlueprint erzeugt
 	private NavigationGrid<GridCell> navGrid = null;
 	private GridFinderOptions opt = null;
 	AStarGridFinder<GridCell> finder = null;
 	
-	//Hilfsarray für generateRoutingForPerson, wird in applyBlueprint erzeugt
+	//Hilfsarray fï¿½r generateRoutingForPerson, wird in applyBlueprint erzeugt
 	private ArrayList<Tile> tilesNearStations;
-	//Wegfindungszeug für Personen:
+	//Wegfindungszeug fï¿½r Personen:
 	private SimpleDirectedWeightedGraph<Waypoint, DefaultWeightedEdge> stationGraph = null;
 	
 	public Town(int sizeX, int sizeY) {
@@ -106,22 +103,22 @@ public class Town implements Updateable {
 	 * Erzeugt die Tiles anhand eines dreidimensionalen Arrays.
 	 * Diese ist wie folgt aufgebaut:
 	 *
-	 * list[x][y][0] = Typ des Tiles, 0 ist Straße, 1 ist Haus
-	 * list[x][y][1] = Wert des Tiles, bei einer Straße die maximale Geschwindigkeit, bei einem Haus die Anzahl der Personen 
+	 * list[x][y][0] = Typ des Tiles, 0 ist Straï¿½e, 1 ist Haus
+	 * list[x][y][1] = Wert des Tiles, bei einer Straï¿½e die maximale Geschwindigkeit, bei einem Haus die Anzahl der Personen 
 	 *
 	 */
 	public void generateTiles(float[][][] list) {
-		if (sizeX < 1 || sizeY < 1) throw new IllegalArgumentException("Größe X / Y muss größer als 0 sein! X:"+sizeX+" Y:"+sizeY);
+		if (sizeX < 1 || sizeY < 1) throw new IllegalArgumentException("Grï¿½ï¿½e X / Y muss grï¿½ï¿½er als 0 sein! X:"+sizeX+" Y:"+sizeY);
 		tiles = new Tile[sizeX][sizeY];
 		
 		for (int x=0;x<list.length;x++) {
 			for (int y=0;y<list[0].length;y++) {
-				if (list[x][y][0] == 0) { //Straße
+				if (list[x][y][0] == 0) { //Straï¿½e
 					tiles[x][y] = new StreetTile(x, y, list[x][y][1]);
 				} else if (list[x][y][0] == 1) { //Haus
 					tiles[x][y] = new HouseTile(x, y, (int) list[x][y][1], list[x][y][2]);
 				} else {
-					Simulation.logger.warning("Liste["+x+"]["+y+"][0] ist kein gültiger Typ! ("+list[x][y][0]+")");
+					Simulation.logger.warning("Liste["+x+"]["+y+"][0] ist kein gï¿½ltiger Typ! ("+list[x][y][0]+")");
 				}
 			}
 		}
@@ -146,7 +143,7 @@ public class Town implements Updateable {
 	}
 	
 	/**
-	 * Gibt alle HouseTiles zurück.
+	 * Gibt alle HouseTiles zurï¿½ck.
 	 */
 	public ArrayList<HouseTile> getHouseTiles() {
 		if (!areTilesReady()) throw new NullPointerException("Bisher keine Tiles erzeugt. (Tiles sind nicht ready)");
@@ -163,7 +160,7 @@ public class Town implements Updateable {
 	}
 	
 	/**
-	 * Gibt alle StreetTiles zurück.
+	 * Gibt alle StreetTiles zurï¿½ck.
 	 */
 	public ArrayList<StreetTile> getStreetTiles() {
 		if (!areTilesReady()) throw new NullPointerException("Tiles aren't ready");
@@ -180,20 +177,20 @@ public class Town implements Updateable {
 	}
 	
 	/**
-	 * Gibt ein zufälliges Tile zurück.
+	 * Gibt ein zufï¿½lliges Tile zurï¿½ck.
 	 */
 	public Tile getRandomTile() {
 		return tiles[random.nextInt(tiles.length)][random.nextInt(tiles[0].length)];
 	}
 	/**
-	 * Gibt ein zufälliges Tiles zurück, welches in der Nähe einer Station ist.
+	 * Gibt ein zufï¿½lliges Tiles zurï¿½ck, welches in der Nï¿½he einer Station ist.
 	 */
 	public Tile getRandomTileNearStation() {
 		return tilesNearStations.get(random.nextInt(tilesNearStations.size()));
 	}
 	
 	/**
-	 * Gibt ein zufälliges Tile, exklusive dem Parameter, zurück.
+	 * Gibt ein zufï¿½lliges Tile, exklusive dem Parameter, zurï¿½ck.
 	 * Exklusives Item wird hier immer mithilfe des Pointers betrachtet, nicht nach Inhalt.
 	 */
 	public Tile getRandomTileWithExclude(Tile exclude) {
@@ -205,7 +202,7 @@ public class Town implements Updateable {
 	}
 	
 	/**
-	 * Gibt ein Haus zurück, wobei ein Haus mit höherer Anzahl an numberPersons häufiger zurückgegeben wird.
+	 * Gibt ein Haus zurï¿½ck, wobei ein Haus mit hï¿½herer Anzahl an numberPersons hï¿½ufiger zurï¿½ckgegeben wird.
 	 */
 	public Tile getHouseTileWithProbability_NumberPersons() {
 		float whichTile = random.nextFloat()*getLastAllNumberOfPersons();
@@ -300,8 +297,8 @@ public class Town implements Updateable {
 	}
 	
 	/**
-	 * Gibt die Summe aller Interessenfaktoren aller Häuser zurück.
-	 * Diese ist sehr wichtig, um die Wahrscheinlichkeit für die Ankunft in einem Haus zu berechnen.
+	 * Gibt die Summe aller Interessenfaktoren aller Hï¿½user zurï¿½ck.
+	 * Diese ist sehr wichtig, um die Wahrscheinlichkeit fï¿½r die Ankunft in einem Haus zu berechnen.
 	 */
 	public float calcAllInterest() {
 		allInterestFactor = 0;
@@ -343,7 +340,7 @@ public class Town implements Updateable {
 
 
 	/**
-	 * Initialisiert die Objekte, welche vor dem Start der Simulation initialisiert werden müssen
+	 * Initialisiert die Objekte, welche vor dem Start der Simulation initialisiert werden mï¿½ssen
 	 */
 	private void init() {
 		for (Bus b : busses) {
@@ -365,7 +362,7 @@ public class Town implements Updateable {
 	
 	
 	/**
-	 * Setzt das Blueprint c als Eingabewert der Simulation. Dieses wird noch nicht angewendet, d.h. die Stadt wird bisher nicht verändert.
+	 * Setzt das Blueprint c als Eingabewert der Simulation. Dieses wird noch nicht angewendet, d.h. die Stadt wird bisher nicht verï¿½ndert.
 	 * Der Parameter darf nicht <code>null</code>sein, zum Reseten der Stadt wird die Funktion resetBlueprint() verwendet
 	 * @param c Blueprint zur Eingabe, darf nicht <code>null</code> sein
 	 */
@@ -383,7 +380,7 @@ public class Town implements Updateable {
 			
 			long t1 = System.currentTimeMillis();
 			
-			//Pathfindingkarte erzeugen (für Busse):
+			//Pathfindingkarte erzeugen (fï¿½r Busse):
 			pathfindingMap = new GridCell[sizeX][sizeY];
 			for (int x=0;x<sizeX;x++) {
 				for (int y=0;y<sizeY;y++) {
@@ -399,9 +396,9 @@ public class Town implements Updateable {
 			opt.allowDiagonal = false;
 			finder = new AStarGridFinder(GridCell.class, opt);
 			
-			//Pathfindingkarte für Menschen erzeugen:
+			//Pathfindingkarte fï¿½r Menschen erzeugen:
 			stationGraph = new SimpleDirectedWeightedGraph<Waypoint, DefaultWeightedEdge>(DefaultWeightedEdge.class); 
-			for ( Schedule s : blueprint.getSchedules()) { //Fügt alle Vertexe ein
+			for ( Schedule s : blueprint.getSchedules()) { //Fï¿½gt alle Vertexe ein
 				for ( Waypoint w : s.getStations()) {
 					if (!stationGraph.containsVertex(w)) {
 						stationGraph.addVertex(w);
@@ -438,37 +435,37 @@ public class Town implements Updateable {
 			//Bushaltestellen setzen:
 			for ( Waypoint p : blueprint.getStations() ) {
 				if (! (tiles[(int)p.getX()][(int)p.getY()] instanceof StreetTile) ) {
-					Simulation.logger.warning("Achtung, Station im Blueprint verweist nicht auf eine gültige Straßenkoordinate!"+" X: "+p.getX()+" Y: "+p.getY());
+					Simulation.logger.warning("Achtung, Station im Blueprint verweist nicht auf eine gï¿½ltige Straï¿½enkoordinate!"+" X: "+p.getX()+" Y: "+p.getY());
 				} else { //korrekte Koordinate
 					StreetTile street = (StreetTile) tiles[(int)p.getX()][(int)p.getY()];
 					street.setToStation();
 				}
 			}
 
-			//Buslinien einfügen:
+			//Buslinien einfï¿½gen:
 			for ( Schedule schedule : blueprint.getSchedules()) {
 				schedule.calcWaypoints(this); //kreiert die internen Wegpunkte TODO eventuell muss auf eine Kopie zugegriffen werden
 				events.addAll(schedule.getBusCreationEvents(this));
-				//Jede Station muss wissen, dass hier diese Linie fährt:
+				//Jede Station muss wissen, dass hier diese Linie fï¿½hrt:
 				for ( Waypoint w : schedule.getStations() ) {
 					if (!(tiles[(int) (w.getX())][(int) (w.getY())] instanceof StreetTile)) {
-						Simulation.logger.warning("Busstation verweist nicht auf eine Straße");
+						Simulation.logger.warning("Busstation verweist nicht auf eine Straï¿½e");
 					} else {
 						StreetTile station = (StreetTile) tiles[(int) (w.getX())][(int) (w.getY())];
-						if (!station.hasSchedule(schedule)) { //Diese Linie nur hinzufügen, wenn diese noch nicht existiert
+						if (!station.hasSchedule(schedule)) { //Diese Linie nur hinzufï¿½gen, wenn diese noch nicht existiert
 							station.addSchedule(schedule);
 						}
 					}
 				}
 			}
-			//Die Tiles wissen lassen, wo ihre nächste Station ist
+			//Die Tiles wissen lassen, wo ihre nï¿½chste Station ist
 			for (int x=0;x<tiles.length;x++) {
 				for (int y=0;y<tiles[0].length;y++) {
 					tiles[x][y].calcNextStation(getTiles());
 				}
 			}
 			
-			//Erzeugt noch ein Hilfsarray mit allen verfügbaren Tiles mit Stationen für generateRoutingForPerson:
+			//Erzeugt noch ein Hilfsarray mit allen verfï¿½gbaren Tiles mit Stationen fï¿½r generateRoutingForPerson:
 			tilesNearStations = new ArrayList<Tile>();
 			for (int x=0;x<tiles.length;x++) {
 				for (int y=0;y<tiles[0].length;y++) {
@@ -482,10 +479,10 @@ public class Town implements Updateable {
 			
 
 			
-			//Generiert die Routen für die Menschen:
+			//Generiert die Routen fï¿½r die Menschen:
 			generateRoutings();
 			
-			//Sortiert schließlich die fertige Eventliste:
+			//Sortiert schlieï¿½lich die fertige Eventliste:
 			sortEvents();
 			
 
@@ -497,11 +494,11 @@ public class Town implements Updateable {
 	 * Updatet die Stadt einen Tick. Die Zeit wird mitgerechnet.
 	 */
 	public void update() {
-		//Alle Busse müssen fahren: (geupdatet werden)
+		//Alle Busse mï¿½ssen fahren: (geupdatet werden)
 		for (Bus b : busses) {
 			b.update();
 		}
-		//Es wird geprüft, ob ein Event auftritt
+		//Es wird geprï¿½ft, ob ein Event auftritt
 		for (int i=events_index;i<events.size();i++) { 
 			if (events.get(i).getStartTime() == time) {
 				events.get(i).start(this);
@@ -514,7 +511,7 @@ public class Town implements Updateable {
 	}
 	
 	/**
-	 * Simuliert die Stadt um einen Schritt rückwärts. Die Zeit wird um 1 abgezogen.
+	 * Simuliert die Stadt um einen Schritt rï¿½ckwï¿½rts. Die Zeit wird um 1 abgezogen.
 	 */
 	public void revert() {
 		for (Bus b : busses) {
@@ -524,7 +521,7 @@ public class Town implements Updateable {
 	}
 	
 	/**
-	 * Wandelt die Stadt wieder in den ursprünglichen Zustand um und löscht das aktuelle Blueprint
+	 * Wandelt die Stadt wieder in den ursprï¿½nglichen Zustand um und lï¿½scht das aktuelle Blueprint
 	 * @see #toNormal()
 	 */
 	public void resetBlueprint() {
@@ -533,11 +530,11 @@ public class Town implements Updateable {
 	}
 	
 	/**
-	 * Wandelt die Stadt wieder in die Ursprüngliche um, alle Änderungen eines angewendeten Blueprints werden rückgängig gemacht.
-	 * Löscht außerdem die bisherigen Events
+	 * Wandelt die Stadt wieder in die Ursprï¿½ngliche um, alle ï¿½nderungen eines angewendeten Blueprints werden rï¿½ckgï¿½ngig gemacht.
+	 * Lï¿½scht auï¿½erdem die bisherigen Events
 	 */
 	public void toNormal() {
-		//Löscht aus allen Straßen die möglichen Stationen
+		//Lï¿½scht aus allen Straï¿½en die mï¿½glichen Stationen
 		for (int x = 0; x < getSizeX(); x++) {
 			for (int y = 0; y < getSizeY(); y++) {
 				if (tiles[x][y] instanceof StreetTile) {
@@ -554,11 +551,11 @@ public class Town implements Updateable {
 
 	
 	/**
-	 * Generiert alle RoutingEvents für die aktuelle Simulation.
+	 * Generiert alle RoutingEvents fï¿½r die aktuelle Simulation.
 	 */
 	private void generateRoutings() {
 		if (!areTilesReady()) throw new NullPointerException("Bisher keine Tiles erzeugt. (Tiles sind nicht ready)");
-		//Generiert für jede Person RoutingEvents:
+		//Generiert fï¿½r jede Person RoutingEvents:
 		ArrayList<HouseTile> houses = getHouseTiles();
 		ArrayList<Event> tmpEvents = new ArrayList<Event>();
 		for ( HouseTile house : houses ) {
@@ -568,7 +565,7 @@ public class Town implements Updateable {
 			}
 		}
 		
-		//RoutingEvents hinzufügen:
+		//RoutingEvents hinzufï¿½gen:
 		events.addAll(tmpEvents);
 	}
 	
@@ -576,7 +573,7 @@ public class Town implements Updateable {
 	/**
 	 * 
 	 * TODO richtigen Algorithmus einbauen
-	 * Generiert Routen für die Person p und fügt diese der Liste list hinzu
+	 * Generiert Routen fï¿½r die Person p und fï¿½gt diese der Liste list hinzu
 	 * @param p die Person, auf welche sich die Routen beziehen
 	 * @param list die Liste
 	 * 
@@ -599,10 +596,10 @@ public class Town implements Updateable {
 			}
 			
 			/**
-			 * Wenn Start und Ziel die gleiche Station anfahren wollen muss erneut ein Ziel ausgewählt werden.
-			 * Das gleiche Auswählen ist kein Fehler, muss jedoch einfach erneut ausprobiert werden.
-			 * Dafür wird jedoch einfach ein anderes Ziel anvisiert, es wird NICHT als Fehler geloggt.
-			 * ACHTUNG: HIER KÖNNTE DER ALGORITHMUS HÄNGEN BLEIBEN
+			 * Wenn Start und Ziel die gleiche Station anfahren wollen muss erneut ein Ziel ausgewï¿½hlt werden.
+			 * Das gleiche Auswï¿½hlen ist kein Fehler, muss jedoch einfach erneut ausprobiert werden.
+			 * Dafï¿½r wird jedoch einfach ein anderes Ziel anvisiert, es wird NICHT als Fehler geloggt.
+			 * ACHTUNG: HIER Kï¿½NNTE DER ALGORITHMUS Hï¿½NGEN BLEIBEN
 			 */
 			while ( true ) {
 				if (origin.getNextStation().getX() == target.getNextStation().getX() &&
@@ -638,10 +635,10 @@ public class Town implements Updateable {
 			}
 			
 			/**
-			 * Wenn Start und Ziel die gleiche Station anfahren wollen muss erneut ein Ziel ausgewählt werden.
-			 * Das gleiche Auswählen ist kein Fehler, muss jedoch einfach erneut ausprobiert werden.
-			 * Dafür wird jedoch einfach ein anderes Ziel anvisiert, es wird NICHT als Fehler geloggt.
-			 * ACHTUNG: HIER KÖNNTE DER ALGORITHMUS HÄNGEN BLEIBEN
+			 * Wenn Start und Ziel die gleiche Station anfahren wollen muss erneut ein Ziel ausgewï¿½hlt werden.
+			 * Das gleiche Auswï¿½hlen ist kein Fehler, muss jedoch einfach erneut ausprobiert werden.
+			 * Dafï¿½r wird jedoch einfach ein anderes Ziel anvisiert, es wird NICHT als Fehler geloggt.
+			 * ACHTUNG: HIER Kï¿½NNTE DER ALGORITHMUS Hï¿½NGEN BLEIBEN
 			 */
 			while ( true ) {
 				if (origin.getNextStation().getX() == target.getNextStation().getX() &&
@@ -687,10 +684,10 @@ public class Town implements Updateable {
 			}
 			
 			/**
-			 * Wenn Start und Ziel die gleiche Station anfahren wollen muss erneut ein Ziel ausgewählt werden.
-			 * Das gleiche Auswählen ist kein Fehler, muss jedoch einfach erneut ausprobiert werden.
-			 * Dafür wird jedoch einfach ein anderes Ziel anvisiert, es wird NICHT als Fehler geloggt.
-			 * ACHTUNG: HIER KÖNNTE DER ALGORITHMUS HÄNGEN BLEIBEN
+			 * Wenn Start und Ziel die gleiche Station anfahren wollen muss erneut ein Ziel ausgewï¿½hlt werden.
+			 * Das gleiche Auswï¿½hlen ist kein Fehler, muss jedoch einfach erneut ausprobiert werden.
+			 * Dafï¿½r wird jedoch einfach ein anderes Ziel anvisiert, es wird NICHT als Fehler geloggt.
+			 * ACHTUNG: HIER Kï¿½NNTE DER ALGORITHMUS Hï¿½NGEN BLEIBEN
 			 */
 			while ( true ) {
 				if (origin.getNextStation().getX() == target.getNextStation().getX() &&
@@ -793,7 +790,7 @@ public class Town implements Updateable {
 		return result;
 	}
 	
-	//Wird für die richtige Zuordnung des Graphen benötigt
+	//Wird fï¿½r die richtige Zuordnung des Graphen benï¿½tigt
 	public Waypoint findWaypointInBlueprint(double x, double y) {
 		for (Schedule s : blueprint.getSchedules()) {
 			for (Waypoint w  : s.getStations()) {
@@ -809,7 +806,7 @@ public class Town implements Updateable {
 		if (tiles[(int)w.getX()][(int)w.getY()] instanceof StreetTile ) {
 			StreetTile st = (StreetTile) tiles[(int)w.getX()][(int)w.getY()];
 			if (!st.isStation()) {
-				Logger.getGlobal().warning("findStationInBlueprint ist keine Station! (sondern Straße)");
+				Logger.getGlobal().warning("findStationInBlueprint ist keine Station! (sondern Straï¿½e)");
 				return null;
 			}
 			return st;
@@ -830,15 +827,15 @@ public class Town implements Updateable {
 		
 		Waypoint lastChangeStation = startW;
 		int lastStationIndex = 0;
-		ArrayList<Schedule> possibleLines = origin.getSchedules(); //Mögliche Linien vom letzten Einstieg
+		ArrayList<Schedule> possibleLines = origin.getSchedules(); //Mï¿½gliche Linien vom letzten Einstieg
 		SpecificSchedule sSchedule = null;
 
 		for ( lastStationIndex=0;lastStationIndex<=path.size();lastStationIndex++) {
 			
-			//Führt diese Station direkt zum Ziel?
+			//Fï¿½hrt diese Station direkt zum Ziel?
 			ArrayList<Schedule> cutSet = new ArrayList<Schedule>(possibleLines);			
 			cutSet.retainAll(findStationInBlueprint(endW).getSchedules());
-			if (!cutSet.isEmpty()) { //Diese Station führt direkt zum Ziel!
+			if (!cutSet.isEmpty()) { //Diese Station fï¿½hrt direkt zum Ziel!
 				Schedule schedule = cutSet.get(random.nextInt(cutSet.size()));
 				BusDirection d = schedule.whichDirectionIsFaster(lastChangeStation, endW);
 				if (d == BusDirection.NORMAL) {
@@ -849,14 +846,14 @@ public class Town implements Updateable {
 				stations.add(new ChangeStation(lastChangeStation, sSchedule));
 				break;
 			}
-			//Schnittmenge zur nächsten Station bilden, um zu prüfen, welche Linien weiterhin angefahren werden können
+			//Schnittmenge zur nï¿½chsten Station bilden, um zu prï¿½fen, welche Linien weiterhin angefahren werden kï¿½nnen
 
 					cutSet = new ArrayList<Schedule>(possibleLines);
 					cutSet.retainAll(findStationInBlueprint(stationGraph.getEdgeTarget(path.get(lastStationIndex))).getSchedules());
 
 			if (cutSet.isEmpty()) { //Schnittmenge leer, Zeit umzusteigen!
-				//Umsteigestation hinzufügen:
-				//Dafür eine mögliche Linie aussuchen:
+				//Umsteigestation hinzufï¿½gen:
+				//Dafï¿½r eine mï¿½gliche Linie aussuchen:
 				int warn_counter = 0;
 				doo:
 				do {
@@ -870,7 +867,7 @@ public class Town implements Updateable {
 					sSchedule = schedule.getScheduleReverse();
 					break doo;
 				} else if (d == null) {
-					//Falsche Schedule wurde ausgewählt
+					//Falsche Schedule wurde ausgewï¿½hlt
 					//possibleLines.remove(schedule);
 					warn_counter++;
 					if (warn_counter>1000) {
@@ -882,13 +879,13 @@ public class Town implements Updateable {
 				lastChangeStation = stationGraph.getEdgeSource(path.get(lastStationIndex));
 				possibleLines = findStationInBlueprint(stationGraph.getEdgeSource(path.get(lastStationIndex))).getSchedules();
 				//possibleLines.retainAll(findStationInBlueprint(stationGraph.getEdgeSource(path.get(lastStationIndex))).getSchedules());
-			} else { //mögliche Linien müssen eingeschränkt werden
+			} else { //mï¿½gliche Linien mï¿½ssen eingeschrï¿½nkt werden
 				possibleLines = cutSet;
 			}
 		}
-		//Letzte Station hinzufügen:
+		//Letzte Station hinzufï¿½gen:
 		if (sSchedule == null) {
-			//Das kann passieren, wenn der Weg zu umständlich ist. Also ein Cryple Error
+			//Das kann passieren, wenn der Weg zu umstï¿½ndlich ist. Also ein Cryple Error
 			statistics.addCrypleError();
 			System.out.println("CRYPLEEE");
 			return null;
@@ -905,7 +902,7 @@ public class Town implements Updateable {
 
 	
 	/**
-	 * Gibt die kürzeste SpecificSchedule zwischen zwei Stationen zurück (müssen nicht nebeneinander sein)
+	 * Gibt die kï¿½rzeste SpecificSchedule zwischen zwei Stationen zurï¿½ck (mï¿½ssen nicht nebeneinander sein)
 	 * @param station1
 	 * @param station2
 	 * @return ALLLLLLLLLLLLLLLLLLLLLT
@@ -947,9 +944,5 @@ public class Town implements Updateable {
 		
 
 		return shortest;
-	}
-	
-	public static PersonNameGenerator getPersonNameGenerator() {
-		return personNameGenerator;
 	}
 }
