@@ -28,6 +28,11 @@ public class FrameLauncher implements Simulator {
 
 	public Random random;
 	
+	/**
+	 * Stellt ein, ob das Switchen zwischen Richtungen erlaubt sein soll
+	 */
+	public static final boolean shouldAllowAlternate = false;
+	
 	private GenericAlgorithm ga;
 
 	/**
@@ -67,7 +72,7 @@ public class FrameLauncher implements Simulator {
 	public static int chromoScheduleCount;
 	public static int chromoScheduleStationLength;
 	public static int chromoScheduleStartTimeLength;
-	public static int chromoScheduleMinDelayLength;
+	public static int chromoScheduleShouldAlternate;
 	public static int chromoCount;
 
 	/**
@@ -161,24 +166,23 @@ public class FrameLauncher implements Simulator {
 		simulationTickSpeed = -1; // DEBUGGING ONLY! Time for one simulation
 									// tick
 		//Anzahl an Verkehrsaufkommen, welches vorhanden sein soll
-		townNumberPersons = 1000;
+		townNumberPersons = 100;
 		//"Pufferzone" in Prozent, in diesem Bereich sollen zum Ende der Simulation keine Personen mehr erzeugt werden
 		townPersonStopPuffer = 0.2f; //Puffer liegt also bei den letzten 20%
 
 		// Init the chromosome length values
 		chromoStationLength = Blueprint.townToMappingIP(map).size(); // Calculates street count
 
-		chromoScheduleCount = 20; // Maximum number of Schedules in a Town
-		chromoScheduleStationLength = 10; // Maximum number of stations per Schedule
+		chromoScheduleCount = 5; // Maximum number of Schedules in a Town
+		chromoScheduleStationLength = 20; // Maximum number of stations per Schedule
 		chromoScheduleStartTimeLength = 10 * 2; // Maximum number of start times per Schedule
 
-		chromoScheduleMinDelayLength = 1; // Min delay value (only one value)
-		chromoCount = 1 + chromoScheduleCount * 3; // Number of chromosomes per individual (1 for the station list, 2
+		chromoScheduleShouldAlternate = 1; //Boolean, if the schedule should alternate
+		chromoCount = 1 + chromoScheduleCount * 3; // Number of chromosomes per individual (1 for the station list, 3
 													// for each schedule)
 
 		// Max start time and min delay
 		final int maxStartTime = 50;
-		final int maxMinDelay = 50;
 		
 		// Declare the chromosome lengths, min genes and max genes
 		final int[] chromosomeLengths = new int[chromoCount];
@@ -194,7 +198,7 @@ public class FrameLauncher implements Simulator {
 			// Schedule station / start times lengths
 			chromosomeLengths[i] = chromoScheduleStationLength;
 			chromosomeLengths[i + 1] = chromoScheduleStartTimeLength;
-			chromosomeLengths[i + 2] = chromoScheduleMinDelayLength;
+			chromosomeLengths[i + 2] = chromoScheduleShouldAlternate;
 
 			// Schedule station range
 			minGenes[i] = 0;
@@ -204,9 +208,9 @@ public class FrameLauncher implements Simulator {
 			minGenes[i + 1] = -maxStartTime;
 			maxGenes[i + 1] = maxStartTime;
 			
-			// Schedule min delay range
-			minGenes[i + 2] = -maxMinDelay;
-			maxGenes[i + 2] = maxMinDelay;
+			// Schedule should alternate range
+			minGenes[i + 2] = Integer.MIN_VALUE;
+			maxGenes[i + 2] = Integer.MAX_VALUE;
 		}
 
 		// Create our genetic algorithm
