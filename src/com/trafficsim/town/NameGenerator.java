@@ -1,17 +1,21 @@
 package com.trafficsim.town;
 
-import java.awt.List;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
 
-public class PersonNameGenerator {
+public class NameGenerator {
 
 	private ArrayList<String> vocals = new ArrayList<String>();
 	private ArrayList<String> startConsonants = new ArrayList<String>();
 	private ArrayList<String> endConsonants = new ArrayList<String>();
 	private ArrayList<String> nameInstructions = new ArrayList<String>();
+	
+	private String[] busFirstChar = new String[] {"1", "2", "3", "M", "X"};
+	
+	private Random random = new Random();
 
-	public PersonNameGenerator() {
+	public NameGenerator() {
 		String demoVocals[] = { "a", "e", "i", "o", "u", "ei", "ai", "y", "eu", "au", };
 
 		String demoStartConsonants[] = { "b", "c", "d", "f", "g", "h", "k", "l", "m", "n", "r", "s", "t", "w", "z",
@@ -40,7 +44,7 @@ public class PersonNameGenerator {
 	 * @param endConsonants
 	 *            pass something like {"th","sh","f",..}
 	 */
-	public PersonNameGenerator(String[] vocals, String[] startConsonants, String[] endConsonants) {
+	public NameGenerator(String[] vocals, String[] startConsonants, String[] endConsonants) {
 		this.vocals.addAll(Arrays.asList(vocals));
 		this.startConsonants.addAll(Arrays.asList(startConsonants));
 		this.endConsonants.addAll(Arrays.asList(endConsonants));
@@ -57,7 +61,7 @@ public class PersonNameGenerator {
 	 *            (v=vocal,c=startConsonsonant,d=endConsonants)! Pass something
 	 *            like {"vd", "cvdvd", "cvd", "vdvd"}
 	 */
-	public PersonNameGenerator(String[] vocals, String[] startConsonants, String[] endConsonants,
+	public NameGenerator(String[] vocals, String[] startConsonants, String[] endConsonants,
 			String[] nameInstructions) {
 		this(vocals, startConsonants, endConsonants);
 		this.nameInstructions.addAll(Arrays.asList(nameInstructions));
@@ -68,7 +72,7 @@ public class PersonNameGenerator {
 	}
 
 	private int randomInt(int min, int max) {
-		return (int) (min + (Math.random() * (max + 1 - min)));
+		return min + random.nextInt(max - min + 1);
 	}
 
 	private String getNameByInstructions(String nameInstructions) {
@@ -99,5 +103,13 @@ public class PersonNameGenerator {
 
 	private String getRandomElementFrom(ArrayList<String> v) {
 		return v.get(randomInt(0, v.size() - 1));
+	}
+	
+	public String getBusName() {
+		String char1 = busFirstChar[random.nextInt(busFirstChar.length)];
+		String char2 = String.valueOf(1 + random.nextInt(9));
+		String char3 = String.valueOf(random.nextInt(10));
+		
+		return char1 + char2 + char3;
 	}
 }

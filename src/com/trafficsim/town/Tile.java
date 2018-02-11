@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public abstract class Tile {
 	private int x, y; //Koordinaten
 	
-	//in welchem quadratischen Bereich die Person eine Station finden kann, bei 1 beträgt diese 3x3, bei 2 5x5 usw
+	//in welchem quadratischen Bereich die Person eine Station finden kann, bei 1 betrï¿½gt diese 3x3, bei 2 5x5 usw
 	public static int AREA_STATION=2;
 	
 	/**
@@ -31,8 +31,8 @@ public abstract class Tile {
 	
 
 	/**
-	 * Gibt die nächste beste Station (mit den meisten Buslinien) zurück
-	 * @return die "beste" nächste Station, wenn keine vorhanden ist <code>null</code>
+	 * Gibt die nï¿½chste beste Station (mit den meisten Buslinien) zurï¿½ck
+	 * @return die "beste" nï¿½chste Station, wenn keine vorhanden ist <code>null</code>
 	 */
 	public StreetTile getNextStation() {
 		return nextStation;
@@ -44,7 +44,7 @@ public abstract class Tile {
 	
 	/**
 	 * Vor dem richtigen Benutzen MUSS diese Funktion aufgerufen werden, die Generierung von PersonRouts
-	 * ruft nämlich getNextStation() ab.
+	 * ruft nï¿½mlich getNextStation() ab.
 	 * 
 	 * @param map
 	 */
@@ -52,7 +52,7 @@ public abstract class Tile {
 		ArrayList<StreetTile> all = new ArrayList<StreetTile>();
 		for (int x2=x-AREA_STATION;x2<=x+AREA_STATION;x2++) {
 			for (int y2=y-AREA_STATION;y2<=y+AREA_STATION;y2++) {
-				if (x2 >= 0 && x2 < map.length && y2 >= 0 && y2 < map[0].length ) { //Koordinaten müssen im Bereich liegen
+				if (x2 >= 0 && x2 < map.length && y2 >= 0 && y2 < map[0].length ) { //Koordinaten mï¿½ssen im Bereich liegen
 					if (map[x2][y2] instanceof StreetTile) {
 						if (((StreetTile) map[x2][y2]).isStation()) {
 							all.add((StreetTile)map[x2][y2]);

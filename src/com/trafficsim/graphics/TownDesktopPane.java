@@ -63,8 +63,6 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 	
 	private SimulationFrameLauncher frameLauncherContext;
 	private Town town;
-
-	private double transX, transY, transZ;
 	
 	private int tileX, tileY;
 	private double tileSize;
@@ -85,11 +83,6 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 		
 		this.frameLauncherContext = frameLauncherContext;
 		this.town = town;
-		
-		// translation and zoom
-		transX = 0.0;
-		transY = 0.0;
-		transZ = 1.0;
 		
 		// Tile position and size (updated when screen resizing)
 		tileX = 10;
@@ -476,7 +469,7 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 			getDesktopManager().setBoundsForFrame(frame, frame.getX(), frame.getY(), frame.getWidth(), frame.getHeight());
 	}
 	
-	private void updateTileTransform() {
+	public void updateTileTransform() {
 		if (town == null) {
 			repaint();
 			return;
@@ -492,11 +485,6 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 			tileX = 0;
 			tileY = (int) ((getHeight() - town.getSizeY() * tileSize) / 2);
 		}
-		
-		// Apply zoom and translation
-		tileSize *= transZ;
-		tileX += transX;
-		tileY += transY;
 		
 		repaint();
 	}
@@ -575,12 +563,11 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 		mouseXFlag = e.getX();
 		mouseYFlag = e.getY();
 		
-		if (SwingUtilities.isMiddleMouseButton(e)) {
-			// Translate
-			transX += mouseDX;
-			transY += mouseDY;
-			updateTileTransform();
-		}
+		// Translate
+		tileX += mouseDX;
+		tileY += mouseDY;
+		
+		repaint();
 	}
 
 	public void mouseMoved(MouseEvent e) {
@@ -593,14 +580,13 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 	}
 
 	public void mouseWheelMoved(MouseWheelEvent e) {
-		if (town == null) return;
+		/*if (town == null) return;
 		
 		double zoomD = Math.pow(ZOOM_SPEED, -e.getWheelRotation());
 		transZ *= zoomD;
-		transX -= town.getSizeX() * tileSize * transZ * (zoomD - 1) / 2;
-		transY -= town.getSizeX() * tileSize * transZ * (zoomD - 1) / 2;
+		transX -= Math.log(zoomD) * 30;
 		
-		updateTileTransform();
+		updateTileTransform();*/
 	}
 
 	public void valueChanged(ListSelectionEvent e) {

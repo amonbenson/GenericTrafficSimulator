@@ -2,6 +2,8 @@ package com.trafficsim.town;
 
 import java.util.Random;
 
+import com.trafficsim.sim.Simulation;
+
 public class Person {
 	
 	public static long currentIDTracker = 0; // Tracker for the current id, will be incremented to generate a unque id for every new Person.
@@ -169,6 +171,6 @@ public class Person {
 	 */
 	private static String createName() {
 		// Generate Name and Surname
-		return Town.getPersonNameGenerator().getName() + " " + Town.getPersonNameGenerator().getName();
+		return Simulation.nameGenerator.getName() + " " + Simulation.nameGenerator.getName();
 	}
 }
