@@ -159,13 +159,18 @@ public class Simulation {
 				for (int y = 0; y < img.getHeight(); y++) {
 					Color col = new Color(img.getRGB(x, y));
 					
-					float isStreet = col.getBlue() > 128 ? 0f : 1f;
+					float isHouse = col.getBlue() > 128 ? 0f : 1f;
 					float strength = 0;
-					if (isStreet == 0f) strength = (float) (col.getGreen() - speed0) / (speed1 - speed0);
-					else strength = (Math.random() < 0.001) ? ((int) ((col.getGreen() - population0) / (population1 - population0))) : 0;
+					if (isHouse == 1f) {
+						strength = (float) (col.getGreen() - speed0) / (speed1 - speed0);
+					} else {
+						strength = (Math.random() < 0.001) ? ((int) ((col.getGreen() - population0) / (population1 - population0))) : 0;
+					}
 					float interest = (float) (col.getGreen() - interest0) / (interest1 - interest0);
+					
+					strength = strength * population1; //Strength liegt bisher zwischen 0-1, also an den maximalen Wert (population1) anpassen
 
-					map[x][y][0] = isStreet;
+					map[x][y][0] = isHouse;
 					map[x][y][1] = strength;
 					map[x][y][2] = interest;
 				}

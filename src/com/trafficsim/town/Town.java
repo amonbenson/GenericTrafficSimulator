@@ -18,6 +18,7 @@ import org.xguzm.pathfinding.grid.finders.AStarGridFinder;
 import org.xguzm.pathfinding.grid.finders.GridFinderOptions;
 
 import com.trafficsim.generic.Blueprint;
+import com.trafficsim.genericalgorithm.FrameLauncher;
 import com.trafficsim.sim.Simulation;
 
 public class Town implements Updateable {
@@ -558,11 +559,9 @@ public class Town implements Updateable {
 		//Generiert f�r jede Person RoutingEvents:
 		ArrayList<HouseTile> houses = getHouseTiles();
 		ArrayList<Event> tmpEvents = new ArrayList<Event>();
-		for ( HouseTile house : houses ) {
-			for ( int i=0;i<house.getNumberPersons();i++) {
-				Person p = new Person(-1d, -1d, house, statistics);
-				generateRoutingForPerson(p, tmpEvents);
-			}
+		for ( int i=0;i<FrameLauncher.townNumberPersons;i++ ) {
+			Person p = new Person(-1d, -1d, null, statistics);
+			generateRoutingForPerson(p, tmpEvents, random.nextInt((int) (FrameLauncher.townRuntime*(1-FrameLauncher.townPersonStopPuffer))));
 		}
 		
 		//RoutingEvents hinzuf�gen:
@@ -579,7 +578,7 @@ public class Town implements Updateable {
 	 * 
 	 * @return TRUE, wenn ein Routing erfolgreich erzeugt wurde. Ansonsten false.
 	 */
-	private boolean generateRoutingForPerson(Person p, ArrayList<Event> list) {
+	private boolean generateRoutingForPerson(Person p, ArrayList<Event> list, int starttime) {
 		
 		if (personRoutingOption == PersonRoutingOption.RANDOM_START_RANDOM_END) {
 			Tile origin = getRandomTile();
@@ -613,7 +612,7 @@ public class Town implements Updateable {
 			List<DefaultWeightedEdge> path = getPathForPerson(origin, target);
 			Route r = pathToRoute(path);
 			if (r != null) {
-				RoutingEvent re = new RoutingEvent(0, p, r);
+				RoutingEvent re = new RoutingEvent(starttime, p, r);
 				events.add(re);
 				return true;
 			}
@@ -652,7 +651,7 @@ public class Town implements Updateable {
 			List<DefaultWeightedEdge> path = getPathForPerson(origin, target);
 			Route r = pathToRoute(path);
 			if (r != null) {
-				RoutingEvent re = new RoutingEvent(0, p, r);
+				RoutingEvent re = new RoutingEvent(starttime, p, r);
 				events.add(re);
 				return true;
 			}
@@ -701,7 +700,7 @@ public class Town implements Updateable {
 			List<DefaultWeightedEdge> path = getPathForPerson(origin, target);
 			Route r = pathToRoute(path);
 			if (r != null) {
-				RoutingEvent re = new RoutingEvent(0, p, r);
+				RoutingEvent re = new RoutingEvent(starttime, p, r);
 				events.add(re);
 				return true;
 			}

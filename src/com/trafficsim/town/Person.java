@@ -45,7 +45,6 @@ public class Person {
 	 * 		@param house das Haus der Person
 	 */
 	public Person(double x, double y, HouseTile house, Statistics statistics) {
-		if (house == null) throw new NullPointerException("House tile cannot be null (we don't have homeless people yet).");
 		
 		id = createID();
 		name = createName();

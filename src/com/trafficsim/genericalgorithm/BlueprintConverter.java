@@ -47,7 +47,7 @@ public class BlueprintConverter {
 
 			final Chromosome usedStationsChromo = chromosomes.get(1 + scheduleIndex * 3);
 			final Chromosome startTimeChromo = chromosomes.get(2 + scheduleIndex * 3);
-			final Chromosome minDelayChromo = chromosomes.get(3 + scheduleIndex * 3);
+			final Chromosome shouldAlternateChromo = chromosomes.get(3 + scheduleIndex * 3);
 
 			Schedule s = null;
 			ArrayList<Waypoint> usedStations = new ArrayList<Waypoint>();
@@ -88,7 +88,7 @@ public class BlueprintConverter {
 			for (int i = 0; i < startTimeChromo.getLength(); i += 2) {
 				int startTime = startTimeChromo.getGene(i);
 				int direction = startTimeChromo.getGene(i + 1);
-				if (startTime > 0) { // Wenn die Startzeit kleiner 0 ist soll sie nicht hinzugefï¿½gt werden
+				if (startTime >= 0) { // Wenn die Startzeit kleiner 0 ist soll sie nicht hinzugefï¿½gt werden
 					BusDirection d;
 					if (direction % 2 == 0) { // Bei gerader Zahl soll die Richtung NORMAL sein
 						d = BusDirection.NORMAL;
@@ -115,16 +115,23 @@ public class BlueprintConverter {
 				last = element;
 			}
 			
-			// minDelay aus dem Chromosom herausfinden
-			int minDelay = minDelayChromo.getGene(0);
+			//Alternieren, wenn das erlaubt ist
+			if (FrameLauncher.shouldAllowAlternate) {
+				int shouldAlternate = shouldAlternateChromo.getGene(0);
+				if (shouldAlternate % 2 == 0) { //Bei gerader Zahl soll der Fahrplan hin und her switchen
+					//Dafür werden die usedStations "gespiegelt", letzte und erste Station wird aber ignoriert
+					for (int i=usedStations.size()-2;i>=0;i--) {
+						usedStations.add(usedStations.get(i));
+					}
+				}
+			}
 
+			
 			// Schedule nur erzeugen, wenn zwei Stationen angefahren werden und es
 			// mindestens eine Startzeit gibt.
 			if (usedStations.size() >= 2 && busStartTimes.size() >= 1) {
-				s = new Schedule(usedStations, busStartTimes, minDelay, Simulation.nameGenerator.getBusName());
+				s = new Schedule(usedStations, busStartTimes, 0, Simulation.nameGenerator.getBusName());
 				schedules.add(s);
-			} else {
-
 			}
 		}
 

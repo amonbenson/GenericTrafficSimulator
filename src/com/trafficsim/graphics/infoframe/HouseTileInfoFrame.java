@@ -52,4 +52,5 @@ public class HouseTileInfoFrame extends InfoFrame {
 	public HouseTile getTile() {
 		return tile;
 	}
+	
 }
