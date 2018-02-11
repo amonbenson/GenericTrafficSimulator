@@ -174,15 +174,7 @@ public class Statistics {
 			return sumBig.floatValue();
 		} else {
 			return MAX_VALUE;
-		}/*
-		float value = (float)sum/(long)(elems);
-		if (value < 0 ) {
-			System.out.println("SUM: "+sum);
-			System.out.println(sumBig);
-			System.out.println("ER:" +value);
 		}
-		//System.out.println((float)sum/(float)(travelTimes.size() + errorNoRoute + personCounter));
-		return (float)sum/(float)(elems);*/
 	}
 	/**
 	 * Gibt den Median der ben�tigten Reisezeit aller gereisten (angekommenden) Menschen zur�ck
@@ -196,7 +188,7 @@ public class Statistics {
 		}
 		//Fehler hinzuf�gen
 		for (int i=0;i<errorNoRoute;i++) {
-			times.add(Long.MAX_VALUE);
+			times.add((long) MAX_VALUE);
 		}
 		
 		//Personen hinzuz�hlen, die irgendwo noch rumstehen:
@@ -226,7 +218,7 @@ public class Statistics {
 			if (times.size() == 1) {
 				return times.get(0);
 			} else {
-				return Integer.MAX_VALUE;
+				return MAX_VALUE;
 			}
 		}
 		

@@ -47,8 +47,15 @@ public class FrameLauncher implements Simulator {
 	 * calculated.
 	 * 
 	 */
-	private int townRuntime;
+	public static int townRuntime;
 
+	/**
+	 * Stellt ein, wie viele Personen über die gesamte Generation generiert werden
+	 */
+	public static int townNumberPersons;
+	
+	public static float townPersonStopPuffer;
+	
 	/**
 	 * Sets the time to sleep between two town updates. Should only be used for
 	 * debbuging only, cause it slows down the generic algorithm.
@@ -70,6 +77,10 @@ public class FrameLauncher implements Simulator {
 	 */
 	private Town currentTown;
 
+
+	
+
+	
 	/**
 	 * The simulation framelauncher will create a jframe to show the current town.
 	 */
@@ -128,15 +139,19 @@ public class FrameLauncher implements Simulator {
 				gaFrameLauncher.getFrame().getY() + GraphicsFX.highDPI(100));
 		simFrameLauncher.getFrame().setLocation(GraphicsFX.highDPI(10), GraphicsFX.highDPI(10));
 
-		gaRuntime = 150; // Terminate after n generations
+		gaRuntime = 500; // Terminate after n generations
 		gaPopSize = 10; // Individuals per population
-		townRuntime = 1000; // Calc fitness after n ticks of simulation
+		townRuntime = 100; // Calc fitness after n ticks of simulation
 		simulationTickSpeed = -1; // DEBUGGING ONLY! Time for one simulation
 									// tick
+		//Anzahl an Verkehrsaufkommen, welches vorhanden sein soll
+		townNumberPersons = 1000;
+		//"Pufferzone" in Prozent, in diesem Bereich sollen zum Ende der Simulation keine Personen mehr erzeugt werden
+		townPersonStopPuffer = 0.2f; //Puffer liegt also bei den letzten 20%
 
 		// Init the chromosome length values
 		chromoStationLength = Blueprint.townToMappingIP(map).size(); // Calculates street count
-		chromoScheduleCount = 4; // Maximum number of Schedules in a Town
+		chromoScheduleCount = 3; // Maximum number of Schedules in a Town
 		chromoScheduleStationLength = 5; // Maximum number of stations per Schedule
 		chromoScheduleStartTimeLength = 5 * 2; // Maximum number of start times per Schedule
 		chromoScheduleMinDelayLength = 1; // Min delay value (only one value)

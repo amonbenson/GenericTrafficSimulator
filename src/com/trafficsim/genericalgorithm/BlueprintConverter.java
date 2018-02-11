@@ -87,7 +87,7 @@ public class BlueprintConverter {
 			for (int i = 0; i < startTimeChromo.getLength(); i += 2) {
 				int startTime = startTimeChromo.getGene(i);
 				int direction = startTimeChromo.getGene(i + 1);
-				if (startTime > 0) { // Wenn die Startzeit kleiner 0 ist soll sie nicht hinzugef�gt werden
+				if (startTime >= 0) { // Wenn die Startzeit kleiner 0 ist soll sie nicht hinzugef�gt werden
 					BusDirection d;
 					if (direction % 2 == 0) { // Bei gerader Zahl soll die Richtung NORMAL sein
 						d = BusDirection.NORMAL;
