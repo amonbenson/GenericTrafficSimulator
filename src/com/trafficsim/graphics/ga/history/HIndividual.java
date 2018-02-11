@@ -12,10 +12,11 @@ public class HIndividual {
 	private List<Chromosome> chromosomes;
 	private double fitness;
 	
-	public HIndividual(long id, int[] parentIndicies, List<Chromosome> chromosomes) {
+	public HIndividual(long id, int[] parentIndicies, List<Chromosome> chromosomes, double fitness) {
 		this.id = id;
 		this.parentIndicies = parentIndicies;
 		this.chromosomes = chromosomes;
+		this.fitness = fitness;
 	}
 
 	public long getID() {
