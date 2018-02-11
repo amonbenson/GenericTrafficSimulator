@@ -9,12 +9,18 @@ public class GenerationHistory {
 	private int populationSize;
 
 	private int maxPopulationCount;
+	
+	private List<Double> fitnessHistory;
+	private double maxFitness;
 
 	public GenerationHistory(int populationSize, int maxPopulationCount) {
 		this.populationSize = populationSize;
 		populations = new ArrayList<HPopulation>();
 
 		this.maxPopulationCount = maxPopulationCount;
+		
+		fitnessHistory = new ArrayList<Double>();
+		maxFitness = 0;
 	}
 
 	public HPopulation getCurrentPopulation() {
@@ -33,9 +39,22 @@ public class GenerationHistory {
 		populations.add(new HPopulation(populationSize));
 		if (populations.size() > maxPopulationCount) populations.remove(0);
 	}
+	
+	public void addPopulationFitnessHistory(double fitness) {
+		fitnessHistory.add(fitness);
+		if (fitness > maxFitness) maxFitness = fitness;
+	}
 
 	public HPopulation getNthPopulation(int n) {
 		return populations.get(n);
+	}
+
+	public List<Double> getFitnessHistory() {
+		return fitnessHistory;
+	}
+
+	public double getMaxFitness() {
+		return maxFitness;
 	}
 
 	public int getPopulationSize() {

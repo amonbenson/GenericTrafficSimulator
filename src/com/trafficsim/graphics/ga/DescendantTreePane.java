@@ -28,6 +28,7 @@ public class DescendantTreePane extends JComponent implements MouseListener, Mou
 	public static final Color COL_FG = new Color(255, 255, 255);
 	public static final Color COL_ACCENT = new Color(239, 108, 38);
 	public static final Color COL_ACCENT_2 = new Color(239, 51, 37);
+	public static final Color COL_SELECTED = new Color(89, 237, 4);
 
 	public static final int PANEL_MARGIN = GraphicsFX.highDPI(7);
 
@@ -41,10 +42,14 @@ public class DescendantTreePane extends JComponent implements MouseListener, Mou
 	
 	private GenerationHistory history;
 	private JScrollPane scroller;
+	
+	private HIndividual selectedIndividual;
 
 	public DescendantTreePane() {
 		history = null;
 		scroller = null;
+		
+		selectedIndividual = null;
 
 		addMouseListener(this);
 		addMouseMotionListener(this);
@@ -92,14 +97,20 @@ public class DescendantTreePane extends JComponent implements MouseListener, Mou
 
 				HIndividual i = p.getIndividual(x);
 
+				// Set color for nodes and connections
+				if (p.isElite(x))
+					g.setColor(COL_ACCENT_2);
+				else
+					g.setColor(COL_ACCENT);
+				
+				if (selectedIndividual != null)
+					if (i.getID() == selectedIndividual.getID())
+						g.setColor(COL_SELECTED);
+				
 				// Draw parent connections
 				if (prevP != null) {
 					g.setStroke(
 							new BasicStroke(GraphicsFX.highDPI(2), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0));
-					if (p.isElite(x))
-						g.setColor(COL_ACCENT_2);
-					else
-						g.setColor(COL_ACCENT);
 
 					int[] parentIndices = i.getParentIndicies();
 					if (parentIndices == null) {
@@ -119,10 +130,6 @@ public class DescendantTreePane extends JComponent implements MouseListener, Mou
 				}
 
 				// Draw node background
-				if (p.isElite(x))
-					g.setColor(COL_ACCENT_2);
-				else
-					g.setColor(COL_ACCENT);
 				g.fillRoundRect(nx, ny, NODE_WIDTH, NODE_HEIGHT, NODE_ARC, NODE_ARC);
 
 				// Draw id text
@@ -152,6 +159,9 @@ public class DescendantTreePane extends JComponent implements MouseListener, Mou
 		setPreferredSize(new Dimension(
 				(history.getPopulationSize() + 1) * (NODE_WIDTH + NODE_MARGIN_X) - NODE_MARGIN_X + PANEL_MARGIN * 2,
 				history.getPopulationCount() * (NODE_HEIGHT + NODE_MARGIN_Y) - NODE_MARGIN_Y + PANEL_MARGIN * 2));
+		
+		// Update console pane
+		frameLauncherContext.gaFrameLauncher.gaInfoConsolePane.repaint();
 	}
 
 	private int getNodeX(int indexX) {
@@ -173,6 +183,18 @@ public class DescendantTreePane extends JComponent implements MouseListener, Mou
 	public void setFrameLauncherContext(FrameLauncher frameLauncherContext) {
 		this.frameLauncherContext = frameLauncherContext;
 	}
+	
+	public HIndividual getSelectedIndividual() {
+		return selectedIndividual;
+	}
+
+	private int getNodeXFromMousePos(int mx) {
+		return (int) ((mx - PANEL_MARGIN + NODE_MARGIN_X * 0.5) / (NODE_WIDTH + NODE_MARGIN_X) - 1);
+	}
+	
+	private int getNodeYFromMousePos(int my) {
+		return (int) ((my - PANEL_MARGIN + NODE_MARGIN_Y * 0.5) / (NODE_HEIGHT + NODE_MARGIN_Y));
+	}
 
 	public void mouseDragged(MouseEvent e) {
 		if (scroller == null) return;
@@ -181,16 +203,48 @@ public class DescendantTreePane extends JComponent implements MouseListener, Mou
 	}
 
 	public void mouseMoved(MouseEvent e) {
-
-	}
-
-	public void mouseClicked(MouseEvent e) {
-		// Return if we have no frame launcher
+		// Only do on-hover-selection if ga is running
+		if (!frameLauncherContext.gaFrameLauncher.playGA.isSelected()) return;
+		
+		// Return if we have no frame launcher or history
 		if (frameLauncherContext == null) return;
+		if (history == null) return;
+		
+		// Reset selected id
+		selectedIndividual = null;
 		
 		// Get our node position
-		int nodeX = (e.getX() - PANEL_MARGIN) / (NODE_WIDTH + NODE_MARGIN_X) - 1;
-		int nodeY = (e.getY() - PANEL_MARGIN) / (NODE_HEIGHT + NODE_MARGIN_Y);
+		int nodeX = getNodeXFromMousePos(e.getX());
+		int nodeY = getNodeYFromMousePos(e.getY());
+		
+		if (nodeX < 0) return;
+		if (nodeX > history.getPopulationSize() - 1) {
+			repaint();
+			return;
+		}
+		if (nodeY < 0) return;
+		if (nodeY > history.getPopulationCount() - 1) {
+			repaint();
+			return;
+		}
+		
+		// Get the corresponding h-individual
+		HPopulation p = history.getNthPopulation(history.getPopulationCount() - nodeY - 1);
+		HIndividual i = p.getIndividual(nodeX);
+		
+		// Set the selected node id
+		selectedIndividual = i;
+		repaint();
+	}
+
+	public void mousePressed(MouseEvent e) {
+		// Return if we have no frame launcher or history
+		if (frameLauncherContext == null) return;
+		if (history == null) return;
+		
+		// Get our node position
+		int nodeX = getNodeXFromMousePos(e.getX());
+		int nodeY = getNodeYFromMousePos(e.getY());
 		
 		if (nodeX < 0) return;
 		if (nodeX > history.getPopulationSize() - 1) return;
@@ -200,6 +254,9 @@ public class DescendantTreePane extends JComponent implements MouseListener, Mou
 		// Get the corresponding h-individual
 		HPopulation p = history.getNthPopulation(history.getPopulationCount() - nodeY - 1);
 		HIndividual i = p.getIndividual(nodeX);
+		
+		// Set the selected node id
+		selectedIndividual = i;
 		
 		// Pause GA
 		frameLauncherContext.gaFrameLauncher.playGA.setSelected(false);
@@ -221,9 +278,13 @@ public class DescendantTreePane extends JComponent implements MouseListener, Mou
 		town.applyBlueprint();
 		
 		frameLauncherContext.simFrameLauncher.setSimulation(simulation);
+		
+		// Repaint
+		repaint();
+		frameLauncherContext.simFrameLauncher.getFrame().repaint();
 	}
 
-	public void mousePressed(MouseEvent e) {
+	public void mouseClicked(MouseEvent e) {
 
 	}
 
@@ -236,6 +297,10 @@ public class DescendantTreePane extends JComponent implements MouseListener, Mou
 	}
 
 	public void mouseExited(MouseEvent e) {
-
+		// Deselect individual, if ga is running
+		if (frameLauncherContext.gaFrameLauncher.playGA.isSelected()) {
+			selectedIndividual = null;
+			repaint();
+		}
 	}
 }

@@ -17,6 +17,7 @@ import com.trafficsim.genericalgorithm.GenericAlgorithmWatcher;
 import com.trafficsim.genericalgorithm.Individual;
 import com.trafficsim.genericalgorithm.Population;
 import com.trafficsim.graphics.GraphicsFX;
+import com.trafficsim.graphics.consolepane.GAInfoConsolePane;
 import com.trafficsim.graphics.ga.history.GenerationHistory;
 import com.trafficsim.graphics.ga.history.HIndividual;
 import com.trafficsim.graphics.ga.history.HPopulation;
@@ -35,6 +36,7 @@ public class GAFrameLauncher implements GenericAlgorithmWatcher {
 	private JFrame frame;
 	private JScrollPane dtPaneScroller;
 	public DescendantTreePane descendantTreePane;
+	public GAInfoConsolePane gaInfoConsolePane;
 
 	private JToolBar toolBar;
 	public JToggleButton playGA;
@@ -89,9 +91,14 @@ public class GAFrameLauncher implements GenericAlgorithmWatcher {
 		dtPaneScroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		dtPaneScroller.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		frame.add(BorderLayout.CENTER, dtPaneScroller);
+		
+		// Info console pane
+		gaInfoConsolePane = new GAInfoConsolePane(descendantTreePane);
+		frame.add(BorderLayout.EAST, gaInfoConsolePane);
 
+		// Show frame
 		frame.setAlwaysOnTop(true);
-		frame.setSize(GraphicsFX.highDPI(400), GraphicsFX.highDPI(300));
+		frame.setSize(GraphicsFX.highDPI(800), GraphicsFX.highDPI(800));
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 	}
@@ -153,18 +160,22 @@ public class GAFrameLauncher implements GenericAlgorithmWatcher {
 			if (prevPop != null) parentIndices = prevPop.idsToIndices(individual.getParentIDs());
 			
 			// Create a new hindividual (graphical representation of a ga individual)
-			HIndividual i = new HIndividual(individual.getID(), parentIndices, individual.getChromosomes());
+			HIndividual i = new HIndividual(individual.getID(), parentIndices, individual.getChromosomes(), individual.getFitness());
 			pop.addIndividual(i);
 		}
 		
 		// Update the generation, population fitness and elite count
 		pop.setGeneration(generation);
 		pop.setFitness(population.getPopulationFitness());
+		history.addPopulationFitnessHistory(population.getPopulationFitness());
 		pop.setEliteLimit(ga.getElitismCount());
 		
 		// Update the descendant tree
 		descendantTreePane.repaint();
 		dtPaneScroller.revalidate();
+		
+		// Update fitness graph
+		frameLauncherContext.fitGraph.getContentPane().getComponent(0).repaint();
 	}
 
 	public JFrame getFrame() {
