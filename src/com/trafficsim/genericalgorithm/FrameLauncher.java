@@ -105,8 +105,9 @@ public class FrameLauncher implements Simulator {
 		random = new Random(1);
 		
 		// Load map and set area station
-		map = Simulation.loadHeatMap("res/heatmap.png", 0, 20, 0, 300, 0, 25);
-		Tile.AREA_STATION = 4;
+		//map = Simulation.loadHeatMap("res/heatmap.png", 0, 20, 0, 300, 0, 25);
+		map = Simulation.testTown();
+		//Tile.AREA_STATION = 4;
 		
 		// Logger stuff
 		Simulation.logger.setLevel(Level.ALL);
@@ -160,13 +161,13 @@ public class FrameLauncher implements Simulator {
 
 		gaRuntime = 500; // Terminate after n generations
 
-		gaPopSize = 5; // Individuals per population
-		townRuntime = 2000; // Calc fitness after n ticks of simulation
+		gaPopSize = 10; // Individuals per population
+		townRuntime = 1000; // Calc fitness after n ticks of simulation
 
 		simulationTickSpeed = -1; // DEBUGGING ONLY! Time for one simulation
 									// tick
 		//Anzahl an Verkehrsaufkommen, welches vorhanden sein soll
-		townNumberPersons = 100;
+		townNumberPersons = 1000;
 		//"Pufferzone" in Prozent, in diesem Bereich sollen zum Ende der Simulation keine Personen mehr erzeugt werden
 		townPersonStopPuffer = 0.2f; //Puffer liegt also bei den letzten 20%
 
