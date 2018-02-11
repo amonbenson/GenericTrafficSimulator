@@ -114,10 +114,9 @@ public class FrameLauncher implements Simulator {
 		random = new Random(1);
 
 		// Load map and set area station
-		// map = Simulation.loadHeatMap("res/heatmap.png", 0, 20, 0, 300, 0,
-		// 25);
+		//map = Simulation.loadHeatMap("res/heatmap.png", 0, 20, 0, 300, 0, 25);
 		map = Simulation.testTown();
-		Tile.AREA_STATION = 1;
+		Tile.AREA_STATION = 2;
 
 		// Logger stuff
 		Simulation.logger.setLevel(Level.ALL);
@@ -207,8 +206,8 @@ public class FrameLauncher implements Simulator {
 		gaFrameLauncher.getFrame().setLocation(0, screen.height - gaFrameHeight);
 		gaFrameLauncher.getFrame().setSize(screen.width, gaFrameHeight - GraphicsFX.highDPI(50));
 
-		gaRuntime = 500; // Terminate after n generations
-		gaPopSize = 5; // Individuals per population
+		gaRuntime = 1500; // Terminate after n generations
+		gaPopSize = 50; // Individuals per population
 		townRuntime = 2000; // Calc fitness after n ticks of simulation
 
 		simulationTickSpeed = -1; // DEBUGGING ONLY! Time for one simulation

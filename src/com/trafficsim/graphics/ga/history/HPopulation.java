@@ -1,6 +1,7 @@
 package com.trafficsim.graphics.ga.history;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class HPopulation {
@@ -35,6 +36,15 @@ public class HPopulation {
 			throw new IndexOutOfBoundsException("Index must be greater than or equal to 0 and smaller than individual count.");
 
 		return individuals.get(index);
+	}
+
+	public void sortIndividuals() {
+		individuals.sort(new Comparator<HIndividual>() {
+			public int compare(HIndividual i1, HIndividual i2) {
+				// We want biggest first, so negate the whole thing
+				return -Double.compare(i1.getFitness(), i2.getFitness());
+			}
+		});
 	}
 	
 	public int indexOf(HIndividual individual) {

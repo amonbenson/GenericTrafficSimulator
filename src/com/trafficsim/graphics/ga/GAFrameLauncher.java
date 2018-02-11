@@ -164,6 +164,9 @@ public class GAFrameLauncher implements GenericAlgorithmWatcher {
 			pop.addIndividual(i);
 		}
 		
+		// Sort pop by fitness
+		pop.sortIndividuals();
+		
 		// Update the generation, population fitness and elite count
 		pop.setGeneration(generation);
 		pop.setFitness(population.getPopulationFitness());
