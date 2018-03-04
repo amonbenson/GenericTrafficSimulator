@@ -32,7 +32,7 @@ public class InfoConsolePane extends ConsolePane {
 		// Write the global time
 		append("%A0A0A0Info");
 		append("Time: " + town.getTime());
-		append("Ticks per second: " + frameLauncherContext.updater.getTickSpeed());
+		append("Ticks per second: " + 1000 / frameLauncherContext.updater.getTickSpeed());
 		append("");
 
 		// Write all the key actions
@@ -54,6 +54,9 @@ public class InfoConsolePane extends ConsolePane {
 		int duplicateEventCount = 0;
 
 		for (Event event : town.getEvents()) {
+			if (town.getTime() > event.getStartTime())
+				continue;
+			
 			String line = "";
 			long eventTime = event.getStartTime();
 			String eventName = event.getClass().getSimpleName();
@@ -64,9 +67,6 @@ public class InfoConsolePane extends ConsolePane {
 				if (duplicateEventCount > 0)
 					getLines().set(getLines().size() - 1, getLines().get(getLines().size() - 1) + "  x" + (duplicateEventCount + 1));
 				duplicateEventCount = 0;
-
-				if (town.getTime() > event.getStartTime())
-					line = "%606060";
 
 				line += eventTime + "\t" + eventName;
 				append(line);
