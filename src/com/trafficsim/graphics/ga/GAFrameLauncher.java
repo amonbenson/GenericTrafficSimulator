@@ -167,10 +167,10 @@ public class GAFrameLauncher implements GenericAlgorithmWatcher {
 		// Don't sort pop by fitness
 		//pop.sortIndividuals();
 		
-		// Update the generation, population fitness and elite count
+		// Update the generation, population avg/max fitness and elite count
 		pop.setGeneration(generation);
 		pop.setFitness(population.getPopulationFitness());
-		history.addPopulationFitnessHistory(population.getPopulationFitness());
+		history.addPopulationFitnessHistory(population.getPopulationFitness() / population.size(), population.getIndividual(0).getFitness());
 		pop.setEliteLimit(ga.getElitismCount());
 		
 		// Update the descendant tree

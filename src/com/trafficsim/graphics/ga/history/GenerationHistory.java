@@ -9,8 +9,9 @@ public class GenerationHistory {
 	private int populationSize;
 
 	private int maxPopulationCount;
-	
-	private List<Double> fitnessHistory;
+
+	private List<Double> avgFitnessHistory;
+	private List<Double> maxFitnessHistory;
 	private double maxFitness;
 
 	public GenerationHistory(int populationSize, int maxPopulationCount) {
@@ -18,8 +19,9 @@ public class GenerationHistory {
 		populations = new ArrayList<HPopulation>();
 
 		this.maxPopulationCount = maxPopulationCount;
-		
-		fitnessHistory = new ArrayList<Double>();
+
+		avgFitnessHistory = new ArrayList<Double>();
+		maxFitnessHistory = new ArrayList<Double>();
 		maxFitness = 0;
 	}
 
@@ -40,17 +42,22 @@ public class GenerationHistory {
 		if (populations.size() > maxPopulationCount) populations.remove(0);
 	}
 	
-	public void addPopulationFitnessHistory(double fitness) {
-		fitnessHistory.add(fitness);
-		if (fitness > maxFitness) maxFitness = fitness;
+	public void addPopulationFitnessHistory(double avgFitness, double maxFitness) {
+		avgFitnessHistory.add(avgFitness);
+		maxFitnessHistory.add(maxFitness);
+		if (maxFitness > this.maxFitness) this.maxFitness = maxFitness;
 	}
 
 	public HPopulation getNthPopulation(int n) {
 		return populations.get(n);
 	}
 
-	public List<Double> getFitnessHistory() {
-		return fitnessHistory;
+	public List<Double> getAvgFitnessHistory() {
+		return avgFitnessHistory;
+	}
+
+	public List<Double> getMaxFitnessHistory() {
+		return maxFitnessHistory;
 	}
 
 	public double getMaxFitness() {

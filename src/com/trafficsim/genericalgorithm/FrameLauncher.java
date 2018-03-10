@@ -1,8 +1,10 @@
 package com.trafficsim.genericalgorithm;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Toolkit;
 import java.util.List;
 import java.util.Random;
@@ -10,7 +12,6 @@ import java.util.logging.Level;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
-import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import com.trafficsim.generic.Blueprint;
@@ -19,7 +20,6 @@ import com.trafficsim.graphics.SimulationFrameLauncher;
 import com.trafficsim.graphics.ga.GAFrameLauncher;
 import com.trafficsim.graphics.ga.history.GenerationHistory;
 import com.trafficsim.sim.Simulation;
-import com.trafficsim.town.Tile;
 import com.trafficsim.town.Town;
 
 /**
@@ -114,9 +114,10 @@ public class FrameLauncher implements Simulator {
 		random = new Random(1);
 
 		// Load map and set area station
-		//map = Simulation.loadHeatMap("res/heatmap.png", 0, 20, 0, 300, 0, 25);
+		// map = Simulation.loadHeatMap("res/heatmap.png", 0, 20, 0, 300, 0,
+		// 25);
 		map = Simulation.testTown();
-		//Tile.AREA_STATION = 4;
+		// Tile.AREA_STATION = 4;
 
 		// Logger stuff
 		Simulation.logger.setLevel(Level.ALL);
@@ -142,25 +143,37 @@ public class FrameLauncher implements Simulator {
 		fitGraph.add(new JComponent() {
 			@Override
 			public void paintComponent(Graphics g) {
-				if (gaFrameLauncher.descendantTreePane == null)
-					return;
-				final GenerationHistory history = gaFrameLauncher.descendantTreePane.getHistory();
-				if (history == null)
-					return;
+				g.setColor(Color.black);
+				g.fillRect(0, 0, getWidth(), getHeight());
+				((Graphics2D) g).setStroke(new BasicStroke(3));
 
-				final List<Double> fitnesses = history.getFitnessHistory();
+				if (gaFrameLauncher.descendantTreePane == null) return;
+				final GenerationHistory history = gaFrameLauncher.descendantTreePane.getHistory();
+				if (history == null) return;
+				if (history.getAvgFitnessHistory().size() == 0) return;
+
+				final List<Double> avgFitnesses = history.getAvgFitnessHistory();
+				final List<Double> maxFitnesses = history.getMaxFitnessHistory();
 				final double max = Math.max(0.001, history.getMaxFitness());
 
-				g.setColor(Color.red);
-				for (int x = Math.max(fitnesses.size() - getWidth(), 0); x < fitnesses.size(); x++) {
-					int y = (int) ((1 - fitnesses.get(x) / max) * getHeight());
-					int x2 = x, y2 = y;
+				for (int x = 0; x < avgFitnesses.size(); x++) {
+					int yAvg = (int) ((1 - avgFitnesses.get(x) / max) * getHeight());
+					int yMax = (int) ((1 - maxFitnesses.get(x) / max) * getHeight());
+					int x2 = x, yAvg2 = yAvg, yMax2 = yAvg;
 					if (x > 0) {
 						x2 = x - 1;
-						y2 = (int) ((1 - fitnesses.get(x2) / max) * getHeight());
+						yAvg2 = (int) ((1 - avgFitnesses.get(x2) / max) * getHeight());
+						yMax2 = (int) ((1 - maxFitnesses.get(x2) / max) * getHeight());
 					}
 
-					g.drawLine(x, y, x2, y2);
+					// Draw it!
+					g.setColor(Color.white);
+					g.drawLine(x * getWidth() / (avgFitnesses.size() - 1), yAvg,
+							x2 * getWidth() / (avgFitnesses.size() - 1), yAvg2);
+
+					g.setColor(Color.red);
+					g.drawLine(x * getWidth() / (maxFitnesses.size() - 1), yMax,
+							x2 * getWidth() / (maxFitnesses.size() - 1), yMax2);
 				}
 			}
 		});
@@ -211,10 +224,11 @@ public class FrameLauncher implements Simulator {
 		townRuntime = 3000; // Calc fitness after n ticks of simulation
 		simulationTickSpeed = -1; // DEBUGGING ONLY! Time for one simulation
 									// tick
-		//Anzahl an Verkehrsaufkommen, welches vorhanden sein soll
+		// Anzahl an Verkehrsaufkommen, welches vorhanden sein soll
 		townNumberPersons = 1000;
-		//"Pufferzone" in Prozent, in diesem Bereich sollen zum Ende der Simulation keine Personen mehr erzeugt werden
-		townPersonStopPuffer = 0.2f; //Puffer liegt also bei den letzten 20%
+		// "Pufferzone" in Prozent, in diesem Bereich sollen zum Ende der
+		// Simulation keine Personen mehr erzeugt werden
+		townPersonStopPuffer = 0.2f; // Puffer liegt also bei den letzten 20%
 
 		// Init the chromosome length values
 		chromoStationLength = Blueprint.townToMappingIP(map).size(); // Calculates
