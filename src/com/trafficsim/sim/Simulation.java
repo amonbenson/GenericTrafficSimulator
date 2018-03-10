@@ -148,9 +148,8 @@ public class Simulation {
 		return townList;
 	}
 
-	public static float[][][] loadHeatMap(String file, int population0, int population1, int speed0, int speed1, int interest0, int interest1) {
+	public static float[][][] loadHeatMap(String file, float populationMin, float populationMax, float speedMin, float speedMax, float interestMin, float interestMax) {
 		try {
-
 			BufferedImage img;
 			img = ImageIO.read(Simulation.class.getClassLoader().getResource("res/heatmap.png"));
 			
@@ -159,17 +158,15 @@ public class Simulation {
 				for (int y = 0; y < img.getHeight(); y++) {
 					Color col = new Color(img.getRGB(x, y));
 					
-					float isHouse = col.getBlue() > 128 ? 0f : 1f;
+					float isHouse = col.getBlue() < 128 ? 1f : 0f;
 					float strength = 0;
-					if (isHouse == 1f) {
-						strength = (float) (col.getGreen() - speed0) / (speed1 - speed0);
+					if (isHouse == 0f) {
+						strength = limit(col.getGreen() / 255f, speedMin, speedMax);
 					} else {
-						strength = (Math.random() < 0.001) ? ((int) ((col.getGreen() - population0) / (population1 - population0))) : 0;
+						strength = limit(col.getGreen() / 255f, populationMin, populationMax);
 					}
-					float interest = (float) (col.getGreen() - interest0) / (interest1 - interest0);
+					float interest = limit(col.getRed() / 255f, interestMin, interestMax);
 					
-					strength = strength * population1; //Strength liegt bisher zwischen 0-1, also an den maximalen Wert (population1) anpassen
-
 					map[x][y][0] = isHouse;
 					map[x][y][1] = strength;
 					map[x][y][2] = interest;
@@ -184,5 +181,9 @@ public class Simulation {
 		}
 
 		return testTown();
+	}
+	
+	private static float limit(float factor, float limitLower, float limitUpper) {
+		return limitLower + factor * (limitUpper - limitLower);
 	}
 }

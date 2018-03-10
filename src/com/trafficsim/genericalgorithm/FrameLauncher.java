@@ -114,9 +114,8 @@ public class FrameLauncher implements Simulator {
 		random = new Random(1);
 
 		// Load map and set area station
-		// map = Simulation.loadHeatMap("res/heatmap.png", 0, 20, 0, 300, 0,
-		// 25);
-		map = Simulation.testTown();
+		map = Simulation.loadHeatMap("res/heatmap.png", 0, 10, 0.1f, 0.5f, 0, 10);
+		//map = Simulation.testTown();
 		// Tile.AREA_STATION = 4;
 
 		// Logger stuff
@@ -220,7 +219,7 @@ public class FrameLauncher implements Simulator {
 		gaFrameLauncher.getFrame().setSize(screen.width, gaFrameHeight - GraphicsFX.highDPI(50));
 
 		gaRuntime = 1000; // Terminate after n generations
-		gaPopSize = 30; // Individuals per population
+		gaPopSize = 3; // Individuals per population
 		townRuntime = 3000; // Calc fitness after n ticks of simulation
 		simulationTickSpeed = -1; // DEBUGGING ONLY! Time for one simulation
 									// tick
@@ -335,7 +334,7 @@ public class FrameLauncher implements Simulator {
 
 		} catch (Exception ex) {
 			// Town generation not possible. return fitness of -1.
-			Simulation.logger.severe("Town creation failed! returning -1 for fitness");
+			Simulation.logger.warning("Town creation failed! returning -1 for fitness");
 			ex.printStackTrace();
 			return -1;
 		}
