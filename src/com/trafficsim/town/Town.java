@@ -23,6 +23,8 @@ import com.trafficsim.sim.Simulation;
 
 public class Town implements Updateable {
 	
+	private static final int PERSON_ROUTING_MAX_TRIES = 200; // Maximal tries to route a person, before it will be detected as a route and aborted.
+	
 	private Statistics statistics;
 	
 	private Tile[][] tiles; //Die Karte der Start
@@ -665,7 +667,7 @@ public class Town implements Updateable {
 			while (!(origin.getX() == target.getX() && origin.getY() == target.getY())) {
 				target = getHouseTileWithProbability_InterestFactor();
 				warn_counter++;
-				if (warn_counter > 10000) {
+				if (warn_counter > PERSON_ROUTING_MAX_TRIES) {
 					Simulation.logger.warning("HOUSE_START_HOUSE_END loop detected. Please fix");
 					return false;
 				}

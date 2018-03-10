@@ -52,7 +52,8 @@ import com.trafficsim.town.Waypoint;
 
 public class TownDesktopPane extends JDesktopPane implements MouseListener, MouseMotionListener, MouseWheelListener, ListSelectionListener, ActionListener, ComponentListener {
 
-	public static final double BUS_DRAW_SIZE = 0.5;
+	public static final double BUS_DRAW_WIDTH = 0.6;
+	public static final double BUS_DRAW_HEIGHT = 0.3;
 	public static final double PERSON_DRAW_SIZE = 0.2;
 	
 	public static final int FRAME_LAYER_SPACE = 35;
@@ -287,15 +288,25 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 		// Draw busses
 		try {
 			for (Bus b : town.getBusses()) {
+				g.rotate(b.getRotation(), b.getX() * tileSize + tileX, b.getY() * tileSize + tileY);
+
 				g.setColor(new Color(100, 100, 100));
 				if (b == focusBus) g.setColor(Color.green);
 				g.fillRect(
-						(int) (b.getX() * tileSize - tileSize * BUS_DRAW_SIZE / 2) + tileX,
-						(int) (b.getY() * tileSize - tileSize * BUS_DRAW_SIZE / 2) + tileY, 
-						(int) (tileSize * BUS_DRAW_SIZE), (int) (tileSize * BUS_DRAW_SIZE) );
+						(int) (b.getX() * tileSize - tileSize * BUS_DRAW_WIDTH / 2) + tileX,
+						(int) ((b.getY() + 0.22) * tileSize - tileSize * BUS_DRAW_HEIGHT / 2) + tileY, 
+						(int) (tileSize * BUS_DRAW_WIDTH), (int) (tileSize * BUS_DRAW_HEIGHT));
+				
+				g.setColor(new Color(100, 150, 180));
+				g.fillRect(
+						(int) (b.getX() * tileSize + tileSize * BUS_DRAW_WIDTH / 4) + tileX,
+						(int) ((b.getY() + 0.22) * tileSize - tileSize * BUS_DRAW_HEIGHT / 2) + tileY, 
+						(int) (tileSize * BUS_DRAW_WIDTH / 4), (int) (tileSize * BUS_DRAW_HEIGHT));
+				
+				g.rotate(-b.getRotation(), b.getX() * tileSize + tileX, b.getY() * tileSize + tileY);
 	
 				// Draw the persons inside the bus
-				drawPersons(g, b.getX() - 0.1, b.getY() - 0.1, b.getPersons().size());
+				drawPersons(g, b.getX() - 0.1, b.getY(), b.getPersons().size());
 			}
 		} catch (ConcurrentModificationException ex) {
 			Simulation.logger.severe("Concurrent modification while drawing busses.");
@@ -508,7 +519,7 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 				
 				int busMidX = (int) (bus.getX() * tileSize) + tileX;
 				int busMidY = (int) (bus.getY() * tileSize) + tileY;
-				int busSize = (int) (tileSize * BUS_DRAW_SIZE);
+				int busSize = (int) (tileSize * Math.max(BUS_DRAW_WIDTH, BUS_DRAW_HEIGHT));
 	
 				// Check if user clicked on bus
 				if (new Rectangle(busMidX - busSize / 2, busMidY - busSize / 2, busSize, busSize).contains(e.getPoint())) {

@@ -114,7 +114,7 @@ public class FrameLauncher implements Simulator {
 		random = new Random(1);
 
 		// Load map and set area station
-		map = Simulation.loadHeatMap("res/heatmap.png", 0, 10, 0.1f, 0.5f, 0, 10);
+		map = Simulation.loadHeatMap("res/heatmap.png", 0, 10, 0.01f, 0.2f, 0, 10);
 		//map = Simulation.testTown();
 		// Tile.AREA_STATION = 4;
 
@@ -218,9 +218,9 @@ public class FrameLauncher implements Simulator {
 		gaFrameLauncher.getFrame().setLocation(0, screen.height - gaFrameHeight);
 		gaFrameLauncher.getFrame().setSize(screen.width, gaFrameHeight - GraphicsFX.highDPI(50));
 
-		gaRuntime = 1000; // Terminate after n generations
-		gaPopSize = 3; // Individuals per population
-		townRuntime = 3000; // Calc fitness after n ticks of simulation
+		gaRuntime = 5000; // Terminate after n generations
+		gaPopSize = 16; // Individuals per population
+		townRuntime = 2000; // Calc fitness after n ticks of simulation
 		simulationTickSpeed = -1; // DEBUGGING ONLY! Time for one simulation
 									// tick
 		// Anzahl an Verkehrsaufkommen, welches vorhanden sein soll
@@ -234,9 +234,9 @@ public class FrameLauncher implements Simulator {
 																		// street
 																		// count
 		chromoScheduleCount = 5; // Maximum number of Schedules in a Town
-		chromoScheduleStationLength = 20; // Maximum number of stations per
+		chromoScheduleStationLength = 5; // Maximum number of stations per
 											// Schedule
-		chromoScheduleStartTimeLength = 10 * 2; // Maximum number of start times
+		chromoScheduleStartTimeLength = 5 * 2; // Maximum number of start times
 												// per Schedule
 
 		chromoScheduleShouldAlternate = 1; // Boolean, if the schedule should

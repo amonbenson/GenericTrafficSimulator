@@ -24,7 +24,7 @@ import com.trafficsim.graphics.ga.history.HPopulation;
 
 public class GAFrameLauncher implements GenericAlgorithmWatcher {
 
-	public static final int HISTORY_LENGTH = 10;
+	public static final int HISTORY_LENGTH = 500;
 	
 	public static final Logger logger = Logger.getLogger(GAFrameLauncher.class.getName());
 
