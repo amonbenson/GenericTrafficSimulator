@@ -45,6 +45,9 @@ public class GenerationHistory {
 	public void addPopulationFitnessHistory(double avgFitness, double maxFitness) {
 		avgFitnessHistory.add(avgFitness);
 		maxFitnessHistory.add(maxFitness);
+		
+		// Update maximum fitness value
+		if (avgFitness > this.maxFitness) this.maxFitness = avgFitness;
 		if (maxFitness > this.maxFitness) this.maxFitness = maxFitness;
 	}
 

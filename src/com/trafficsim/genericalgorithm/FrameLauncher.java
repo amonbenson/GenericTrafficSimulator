@@ -113,8 +113,11 @@ public class FrameLauncher implements Simulator {
 		// Init random
 		random = new Random(1);
 
-		// Load map and set area station
-		map = Simulation.loadHeatMap("res/heatmap.png", 0, 10, 0.01f, 0.2f, 0, 10);
+		// Heatmap:	blue:	0=house, 255=street
+		//			green:	ifhouse: numpersons, ifstreet: speed
+		//			red:	interest (how many persons want to go there)
+		// Load map and set area station (args: file, populationMin/Max, speedMin/Max, interestMin/Max)
+		map = Simulation.loadHeatMap("res/heatmap.png", 0, 100, 0.01f, 0.2f, 0, 10);
 		//map = Simulation.testTown();
 		// Tile.AREA_STATION = 4;
 
@@ -219,7 +222,7 @@ public class FrameLauncher implements Simulator {
 		gaFrameLauncher.getFrame().setSize(screen.width, gaFrameHeight - GraphicsFX.highDPI(50));
 
 		gaRuntime = 5000; // Terminate after n generations
-		gaPopSize = 16; // Individuals per population
+		gaPopSize = 20; // Individuals per population
 		townRuntime = 2000; // Calc fitness after n ticks of simulation
 		simulationTickSpeed = -1; // DEBUGGING ONLY! Time for one simulation
 									// tick
@@ -278,9 +281,8 @@ public class FrameLauncher implements Simulator {
 			maxGenes[i + 2] = Integer.MAX_VALUE;
 		}
 
-		// Create our genetic algorithm
-
-		ga = new GenericAlgorithm(this, gaPopSize, 0.05, 0.95, 2, random);
+		// Create our genetic algorithm (from 2nd argument on: mutationRate, crossoverRate, crossoverSwapProbability, elitismCount)
+		ga = new GenericAlgorithm(this, gaPopSize, 0.05, 0.85, 0.2, 4, random);
 
 		// Initialize population
 		Population population = ga.initPopulation(chromosomeLengths, minGenes, maxGenes);

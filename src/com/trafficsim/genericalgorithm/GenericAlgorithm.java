@@ -13,28 +13,30 @@ public class GenericAlgorithm {
 
 	private double mutationRate;
 	private double crossoverRate;
+	private double crossoverSwapProbability;
 	private int elitismCount;
 
 	private int generation;
 
 	private Random random;
 
-	public GenericAlgorithm(Simulator simulator, int populationSize, double mutationRate, double crossoverRate,
+	public GenericAlgorithm(Simulator simulator, int populationSize, double mutationRate, double crossoverRate, double crossoverSwapProbability,
 			int elitismCount) {
-		this(simulator, populationSize, mutationRate, crossoverRate, elitismCount, new Random());
+		this(simulator, populationSize, mutationRate, crossoverRate, crossoverSwapProbability, elitismCount, new Random());
 	}
 
-	public GenericAlgorithm(Simulator simulator, int populationSize, double mutationRate, double crossoverRate,
+	public GenericAlgorithm(Simulator simulator, int populationSize, double mutationRate, double crossoverRate, double crossoverSwapProbability,
 			int elitismCount, long seed) {
-		this(simulator, populationSize, mutationRate, crossoverRate, elitismCount, new Random(seed));
+		this(simulator, populationSize, mutationRate, crossoverRate, crossoverSwapProbability, elitismCount, new Random(seed));
 	}
 
-	public GenericAlgorithm(Simulator simulator, int populationSize, double mutationRate, double crossoverRate,
+	public GenericAlgorithm(Simulator simulator, int populationSize, double mutationRate, double crossoverRate, double crossoverSwapProbability,
 			int elitismCount, Random random) {
 		this.simulator = simulator;
 		this.populationSize = populationSize;
 		this.mutationRate = mutationRate;
 		this.crossoverRate = crossoverRate;
+		this.crossoverSwapProbability = crossoverSwapProbability;
 		this.elitismCount = elitismCount;
 		this.random = random;
 
@@ -168,13 +170,16 @@ public class GenericAlgorithm {
 					Chromosome chromosomeOff = offspring.getChromosome(chromosomeIndex);
 
 					// Loop over the chromosome's genes
+					boolean useParent1 = 0.5 > random.nextFloat();
 					for (int geneIndex = 0; geneIndex < chromosomeOff.getLength(); geneIndex++) {
 						// Use half of parent1's genes and half of parent2's genes
-						if (0.5 > random.nextFloat()) {
+						if (useParent1) {
 							chromosomeOff.setGene(geneIndex, chromosomePa1.getGene(geneIndex));
 						} else {
 							chromosomeOff.setGene(geneIndex, chromosomePa2.getGene(geneIndex));
 						}
+						
+						if (random.nextDouble() > crossoverSwapProbability) useParent1 = !useParent1;
 					}
 				}
 

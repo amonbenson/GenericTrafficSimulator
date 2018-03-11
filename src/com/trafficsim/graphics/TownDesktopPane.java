@@ -180,9 +180,13 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 				if (tile instanceof StreetTile) {
 					StreetTile s = (StreetTile) tile;
 					if (s.isStation()) {
-						g.setColor(Color.lightGray);
+						if (s.getSchedules().size() == 0) {
+							g.setColor(new Color(140, 140, 140)); // Station, but no bus stops here
+						} else {
+							g.setColor(new Color(200, 200, 200)); // Actual station
+						}
 					} else {
-						g.setColor(Color.gray);
+						g.setColor(new Color(100, 100, 100)); // No Station, just street
 					}
 				}
 				if (tile instanceof HouseTile) {
@@ -290,7 +294,7 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 			for (Bus b : town.getBusses()) {
 				g.rotate(b.getRotation(), b.getX() * tileSize + tileX, b.getY() * tileSize + tileY);
 
-				g.setColor(new Color(100, 100, 100));
+				g.setColor(new Color(70, 70, 70));
 				if (b == focusBus) g.setColor(Color.green);
 				g.fillRect(
 						(int) (b.getX() * tileSize - tileSize * BUS_DRAW_WIDTH / 2) + tileX,

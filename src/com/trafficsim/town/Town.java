@@ -23,7 +23,7 @@ import com.trafficsim.sim.Simulation;
 
 public class Town implements Updateable {
 	
-	private static final int PERSON_ROUTING_MAX_TRIES = 200; // Maximal tries to route a person, before it will be detected as a route and aborted.
+	private static final int PERSON_ROUTING_MAX_TRIES = 100; // Maximal tries to route a person, before it will be detected as a route and aborted.
 	
 	private Statistics statistics;
 	
