@@ -111,13 +111,13 @@ public class FrameLauncher implements Simulator {
 
 	public FrameLauncher() throws InterruptedException {
 		// Init random
-		random = new Random(1);
+		random = new Random(System.currentTimeMillis());
 
 		// Heatmap:	blue:	0=house, 255=street
 		//			green:	ifhouse: numpersons, ifstreet: speed
 		//			red:	interest (how many persons want to go there)
 		// Load map and set area station (args: file, populationMin/Max, speedMin/Max, interestMin/Max)
-		map = Simulation.loadHeatMap("res/heatmap.png", 0, 100, 0.01f, 0.2f, 0, 10);
+		map = Simulation.loadHeatMap("res/heatmap.png", 0, 100, Units.kmhToTilesPerTick(10), Units.kmhToTilesPerTick(50), 0, 10);
 		//map = Simulation.testTown();
 		// Tile.AREA_STATION = 4;
 
@@ -152,7 +152,7 @@ public class FrameLauncher implements Simulator {
 				if (gaFrameLauncher.descendantTreePane == null) return;
 				final GenerationHistory history = gaFrameLauncher.descendantTreePane.getHistory();
 				if (history == null) return;
-				if (history.getAvgFitnessHistory().size() == 0) return;
+				if (history.getAvgFitnessHistory().size() <= 1) return;
 
 				final List<Double> avgFitnesses = history.getAvgFitnessHistory();
 				final List<Double> maxFitnesses = history.getMaxFitnessHistory();
@@ -223,7 +223,7 @@ public class FrameLauncher implements Simulator {
 
 		gaRuntime = 5000; // Terminate after n generations
 		gaPopSize = 20; // Individuals per population
-		townRuntime = 2000; // Calc fitness after n ticks of simulation
+		townRuntime = (int) Units.hoursToTicks(24); // Calc fitness after n ticks of simulation
 		simulationTickSpeed = -1; // DEBUGGING ONLY! Time for one simulation
 									// tick
 		// Anzahl an Verkehrsaufkommen, welches vorhanden sein soll

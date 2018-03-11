@@ -2,6 +2,7 @@ package com.trafficsim.graphics.consolepane;
 
 import java.awt.Graphics;
 
+import com.trafficsim.genericalgorithm.Units;
 import com.trafficsim.graphics.GraphicsFX;
 import com.trafficsim.graphics.SimulationFrameLauncher;
 import com.trafficsim.town.Event;
@@ -31,16 +32,16 @@ public class InfoConsolePane extends ConsolePane {
 
 		// Write the global time
 		append("%A0A0A0Info");
-		append("Time: " + town.getTime());
-		append("Ticks per second: " + 1000 / frameLauncherContext.updater.getTickSpeed());
+		append("Time:\t" + Units.getSSMMHH(town.getTime()) + " h");
+		append("Speed Scale:\t" + (int) Units.tickdelayToSimseconds(frameLauncherContext.updater.getTickSpeed()) + "x Realtime");
 		append("");
 
 		// Write all the key actions
 		append("%A0A0A0Key Actions");
 		append("Enter\tStart / Pause simulation");
 		append("U\tUpdate by one tick");
-		append("+\tDecrease Speed");
-		append("-\tIncrease Speed");
+		append("+\tIncrease Speed Scale");
+		append("-\tDecrease Speed Scale");
 		append("");
 
 		// Get all events and write them into the lines array
@@ -68,7 +69,7 @@ public class InfoConsolePane extends ConsolePane {
 					getLines().set(getLines().size() - 1, getLines().get(getLines().size() - 1) + "  x" + (duplicateEventCount + 1));
 				duplicateEventCount = 0;
 
-				line += eventTime + "\t" + eventName;
+				line += Units.getSSMMHH(eventTime) + " h\t" + eventName;
 				append(line);
 			}
 

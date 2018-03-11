@@ -505,6 +505,14 @@ public class Town implements Updateable {
 		for (int i=events_index;i<events.size();i++) { 
 			if (events.get(i).getStartTime() == time) {
 				events.get(i).start(this);
+				
+				// Resort bus list
+				busses.sort(new Comparator<Bus>() {
+					public int compare(Bus o1, Bus o2) {
+						return o1.getSchedule().getSchedule().getName().compareTo(o2.getSchedule().getSchedule().getName());
+					}
+				});
+				
 				events_index++;
 			} else {
 				break;
@@ -668,7 +676,7 @@ public class Town implements Updateable {
 				target = getHouseTileWithProbability_InterestFactor();
 				warn_counter++;
 				if (warn_counter > PERSON_ROUTING_MAX_TRIES) {
-					Simulation.logger.warning("HOUSE_START_HOUSE_END loop detected. Please fix");
+					//Simulation.logger.warning("HOUSE_START_HOUSE_END loop detected. Please fix");
 					return false;
 				}
 			}

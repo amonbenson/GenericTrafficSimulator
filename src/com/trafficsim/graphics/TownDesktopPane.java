@@ -18,6 +18,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.geom.AffineTransform;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 
@@ -292,6 +293,7 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 		// Draw busses
 		try {
 			for (Bus b : town.getBusses()) {
+				AffineTransform before = (AffineTransform) g.getTransform().clone();
 				g.rotate(b.getRotation(), b.getX() * tileSize + tileX, b.getY() * tileSize + tileY);
 
 				g.setColor(new Color(70, 70, 70));
@@ -307,7 +309,7 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 						(int) ((b.getY() + 0.22) * tileSize - tileSize * BUS_DRAW_HEIGHT / 2) + tileY, 
 						(int) (tileSize * BUS_DRAW_WIDTH / 4), (int) (tileSize * BUS_DRAW_HEIGHT));
 				
-				g.rotate(-b.getRotation(), b.getX() * tileSize + tileX, b.getY() * tileSize + tileY);
+				g.setTransform(before);
 	
 				// Draw the persons inside the bus
 				drawPersons(g, b.getX() - 0.1, b.getY(), b.getPersons().size());

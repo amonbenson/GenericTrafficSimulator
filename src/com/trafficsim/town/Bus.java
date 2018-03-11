@@ -59,8 +59,8 @@ public class Bus extends Entity {
 		
 		// Rotation neu berechnen
 		double deltaRotation = Math.atan2(speedY, speedX) - rotation;
-		if (deltaRotation > Math.PI) deltaRotation -= 2 * Math.PI;
-		if (deltaRotation < -Math.PI) deltaRotation += 2 * Math.PI;
+		while (deltaRotation < -Math.PI) deltaRotation += 2 * Math.PI;
+		while (deltaRotation > Math.PI * 0.9) deltaRotation -= 2 * Math.PI;
 		
 		// neue Position interpolieren
 		double maxRotation = 0.6;
