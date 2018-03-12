@@ -1,11 +1,12 @@
 package com.trafficsim.genericalgorithm;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 public class GenericAlgorithm {
-
+	
 	private Simulator simulator;
 	private List<GenericAlgorithmWatcher> watchers;
 
@@ -300,5 +301,13 @@ public class GenericAlgorithm {
 
 	public int getElitismCount() {
 		return elitismCount;
+	}
+
+	public Simulator getSimulator() {
+		return simulator;
+	}
+
+	public void setSimulator(Simulator simulator) {
+		this.simulator = simulator;
 	}
 }

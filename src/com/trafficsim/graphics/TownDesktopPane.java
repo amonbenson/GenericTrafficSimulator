@@ -24,6 +24,7 @@ import java.util.Iterator;
 
 import javax.swing.DefaultDesktopManager;
 import javax.swing.DesktopManager;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
@@ -34,6 +35,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import com.trafficsim.genericalgorithm.FrameLauncher;
 import com.trafficsim.graphics.consolepane.ConsolePane;
 import com.trafficsim.graphics.infoframe.BusInfoFrame;
 import com.trafficsim.graphics.infoframe.HouseTileInfoFrame;
@@ -75,6 +77,7 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 	
 	private JToolBar toolBar;
 	private JToggleButton showRoutesButton, showRelationLinesButton, showNonCoveredTiles;
+	private JButton saveState, loadState;
 	
 	private JLabel splashText;
 	
@@ -134,20 +137,32 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 		toolBar.setFloatable(false);
 		frameLauncherContext.getFrame().add(BorderLayout.NORTH, toolBar);
 		
-		showRoutesButton = new JToggleButton("show routes", true);
+		showRoutesButton = new JToggleButton(" show routes ", true);
 		showRoutesButton.setFocusable(false);
 		showRoutesButton.addActionListener(this);
 		toolBar.add(showRoutesButton);
 		
-		showRelationLinesButton = new JToggleButton("show relation lines", true);
+		showRelationLinesButton = new JToggleButton(" show relation lines ", true);
 		showRelationLinesButton.setFocusable(false);
 		showRelationLinesButton.addActionListener(this);
 		toolBar.add(showRelationLinesButton);
 		
-		showNonCoveredTiles = new JToggleButton("show non covered tiles", true);
+		showNonCoveredTiles = new JToggleButton(" show non covered tiles ", true);
 		showNonCoveredTiles.setFocusable(false);
 		showNonCoveredTiles.addActionListener(this);
 		toolBar.add(showNonCoveredTiles);
+
+		toolBar.addSeparator();
+
+		saveState = new JButton(" Save ");
+		saveState.setFocusable(false);
+		saveState.addActionListener(this);
+		toolBar.add(saveState);
+		
+		loadState = new JButton(" Load ");
+		loadState.setFocusable(false);
+		loadState.addActionListener(this);
+		toolBar.add(loadState);
 		
 		// Create the splash text
 		splashText = new JLabel("Splash");
@@ -315,7 +330,7 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 				drawPersons(g, b.getX() - 0.1, b.getY(), b.getPersons().size());
 			}
 		} catch (ConcurrentModificationException ex) {
-			Simulation.logger.severe("Concurrent modification while drawing busses.");
+			//Simulation.logger.severe("Concurrent modification while drawing busses.");
 		}
 		
 		// Draw lines to the internal frames ("relation lines")
@@ -648,10 +663,14 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		// Events on tool bar toggles will cause a repaint
+		// TOOLBAR: Events on tool bar toggles will cause a repaint
 		if (e.getSource() == showRoutesButton) repaint();
 		else if (e.getSource() == showRelationLinesButton) repaint();
 		else if (e.getSource() == showNonCoveredTiles) repaint();
+		
+		// TOOLBAR: Save and load features
+		else if (e.getSource() == saveState) FrameLauncher.saveState();
+		else if (e.getSource() == loadState) FrameLauncher.loadState();
 		
 		// The action event may be caused by an info frame
 		else if (e.getSource() instanceof Component) {

@@ -1,11 +1,11 @@
 package com.trafficsim.genericalgorithm;
 
+import java.io.Serializable;
 import java.util.Random;
-import java.util.logging.Logger;
 
 import com.trafficsim.sim.Simulation;
 
-public class Chromosome {
+public class Chromosome implements Serializable {
 
 	private int[] genes;
 	private int minGene, maxGene;

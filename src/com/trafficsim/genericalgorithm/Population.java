@@ -1,10 +1,11 @@
 package com.trafficsim.genericalgorithm;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Random;
 
-public class Population {
+public class Population implements Serializable {
 	private Individual population[];
 	private double populationFitness = -1;
 
