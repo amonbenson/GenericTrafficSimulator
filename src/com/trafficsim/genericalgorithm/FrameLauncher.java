@@ -212,7 +212,7 @@ public class FrameLauncher implements Simulator {
 		simulationTickSpeed = -1; // DEBUGGING ONLY! Time for one simulation
 									// tick
 		//Anzahl an Verkehrsaufkommen, welches vorhanden sein soll
-		townNumberPersons = 1000;
+		townNumberPersons = 10000;
 		//"Pufferzone" in Prozent, in diesem Bereich sollen zum Ende der Simulation keine Personen mehr erzeugt werden
 		townPersonStopPuffer = 0.2f; //Puffer liegt also bei den letzten 20%
 

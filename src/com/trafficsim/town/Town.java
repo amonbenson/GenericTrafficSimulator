@@ -9,7 +9,11 @@ import java.util.List;
 import java.util.Random;
 import java.util.logging.Logger;
 
+import javax.swing.JFrame;
+
+import org.jgraph.JGraph;
 import org.jgrapht.alg.DijkstraShortestPath;
+import org.jgrapht.ext.JGraphModelAdapter;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleDirectedWeightedGraph;
 import org.xguzm.pathfinding.grid.GridCell;
@@ -22,6 +26,10 @@ import com.trafficsim.genericalgorithm.FrameLauncher;
 import com.trafficsim.sim.Simulation;
 
 public class Town implements Updateable {
+	
+	//Debug, zeigt den Stationsgraphen
+	public static final boolean showGraph = false;
+	private JFrame graphFrame = null;
 	
 	private Statistics statistics;
 	
@@ -90,6 +98,7 @@ public class Town implements Updateable {
 		allNumberOfPersons = -1;
 		
 		statistics = new Statistics();
+
 	}
 	
 	/**
@@ -432,7 +441,18 @@ public class Town implements Updateable {
 				}
 			}
 
-
+			
+			if (showGraph) {
+			 if (graphFrame == null) {
+				 graphFrame = new JFrame("Stationsgraph");
+				 graphFrame.setSize(400, 400);
+			 }
+			 	graphFrame.getContentPane().removeAll();
+				JGraph jgraph = new JGraph( new JGraphModelAdapter( stationGraph ) );
+				graphFrame.getContentPane().add(jgraph);
+				graphFrame.setVisible(true);
+			}
+		      
 			//Bushaltestellen setzen:
 			for ( Waypoint p : blueprint.getStations() ) {
 				if (! (tiles[(int)p.getX()][(int)p.getY()] instanceof StreetTile) ) {
