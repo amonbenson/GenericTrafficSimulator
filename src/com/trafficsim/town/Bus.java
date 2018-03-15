@@ -8,7 +8,7 @@ import com.trafficsim.sim.Simulation;
 public class Bus extends Entity {
 
 	private int maxPersons; //maximale Anzahl der Personen des Busses
-	private double speedX, speedY; //Geschwindigkeit des Busses
+	private double speedX, speedY, rotation; //Geschwindigkeit und Rotation des Busses
 	private ArrayList<Person> persons; //Liste der momentanen Personen im Bus
 	private SpecificSchedule schedule; //ein Bus hat immer eine Buslinie mit Richtungsangabe
 	private int currentWaypoint; //gibt an, welcher Wegpunkt gerade als nächstes angefahren werden soll
@@ -32,6 +32,9 @@ public class Bus extends Entity {
 		if (town == null) throw new NullPointerException("Town can't be null.");
 		
 		this.maxPersons = maxPersons;
+		this.speedX = 0;
+		this.speedY = 0;
+		this.rotation = 0;
 		this.persons = persons;
 		this.schedule = schedule;
 		this.town = town;
@@ -53,6 +56,16 @@ public class Bus extends Entity {
 		//Fahre zum nächsten Wegpunkt:
 		setX(getX()+speedX);
 		setY(getY()+speedY);
+		
+		// Rotation neu berechnen
+		double deltaRotation = Math.atan2(speedY, speedX) - rotation;
+		while (deltaRotation < -Math.PI) deltaRotation += 2 * Math.PI;
+		while (deltaRotation > Math.PI * 0.9) deltaRotation -= 2 * Math.PI;
+		
+		// neue Position interpolieren
+		double maxRotation = 0.6;
+		if (deltaRotation > 0) rotation += Math.min(deltaRotation, maxRotation);
+		if (deltaRotation < 0) rotation -= Math.min(-deltaRotation, maxRotation);
 		
 		checkIfWaypointIsReached();
 	}
@@ -228,6 +241,9 @@ public class Bus extends Entity {
 	}
 	public double getSpeedY() {
 		return speedY;
+	}
+	public double getRotation() {
+		return rotation;
 	}
 	public ArrayList<Person> getPersons() {
 		return persons;

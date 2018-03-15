@@ -1,12 +1,13 @@
 package com.trafficsim.genericalgorithm;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
-public class Individual {
+public class Individual implements Serializable {
 	public static long CURRENT_ID = 0;
 
 	private long id;

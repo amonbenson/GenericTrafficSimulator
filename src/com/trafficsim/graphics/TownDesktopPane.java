@@ -18,11 +18,13 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.geom.AffineTransform;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 
 import javax.swing.DefaultDesktopManager;
 import javax.swing.DesktopManager;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
@@ -33,6 +35,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import com.trafficsim.genericalgorithm.FrameLauncher;
 import com.trafficsim.graphics.consolepane.ConsolePane;
 import com.trafficsim.graphics.infoframe.BusInfoFrame;
 import com.trafficsim.graphics.infoframe.HouseTileInfoFrame;
@@ -52,7 +55,8 @@ import com.trafficsim.town.Waypoint;
 
 public class TownDesktopPane extends JDesktopPane implements MouseListener, MouseMotionListener, MouseWheelListener, ListSelectionListener, ActionListener, ComponentListener {
 
-	public static final double BUS_DRAW_SIZE = 0.5;
+	public static final double BUS_DRAW_WIDTH = 0.6;
+	public static final double BUS_DRAW_HEIGHT = 0.3;
 	public static final double PERSON_DRAW_SIZE = 0.2;
 	
 	public static final int FRAME_LAYER_SPACE = 35;
@@ -73,6 +77,7 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 	
 	private JToolBar toolBar;
 	private JToggleButton showRoutesButton, showRelationLinesButton, showNonCoveredTiles;
+	private JButton saveState, loadState;
 	
 	private JLabel splashText;
 	
@@ -132,20 +137,32 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 		toolBar.setFloatable(false);
 		frameLauncherContext.getFrame().add(BorderLayout.NORTH, toolBar);
 		
-		showRoutesButton = new JToggleButton("show routes", true);
+		showRoutesButton = new JToggleButton(" show routes ", true);
 		showRoutesButton.setFocusable(false);
 		showRoutesButton.addActionListener(this);
 		toolBar.add(showRoutesButton);
 		
-		showRelationLinesButton = new JToggleButton("show relation lines", true);
+		showRelationLinesButton = new JToggleButton(" show relation lines ", true);
 		showRelationLinesButton.setFocusable(false);
 		showRelationLinesButton.addActionListener(this);
 		toolBar.add(showRelationLinesButton);
 		
-		showNonCoveredTiles = new JToggleButton("show non covered tiles", true);
+		showNonCoveredTiles = new JToggleButton(" show non covered tiles ", true);
 		showNonCoveredTiles.setFocusable(false);
 		showNonCoveredTiles.addActionListener(this);
 		toolBar.add(showNonCoveredTiles);
+
+		toolBar.addSeparator();
+
+		saveState = new JButton(" Save ");
+		saveState.setFocusable(false);
+		saveState.addActionListener(this);
+		toolBar.add(saveState);
+		
+		loadState = new JButton(" Load ");
+		loadState.setFocusable(false);
+		loadState.addActionListener(this);
+		toolBar.add(loadState);
 		
 		// Create the splash text
 		splashText = new JLabel("Splash");
@@ -179,9 +196,13 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 				if (tile instanceof StreetTile) {
 					StreetTile s = (StreetTile) tile;
 					if (s.isStation()) {
-						g.setColor(Color.lightGray);
+						if (s.getSchedules().size() == 0) {
+							g.setColor(new Color(140, 140, 140)); // Station, but no bus stops here
+						} else {
+							g.setColor(new Color(200, 200, 200)); // Actual station
+						}
 					} else {
-						g.setColor(Color.gray);
+						g.setColor(new Color(100, 100, 100)); // No Station, just street
 					}
 				}
 				if (tile instanceof HouseTile) {
@@ -287,18 +308,29 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 		// Draw busses
 		try {
 			for (Bus b : town.getBusses()) {
-				g.setColor(new Color(100, 100, 100));
+				AffineTransform before = (AffineTransform) g.getTransform().clone();
+				g.rotate(b.getRotation(), b.getX() * tileSize + tileX, b.getY() * tileSize + tileY);
+
+				g.setColor(new Color(70, 70, 70));
 				if (b == focusBus) g.setColor(Color.green);
 				g.fillRect(
-						(int) (b.getX() * tileSize - tileSize * BUS_DRAW_SIZE / 2) + tileX,
-						(int) (b.getY() * tileSize - tileSize * BUS_DRAW_SIZE / 2) + tileY, 
-						(int) (tileSize * BUS_DRAW_SIZE), (int) (tileSize * BUS_DRAW_SIZE) );
+						(int) (b.getX() * tileSize - tileSize * BUS_DRAW_WIDTH / 2) + tileX,
+						(int) ((b.getY() + 0.22) * tileSize - tileSize * BUS_DRAW_HEIGHT / 2) + tileY, 
+						(int) (tileSize * BUS_DRAW_WIDTH), (int) (tileSize * BUS_DRAW_HEIGHT));
+				
+				g.setColor(new Color(100, 150, 180));
+				g.fillRect(
+						(int) (b.getX() * tileSize + tileSize * BUS_DRAW_WIDTH / 4) + tileX,
+						(int) ((b.getY() + 0.22) * tileSize - tileSize * BUS_DRAW_HEIGHT / 2) + tileY, 
+						(int) (tileSize * BUS_DRAW_WIDTH / 4), (int) (tileSize * BUS_DRAW_HEIGHT));
+				
+				g.setTransform(before);
 	
 				// Draw the persons inside the bus
-				drawPersons(g, b.getX() - 0.1, b.getY() - 0.1, b.getPersons().size());
+				drawPersons(g, b.getX() - 0.1, b.getY(), b.getPersons().size());
 			}
 		} catch (ConcurrentModificationException ex) {
-			Simulation.logger.severe("Concurrent modification while drawing busses.");
+			//Simulation.logger.severe("Concurrent modification while drawing busses.");
 		}
 		
 		// Draw lines to the internal frames ("relation lines")
@@ -508,7 +540,7 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 				
 				int busMidX = (int) (bus.getX() * tileSize) + tileX;
 				int busMidY = (int) (bus.getY() * tileSize) + tileY;
-				int busSize = (int) (tileSize * BUS_DRAW_SIZE);
+				int busSize = (int) (tileSize * Math.max(BUS_DRAW_WIDTH, BUS_DRAW_HEIGHT));
 	
 				// Check if user clicked on bus
 				if (new Rectangle(busMidX - busSize / 2, busMidY - busSize / 2, busSize, busSize).contains(e.getPoint())) {
@@ -631,10 +663,14 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		// Events on tool bar toggles will cause a repaint
+		// TOOLBAR: Events on tool bar toggles will cause a repaint
 		if (e.getSource() == showRoutesButton) repaint();
 		else if (e.getSource() == showRelationLinesButton) repaint();
 		else if (e.getSource() == showNonCoveredTiles) repaint();
+		
+		// TOOLBAR: Save and load features
+		else if (e.getSource() == saveState) FrameLauncher.saveState();
+		else if (e.getSource() == loadState) FrameLauncher.loadState();
 		
 		// The action event may be caused by an info frame
 		else if (e.getSource() instanceof Component) {

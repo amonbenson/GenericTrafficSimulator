@@ -1,16 +1,27 @@
 package com.trafficsim.genericalgorithm;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Toolkit;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
-import javax.swing.SwingUtilities;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.ListCellRenderer;
 import javax.swing.UIManager;
 
 import com.trafficsim.generic.Blueprint;
@@ -19,7 +30,6 @@ import com.trafficsim.graphics.SimulationFrameLauncher;
 import com.trafficsim.graphics.ga.GAFrameLauncher;
 import com.trafficsim.graphics.ga.history.GenerationHistory;
 import com.trafficsim.sim.Simulation;
-import com.trafficsim.town.Tile;
 import com.trafficsim.town.Town;
 
 /**
@@ -33,26 +43,30 @@ import com.trafficsim.town.Town;
  *
  */
 public class FrameLauncher implements Simulator {
+	
+	public static FrameLauncher defaultFrameLauncher;
 
-	public Random random;
+	public static Random random;
 
 	/**
 	 * Stellt ein, ob das Switchen zwischen Richtungen erlaubt sein soll
 	 */
 	public static final boolean shouldAllowAlternate = false;
 
-	private GenericAlgorithm ga;
+	public static GenericAlgorithm ga;
+	public static Population currentPopulation;
+	public static boolean isGARunning = false;
 
 	/**
 	 * The number of iterations, which the generic algorithm will get through,
 	 * until it stops and returns the results.
 	 */
-	private int gaRuntime;
+	public static int gaRuntime;
 
 	/**
 	 * The number of individuals in each generated population.
 	 */
-	private int gaPopSize;
+	public static int gaPopSize;
 
 	/**
 	 * The number of iterations, which a single town will be simulated. One
@@ -75,7 +89,7 @@ public class FrameLauncher implements Simulator {
 	 * Sets the time to sleep between two town updates. Should only be used for
 	 * debbuging only, cause it slows down the generic algorithm.
 	 */
-	private long simulationTickSpeed;
+	public static long simulationTickSpeed;
 
 	public static int chromoStationLength;
 	public static int chromoScheduleCount;
@@ -90,33 +104,36 @@ public class FrameLauncher implements Simulator {
 	 * graphics, where this town class can be used to show the process. However,
 	 * it may be null, if nothing is simulated.
 	 */
-	private Town currentTown;
+	public static Town currentTown;
 
 	/**
 	 * The simulation framelauncher will create a jframe to show the current
 	 * town.
 	 */
-	public SimulationFrameLauncher simFrameLauncher;
+	public static SimulationFrameLauncher simFrameLauncher;
 
 	/**
 	 * The generic algorithm frame launcher will take care of showing the
 	 * current ga's process and displaying a nice family tree of the
 	 * individuals.
 	 */
-	public GAFrameLauncher gaFrameLauncher;
+	public static GAFrameLauncher gaFrameLauncher;
 
-	public JFrame fitGraph;
+	public static JFrame fitGraph;
 
 	public static float[][][] map;
 
 	public FrameLauncher() throws InterruptedException {
 		// Init random
-		random = new Random(1);
+		random = new Random(System.currentTimeMillis());
 
-		// Load map and set area station
-		//map = Simulation.loadHeatMap("res/heatmap.png", 0, 20, 0, 300, 0, 25);
-		map = Simulation.testTown();
-		//Tile.AREA_STATION = 4;
+		// Heatmap:	blue:	0=house, 255=street
+		//			green:	ifhouse: numpersons, ifstreet: speed
+		//			red:	interest (how many persons want to go there)
+		// Load map and set area station (args: file, populationMin/Max, speedMin/Max, interestMin/Max)
+		map = Simulation.loadHeatMap("res/heatmap.png", 0, 100, Units.kmhToTilesPerTick(10), Units.kmhToTilesPerTick(50), 0, 10);
+		//map = Simulation.testTown();
+		// Tile.AREA_STATION = 4;
 
 		// Logger stuff
 		Simulation.logger.setLevel(Level.ALL);
@@ -142,25 +159,37 @@ public class FrameLauncher implements Simulator {
 		fitGraph.add(new JComponent() {
 			@Override
 			public void paintComponent(Graphics g) {
-				if (gaFrameLauncher.descendantTreePane == null)
-					return;
-				final GenerationHistory history = gaFrameLauncher.descendantTreePane.getHistory();
-				if (history == null)
-					return;
+				g.setColor(Color.black);
+				g.fillRect(0, 0, getWidth(), getHeight());
+				((Graphics2D) g).setStroke(new BasicStroke(3));
 
-				final List<Double> fitnesses = history.getFitnessHistory();
+				if (gaFrameLauncher.descendantTreePane == null) return;
+				final GenerationHistory history = gaFrameLauncher.descendantTreePane.getHistory();
+				if (history == null) return;
+				if (history.getAvgFitnessHistory().size() <= 1) return;
+
+				final List<Double> avgFitnesses = history.getAvgFitnessHistory();
+				final List<Double> maxFitnesses = history.getMaxFitnessHistory();
 				final double max = Math.max(0.001, history.getMaxFitness());
 
-				g.setColor(Color.red);
-				for (int x = Math.max(fitnesses.size() - getWidth(), 0); x < fitnesses.size(); x++) {
-					int y = (int) ((1 - fitnesses.get(x) / max) * getHeight());
-					int x2 = x, y2 = y;
+				for (int x = 0; x < avgFitnesses.size(); x++) {
+					int yAvg = (int) ((1 - avgFitnesses.get(x) / max) * getHeight());
+					int yMax = (int) ((1 - maxFitnesses.get(x) / max) * getHeight());
+					int x2 = x, yAvg2 = yAvg, yMax2 = yAvg;
 					if (x > 0) {
 						x2 = x - 1;
-						y2 = (int) ((1 - fitnesses.get(x2) / max) * getHeight());
+						yAvg2 = (int) ((1 - avgFitnesses.get(x2) / max) * getHeight());
+						yMax2 = (int) ((1 - maxFitnesses.get(x2) / max) * getHeight());
 					}
 
-					g.drawLine(x, y, x2, y2);
+					// Draw it!
+					g.setColor(Color.white);
+					g.drawLine(x * getWidth() / (avgFitnesses.size() - 1), yAvg,
+							x2 * getWidth() / (avgFitnesses.size() - 1), yAvg2);
+
+					g.setColor(Color.red);
+					g.drawLine(x * getWidth() / (maxFitnesses.size() - 1), yMax,
+							x2 * getWidth() / (maxFitnesses.size() - 1), yMax2);
 				}
 			}
 		});
@@ -205,25 +234,28 @@ public class FrameLauncher implements Simulator {
 		simFrameLauncher.getFrame().setSize(screen.width, screen.height - gaFrameHeight);
 		gaFrameLauncher.getFrame().setLocation(0, screen.height - gaFrameHeight);
 		gaFrameLauncher.getFrame().setSize(screen.width, gaFrameHeight - GraphicsFX.highDPI(50));
+		fitGraph.setLocation(screen.width - fitGraph.getWidth() - GraphicsFX.highDPI(20), screen.height - fitGraph.getHeight() - gaFrameLauncher.getFrame().getHeight() - GraphicsFX.highDPI(50));
 
-		gaRuntime = 1000; // Terminate after n generations
-		gaPopSize = 30; // Individuals per population
-		townRuntime = 3000; // Calc fitness after n ticks of simulation
+		gaRuntime = 5000; // Terminate after n generations
+		gaPopSize = 20; // Individuals per population
+		townRuntime = (int) Units.hoursToTicks(24); // Calc fitness after n ticks of simulation
 		simulationTickSpeed = -1; // DEBUGGING ONLY! Time for one simulation
 									// tick
+
 		//Anzahl an Verkehrsaufkommen, welches vorhanden sein soll
 		townNumberPersons = 10000;
 		//"Pufferzone" in Prozent, in diesem Bereich sollen zum Ende der Simulation keine Personen mehr erzeugt werden
 		townPersonStopPuffer = 0.2f; //Puffer liegt also bei den letzten 20%
+
 
 		// Init the chromosome length values
 		chromoStationLength = Blueprint.townToMappingIP(map).size(); // Calculates
 																		// street
 																		// count
 		chromoScheduleCount = 5; // Maximum number of Schedules in a Town
-		chromoScheduleStationLength = 20; // Maximum number of stations per
+		chromoScheduleStationLength = 5; // Maximum number of stations per
 											// Schedule
-		chromoScheduleStartTimeLength = 10 * 2; // Maximum number of start times
+		chromoScheduleStartTimeLength = 5 * 2; // Maximum number of start times
 												// per Schedule
 
 		chromoScheduleShouldAlternate = 1; // Boolean, if the schedule should
@@ -265,37 +297,41 @@ public class FrameLauncher implements Simulator {
 			maxGenes[i + 2] = Integer.MAX_VALUE;
 		}
 
-		// Create our genetic algorithm
-
-		ga = new GenericAlgorithm(this, gaPopSize, 0.05, 0.95, 2, random);
+		// Create our genetic algorithm (from 2nd argument on: mutationRate, crossoverRate, crossoverSwapProbability, elitismCount)
+		ga = new GenericAlgorithm(this, gaPopSize, 0.1, 0.85, 0.2, 4, random);
 
 		// Initialize population
-		Population population = ga.initPopulation(chromosomeLengths, minGenes, maxGenes);
-		Individual i = population.getIndividuals()[0];
+		currentPopulation = ga.initPopulation(chromosomeLengths, minGenes, maxGenes);
+		Individual i = currentPopulation.getIndividuals()[0];
 
 		// Set the gaframelauncher's ga
 		gaFrameLauncher.setGenericAlgorithm(ga);
 
 		// Evaluate population for the first time
-		ga.evalPopulation(population);
+		isGARunning = true;
+		ga.evalPopulation(currentPopulation);
 
-		while (ga.isTerminationConditionMet(population) == false) {
+		while (ga.isTerminationConditionMet(currentPopulation) == false) {
 			// Check if the execution is beeing blocked
-			while (gaFrameLauncher.isBlockGA())
+			while (gaFrameLauncher.isBlockGA()) {
+				isGARunning = false;
 				Thread.sleep(200);
+			}
+			isGARunning = true;
 
 			// Apply crossover
-			population = ga.crossoverPopulation(population);
+			currentPopulation = ga.crossoverPopulation(currentPopulation);
 
 			// Apply mutation
-			population = ga.mutatePopulation(population);
+			currentPopulation = ga.mutatePopulation(currentPopulation);
 
 			// Evaluate population
-			ga.evalPopulation(population);
+			ga.evalPopulation(currentPopulation);
 		}
+		isGARunning = false;
 
 		GAFrameLauncher.logger.info("Found solution in " + ga.getGeneration() + " generations");
-		GAFrameLauncher.logger.info("Best solution: " + population.getFittest(0).toString());
+		GAFrameLauncher.logger.info("Best solution: " + currentPopulation.getFittest(0).toString());
 	}
 
 	/**
@@ -309,7 +345,6 @@ public class FrameLauncher implements Simulator {
 
 		try {
 			// Create a town simulation
-			// TODO Make the real chromosom to town conversion
 			simulation = new Simulation(new Town(map.length, map[0].length, random));
 			town = simulation.getTown();
 			town.generateTiles(map); // Landschaftskarte
@@ -321,13 +356,12 @@ public class FrameLauncher implements Simulator {
 
 		} catch (Exception ex) {
 			// Town generation not possible. return fitness of -1.
-			Simulation.logger.severe("Town creation failed! returning -1 for fitness");
+			Simulation.logger.warning("Town creation failed! returning -1 for fitness");
 			ex.printStackTrace();
 			return -1;
 		}
 
 		// Simulate the town and get its fitness
-		// TODO Make a real fitness function
 		currentTown = town;
 		simFrameLauncher.setSimulation(simulation);
 
@@ -359,8 +393,92 @@ public class FrameLauncher implements Simulator {
 		// Terminate, when we have enough generations
 		return ga.getGeneration() >= gaRuntime;
 	}
+	
+	public static void saveState() {
+		if (isGARunning) {
+			JOptionPane.showMessageDialog(null, "GA läuft noch!", "Save State", JOptionPane.INFORMATION_MESSAGE);
+			return;
+		}
+		
+		String filename = JOptionPane.showInputDialog(null, "Titel eingeben", "Save State", JOptionPane.INFORMATION_MESSAGE);
+		if (filename == null) return;
+		if (filename.isEmpty()) return;
+		
+		// Gain a file
+		File file = new File(FrameLauncher.class.getClassLoader().getResource("res/saves/").getFile() + filename + ".trafficsim");
+
+		// Overwrite?
+		if (file.exists()) {
+			int ans = JOptionPane.showConfirmDialog(null, "Soll die vorhandene State überschrieben werden?", "Save State", JOptionPane.YES_NO_OPTION);
+			if (ans != JOptionPane.YES_OPTION) return;
+		}
+		
+		// Save that thang!
+		try {
+			ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file));
+			
+			out.writeObject(currentPopulation);
+			out.writeObject(map);
+			
+			out.flush();
+			out.close();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			JOptionPane.showMessageDialog(null, "State konnte nicht gespeichert werden.", "Save State", JOptionPane.ERROR_MESSAGE);
+		}
+	}
+	
+	public static void loadState() {
+		if (isGARunning) {
+			JOptionPane.showMessageDialog(null, "GA läuft noch!", "Save State", JOptionPane.INFORMATION_MESSAGE);
+			return;
+		}
+		
+		File path = new File(FrameLauncher.class.getClassLoader().getResource("res/saves/").getFile());
+		File[] files = path.listFiles();
+		
+		JList list = new JList(files);
+		list.setCellRenderer(new ListCellRenderer<File>() {
+			public Component getListCellRendererComponent(JList<? extends File> list, File value, int index,
+					boolean isSelected, boolean cellHasFocus) {
+				JLabel l = new JLabel(value.getName().replace(".trafficsim", ""));
+				l.setOpaque(true);
+				if (isSelected) l.setBackground(Color.lightGray);
+				return l;
+			}
+		});
+		JOptionPane.showMessageDialog(null, list, "Load State", JOptionPane.PLAIN_MESSAGE);
+		
+		int selectedIndex = list.getSelectedIndex();
+		if (selectedIndex < 0 || selectedIndex >= files.length) return;
+		
+		File file = files[selectedIndex];
+		
+		// Load that thang!
+		try {
+			ObjectInputStream in = new ObjectInputStream(new FileInputStream(file));
+			currentPopulation = (Population) in.readObject();
+			map = (float[][][]) in.readObject();
+			
+			
+			in.close();
+			
+			// Readd GA to gaFrameLauncher
+			ga.removeGenericAlgorithmWatcher(gaFrameLauncher);
+			gaFrameLauncher.setGenericAlgorithm(ga);
+			
+			// Update all
+			simFrameLauncher.getFrame().repaint();
+			gaFrameLauncher.getFrame().repaint();
+			
+			gaFrameLauncher.unblockGA();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			JOptionPane.showMessageDialog(null, "State konnte nicht geladen werden.", "Load State", JOptionPane.ERROR_MESSAGE);
+		}
+	}
 
 	public static void main(String[] args) throws InterruptedException {
-		new FrameLauncher();
+		defaultFrameLauncher = new FrameLauncher();
 	}
 }

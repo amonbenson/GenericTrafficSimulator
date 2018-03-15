@@ -10,7 +10,7 @@ import com.trafficsim.town.Town;
 public class AutoUpdater implements Runnable {
 
 	private static final long MIN_TICK_SPEED = 1;
-	private static final long MAX_TICK_SPEED = 500;
+	private static final long MAX_TICK_SPEED = 2000;
 	private static final double MULT_TICK_SPEED = 1.3;
 	
 	private SimulationFrameLauncher frameLauncher; // FrameLauncher context
