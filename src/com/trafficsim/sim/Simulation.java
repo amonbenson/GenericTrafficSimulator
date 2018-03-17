@@ -151,7 +151,7 @@ public class Simulation {
 	public static float[][][] loadHeatMap(String file, float populationMin, float populationMax, float speedMin, float speedMax, float interestMin, float interestMax) {
 		try {
 			BufferedImage img;
-			img = ImageIO.read(Simulation.class.getClassLoader().getResource("res/heatmap.png"));
+			img = ImageIO.read(Simulation.class.getClassLoader().getResource("res/heatmap2.png"));
 			
 			float[][][] map = new float[img.getWidth()][img.getHeight()][3];
 			for (int x = 0; x < img.getWidth(); x++) {

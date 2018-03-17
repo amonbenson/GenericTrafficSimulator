@@ -131,7 +131,7 @@ public class FrameLauncher implements Simulator {
 		//			green:	ifhouse: numpersons, ifstreet: speed
 		//			red:	interest (how many persons want to go there)
 		// Load map and set area station (args: file, populationMin/Max, speedMin/Max, interestMin/Max)
-		map = Simulation.loadHeatMap("res/heatmap.png", 0, 100, Units.kmhToTilesPerTick(10), Units.kmhToTilesPerTick(50), 0, 10);
+		map = Simulation.loadHeatMap("res/heatmap2.png", 0, 100, Units.kmhToTilesPerTick(10), Units.kmhToTilesPerTick(50), 0, 10);
 		//map = Simulation.testTown();
 		// Tile.AREA_STATION = 4;
 
@@ -237,8 +237,8 @@ public class FrameLauncher implements Simulator {
 		fitGraph.setLocation(screen.width - fitGraph.getWidth() - GraphicsFX.highDPI(20), screen.height - fitGraph.getHeight() - gaFrameLauncher.getFrame().getHeight() - GraphicsFX.highDPI(50));
 
 		gaRuntime = 5000; // Terminate after n generations
-		gaPopSize = 20; // Individuals per population
-		townRuntime = (int) Units.hoursToTicks(24); // Calc fitness after n ticks of simulation
+		gaPopSize = 10; // Individuals per population
+		townRuntime = (int) Units.hoursToTicks(12); // Calc fitness after n ticks of simulation
 		simulationTickSpeed = -1; // DEBUGGING ONLY! Time for one simulation
 									// tick
 

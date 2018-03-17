@@ -13,7 +13,7 @@ public class FitnessEvaluator {
 	public static final double DIVIDEND = 100000.0;
 
 	public static final double F_TRAVEL_TIME_PENALTY = 0.1;
-	public static final double F_STATIONS_PENALTY = 2666;
+	public static final double F_STATIONS_PENALTY = 12666;
 	public static final double F_BUSSES_PENALTY = 7273;
 	public static final double F_SAME_PATH_PENALTY = 160;
 	// public static final double F_PERSON_STILL_TRAVELLING_PENALTY = 3;
