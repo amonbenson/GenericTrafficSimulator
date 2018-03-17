@@ -10,7 +10,7 @@ import com.trafficsim.town.Waypoint;
 
 public class FitnessEvaluator {
 
-	public static final double DIVIDEND = 100000.0;
+	public static final double DIVIDEND = 1000000.0;
 
 	public static final double F_TRAVEL_TIME_PENALTY = 0.1;
 	public static final double F_STATIONS_PENALTY = 2666;
