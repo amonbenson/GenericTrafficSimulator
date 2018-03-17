@@ -131,8 +131,8 @@ public class FrameLauncher implements Simulator {
 		//			green:	ifhouse: numpersons, ifstreet: speed
 		//			red:	interest (how many persons want to go there)
 		// Load map and set area station (args: file, populationMin/Max, speedMin/Max, interestMin/Max)
-		map = Simulation.loadHeatMap("res/heatmap.png", 0, 100, Units.kmhToTilesPerTick(10), Units.kmhToTilesPerTick(50), 0, 10);
-		//map = Simulation.testTown();
+		//map = Simulation.loadHeatMap("res/heatmap.png", 0, 100, Units.kmhToTilesPerTick(10), Units.kmhToTilesPerTick(50), 0, 10);
+		map = Simulation.testTown();
 		// Tile.AREA_STATION = 4;
 
 		// Logger stuff
