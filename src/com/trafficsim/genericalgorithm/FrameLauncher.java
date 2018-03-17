@@ -241,11 +241,12 @@ public class FrameLauncher implements Simulator {
 		townRuntime = (int) Units.hoursToTicks(24); // Calc fitness after n ticks of simulation
 		simulationTickSpeed = -1; // DEBUGGING ONLY! Time for one simulation
 									// tick
-		// Anzahl an Verkehrsaufkommen, welches vorhanden sein soll
-		townNumberPersons = 2000;
-		// "Pufferzone" in Prozent, in diesem Bereich sollen zum Ende der
-		// Simulation keine Personen mehr erzeugt werden
-		townPersonStopPuffer = 0.2f; // Puffer liegt also bei den letzten 20%
+
+		//Anzahl an Verkehrsaufkommen, welches vorhanden sein soll
+		townNumberPersons = 10000;
+		//"Pufferzone" in Prozent, in diesem Bereich sollen zum Ende der Simulation keine Personen mehr erzeugt werden
+		townPersonStopPuffer = 0.2f; //Puffer liegt also bei den letzten 20%
+
 
 		// Init the chromosome length values
 		chromoStationLength = Blueprint.townToMappingIP(map).size(); // Calculates
