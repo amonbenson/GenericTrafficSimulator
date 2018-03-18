@@ -237,7 +237,7 @@ public class FrameLauncher implements Simulator {
 		fitGraph.setLocation(screen.width - fitGraph.getWidth() - GraphicsFX.highDPI(20), screen.height - fitGraph.getHeight() - gaFrameLauncher.getFrame().getHeight() - GraphicsFX.highDPI(50));
 
 		gaRuntime = 5000; // Terminate after n generations
-		gaPopSize = 20; // Individuals per population
+		gaPopSize = 5;//20; // Individuals per population
 		townRuntime = (int) Units.hoursToTicks(24); // Calc fitness after n ticks of simulation
 		simulationTickSpeed = -1; // DEBUGGING ONLY! Time for one simulation
 									// tick
@@ -252,7 +252,7 @@ public class FrameLauncher implements Simulator {
 		chromoStationLength = Blueprint.townToMappingIP(map).size(); // Calculates
 																		// street
 																		// count
-		chromoScheduleCount = 5; // Maximum number of Schedules in a Town
+		chromoScheduleCount = 1;//5; // Maximum number of Schedules in a Town
 		chromoScheduleStationLength = 5; // Maximum number of stations per
 											// Schedule
 		chromoScheduleStartTimeLength = 5 * 2; // Maximum number of start times
@@ -275,8 +275,8 @@ public class FrameLauncher implements Simulator {
 
 		// Initialize these
 		chromosomeLengths[0] = chromoStationLength;
-		minGenes[0] = Integer.MIN_VALUE;
-		maxGenes[0] = Integer.MAX_VALUE;
+		minGenes[0] = 0;
+		maxGenes[0] = 1;
 
 		for (int i = 1; i < chromoCount; i += 3) {
 			// Schedule station / start times lengths
@@ -298,7 +298,7 @@ public class FrameLauncher implements Simulator {
 		}
 
 		// Create our genetic algorithm (from 2nd argument on: mutationRate, crossoverRate, crossoverSwapProbability, elitismCount)
-		ga = new GenericAlgorithm(this, gaPopSize, 0.1, 0.85, 0.2, 4, random);
+		ga = new GenericAlgorithm(this, gaPopSize, 0.1, 0.85, 0.2, 2, random);
 
 		// Initialize population
 		currentPopulation = ga.initPopulation(chromosomeLengths, minGenes, maxGenes);

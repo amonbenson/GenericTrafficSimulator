@@ -2,6 +2,12 @@ package com.trafficsim.graphics.consolepane;
 
 import java.awt.Graphics;
 
+import javax.swing.JDialog;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+
+import com.trafficsim.genericalgorithm.Chromosome;
+import com.trafficsim.graphics.GraphicsFX;
 import com.trafficsim.graphics.ga.DescendantTreePane;
 import com.trafficsim.graphics.ga.history.HIndividual;
 import com.trafficsim.graphics.ga.history.HPopulation;
@@ -48,6 +54,7 @@ public class GAInfoConsolePane extends ConsolePane {
 		}
 
 		append("ID:\t" + selI.getID());
+		append("Chromosome:\t...");
 		append("Fitness:\t" + selI.getFitness());
 
 		// Repaint the super class
@@ -56,6 +63,24 @@ public class GAInfoConsolePane extends ConsolePane {
 
 	@Override
 	public void lineClicked(int line, String content) {
-
+		if (line == 6) {
+			HIndividual selI = treePane.getSelectedIndividual();
+			if (selI == null) return;
+			
+			String s = "";
+			for (Chromosome c : selI.getChromosomes()) s += c + "\n";
+			
+			JDialog dialog = new JDialog();
+			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+			
+			JTextArea area = new JTextArea(s);
+			area.setEditable(false);
+			area.setFont(GraphicsFX.FONT_DEFAULT);
+			dialog.add(new JScrollPane(area));
+			
+			dialog.setSize(GraphicsFX.highDPI(800), GraphicsFX.highDPI(300));
+			dialog.setLocationRelativeTo(null);
+			dialog.setVisible(true);
+		}
 	}
 }

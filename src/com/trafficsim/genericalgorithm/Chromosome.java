@@ -98,7 +98,7 @@ public class Chromosome implements Serializable {
 	public String toString() {
 		String output = "";
 		for (int gene : getGenes()) {
-			output += gene + ",";
+			output += gene + " ";
 		}
 		output = output.substring(0, output.length() - 1);
 		return output;
