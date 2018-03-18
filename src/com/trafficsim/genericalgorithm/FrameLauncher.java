@@ -129,7 +129,7 @@ public class FrameLauncher implements Simulator {
 	public static float[][][] map;
 	
 	public FrameLauncher() throws InterruptedException {
-		this(0.1d, 12666d, 8333d, 166d, 15, 5, 15, (int) Units.hoursToTicks(12), 2, 10, "heatmap.png", 1000000d, new Random());
+		this(0.1d, 12666d, 8333d, 166d, 15, 5, 15, (int) Units.hoursToTicks(12), 2, 10, "heatmadp.png", 1000000d, new Random());
 	}
 	
 	public FrameLauncher(double p_travel_time, double p_stations, double p_busses, double p_same_path,
@@ -166,6 +166,7 @@ public class FrameLauncher implements Simulator {
 		FitnessEvaluator.F_TRAVEL_TIME_PENALTY = p_travel_time;
 		
 		gaPopSize = s_pop_size;
+		gaEliteNumber = s_number_elite;
 		
 		// Logger stuff
 		Simulation.logger.setLevel(Level.ALL);
