@@ -32,6 +32,8 @@ public class Bus extends Entity {
 		if (town == null) throw new NullPointerException("Town can't be null.");
 		
 		this.maxPersons = maxPersons;
+		//WICHTIGE ÄNDERUNG
+		this.maxPersons = 50;
 		this.speedX = 0;
 		this.speedY = 0;
 		this.rotation = 0;
