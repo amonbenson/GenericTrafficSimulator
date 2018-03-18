@@ -16,7 +16,7 @@ public class HouseTileInfoFrame extends InfoFrame {
 	private StreetTile nextStation;
 	
 	private JButton openNextStation;
-	private JLabel numPersons;
+	private JLabel numPersons, numInterest;
 	
 	public HouseTileInfoFrame(TownDesktopPane rootDesktop, HouseTile tile, int dx, int dy) {
 		super(rootDesktop, null, dx, dy);
@@ -33,6 +33,9 @@ public class HouseTileInfoFrame extends InfoFrame {
 		
 		numPersons = new JLabel("Persons: " + tile.getNumberPersons());
 		add(numPersons);
+		
+		numInterest = new JLabel("Interest: " + tile.getFactorInterest());
+		add(numInterest);
 		
 		packFrame();
 	}

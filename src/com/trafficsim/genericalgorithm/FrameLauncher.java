@@ -69,6 +69,11 @@ public class FrameLauncher implements Simulator {
 	public static int gaPopSize;
 
 	/**
+	 * The count of elite individuals in each generated population.
+	 */
+	public static int gaEliteNumber;
+	
+	/**
 	 * The number of iterations, which a single town will be simulated. One
 	 * iteration means one update call, which means one town tick. If the
 	 * maximum number is reached, the town will stop simulating, and the fitness
@@ -122,19 +127,46 @@ public class FrameLauncher implements Simulator {
 	public static JFrame fitGraph;
 
 	public static float[][][] map;
-
+	
 	public FrameLauncher() throws InterruptedException {
+		this(0.1d, 12666d, 8333d, 166d, 15, 5, 15, (int) Units.hoursToTicks(12), 2, 10, "heatmap.png", 1000000d, new Random());
+	}
+	
+	public FrameLauncher(double p_travel_time, double p_stations, double p_busses, double p_same_path,
+			int c_number_stations, int c_number_schedules, int c_number_starttimes, int s_ticks,
+			int s_number_elite, int s_pop_size, String map_name, double dividend) throws Exception {
+		this(p_travel_time, p_stations, p_busses, p_same_path, c_number_stations, c_number_schedules,
+				c_number_starttimes, s_ticks, s_number_elite, s_pop_size, map_name, dividend, new Random());
+
+	}
+	
+	public FrameLauncher(double p_travel_time, double p_stations, double p_busses, double p_same_path,
+	int c_number_stations, int c_number_schedules, int c_number_starttimes, int s_ticks,
+	int s_number_elite, int s_pop_size, String map_name, double dividend, Random r) throws InterruptedException {
 		// Init random
-		random = new Random(System.currentTimeMillis());
+		random = r;
 
 		// Heatmap:	blue:	0=house, 255=street
 		//			green:	ifhouse: numpersons, ifstreet: speed
 		//			red:	interest (how many persons want to go there)
 		// Load map and set area station (args: file, populationMin/Max, speedMin/Max, interestMin/Max)
-		map = Simulation.loadHeatMap("res/heatmap2.png", 0, 100, Units.kmhToTilesPerTick(10), Units.kmhToTilesPerTick(50), 0, 10);
+
+		map = Simulation.loadHeatMap("res/"+map_name, 0, 100, Units.kmhToTilesPerTick(10), Units.kmhToTilesPerTick(50), 0, 10);
 		//map = Simulation.testTown();
+
+		//map = Simulation.loadHeatMap("res/heatmap.png", 0, 100, Units.kmhToTilesPerTick(10), Units.kmhToTilesPerTick(50), 0, 10);
+		//map = Simulation.testTown();
+
 		// Tile.AREA_STATION = 4;
 
+		FitnessEvaluator.DIVIDEND = dividend;
+		FitnessEvaluator.F_BUSSES_PENALTY = p_busses;
+		FitnessEvaluator.F_SAME_PATH_PENALTY = p_same_path;
+		FitnessEvaluator.F_STATIONS_PENALTY = p_stations;
+		FitnessEvaluator.F_TRAVEL_TIME_PENALTY = p_travel_time;
+		
+		gaPopSize = s_pop_size;
+		
 		// Logger stuff
 		Simulation.logger.setLevel(Level.ALL);
 		GAFrameLauncher.logger.setLevel(Level.ALL);
@@ -184,8 +216,8 @@ public class FrameLauncher implements Simulator {
 
 					// Draw it!
 					g.setColor(Color.white);
-					g.drawLine(x * getWidth() / (avgFitnesses.size() - 1), yAvg,
-							x2 * getWidth() / (avgFitnesses.size() - 1), yAvg2);
+					//g.drawLine(x * getWidth() / (avgFitnesses.size() - 1), yAvg,
+				//			x2 * getWidth() / (avgFitnesses.size() - 1), yAvg2);
 
 					g.setColor(Color.red);
 					g.drawLine(x * getWidth() / (maxFitnesses.size() - 1), yMax,
@@ -252,10 +284,10 @@ public class FrameLauncher implements Simulator {
 		chromoStationLength = Blueprint.townToMappingIP(map).size(); // Calculates
 																		// street
 																		// count
-		chromoScheduleCount = 5; // Maximum number of Schedules in a Town
-		chromoScheduleStationLength = 5; // Maximum number of stations per
+		chromoScheduleCount = c_number_schedules; // Maximum number of Schedules in a Town
+		chromoScheduleStationLength = c_number_stations; // Maximum number of stations per
 											// Schedule
-		chromoScheduleStartTimeLength = 5 * 2; // Maximum number of start times
+		chromoScheduleStartTimeLength = c_number_starttimes * 2; // Maximum number of start times
 												// per Schedule
 
 		chromoScheduleShouldAlternate = 1; // Boolean, if the schedule should
@@ -298,7 +330,7 @@ public class FrameLauncher implements Simulator {
 		}
 
 		// Create our genetic algorithm (from 2nd argument on: mutationRate, crossoverRate, crossoverSwapProbability, elitismCount)
-		ga = new GenericAlgorithm(this, gaPopSize, 0.1, 0.85, 0.2, 4, random);
+		ga = new GenericAlgorithm(this, gaPopSize, 0.1, 0.85, 0.2, gaEliteNumber, random);
 
 		// Initialize population
 		currentPopulation = ga.initPopulation(chromosomeLengths, minGenes, maxGenes);
@@ -479,6 +511,77 @@ public class FrameLauncher implements Simulator {
 	}
 
 	public static void main(String[] args) throws InterruptedException {
-		defaultFrameLauncher = new FrameLauncher();
+		
+		if (args.length == 13) { //Alle Parameter gegeben
+			
+			//Parameter sind:
+			double p_travel_time = Double.valueOf(args[0]);
+			double p_stations = Double.valueOf(args[1]);
+			double p_busses = Double.valueOf(args[2]);
+			double p_same_path = Double.valueOf(args[3]);
+			
+			int c_number_stations = Integer.valueOf(args[4]);
+			int	c_number_schedules = Integer.valueOf(args[5]);
+			int c_number_starttimes = Integer.valueOf(args[6]);
+			
+			int s_ticks = Integer.valueOf(args[7]);
+			int s_number_elite = Integer.valueOf(args[8]);
+			int s_pop_size = Integer.valueOf(args[9]);
+			
+			String map = args[10];
+			
+			double dividend = Double.valueOf(args[11]);
+			
+			Random random = new Random(Long.parseLong(args[12]));
+			
+			defaultFrameLauncher = new FrameLauncher(p_travel_time, p_stations, p_busses, p_same_path,
+					c_number_stations, c_number_schedules, c_number_starttimes, s_ticks, s_number_elite,
+					s_pop_size, map, dividend, random);
+			
+		} else if (args.length == 12) { //Random nicht gegeben
+			//Parameter sind:
+			double p_travel_time = Double.valueOf(args[0]);
+			double p_stations = Double.valueOf(args[1]);
+			double p_busses = Double.valueOf(args[2]);
+			double p_same_path = Double.valueOf(args[3]);
+			
+			int c_number_stations = Integer.valueOf(args[4]);
+			int	c_number_schedules = Integer.valueOf(args[5]);
+			int c_number_starttimes = Integer.valueOf(args[6]);
+			
+			int s_ticks = Integer.valueOf(args[7]);
+			int s_number_elite = Integer.valueOf(args[8]);
+			int s_pop_size = Integer.valueOf(args[9]);
+			
+			String map = args[10];
+			
+			double dividend = Double.valueOf(args[11]);
+			
+			defaultFrameLauncher = new FrameLauncher(p_travel_time, p_stations, p_busses, p_same_path,
+					c_number_stations, c_number_schedules, c_number_starttimes, s_ticks, s_number_elite,
+					s_pop_size, map, dividend, new Random());
+		} else if (args.length == 0) { //nichts gegeben
+			defaultFrameLauncher = new FrameLauncher();
+		} else {
+			System.err.println("Fehler, Anzahl an Parametern stimmt nicht.");
+			System.err.println("Parameter sind:");
+			System.err.println("double p_travel_time;\n"+
+				"double p_stations;\n"+
+				"double p_busses;\n"+
+				"double p_same_path;\n"+
+				"int c_number_stations;\n"+
+				"int	c_number_schedules;\n"+
+				"int c_number_starttimes;\n"+
+				"int s_ticks;\n"+
+				"int s_number_elite;\n"+
+				"int s_pop_size;\n"+
+				"String map;\n"+
+				"double dividend;\n"+
+				"Random random;");
+		}
+		
+
+		
+		
 	}
 }

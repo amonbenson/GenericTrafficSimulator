@@ -10,12 +10,12 @@ import com.trafficsim.town.Waypoint;
 
 public class FitnessEvaluator {
 
-	public static final double DIVIDEND = 100000.0;
-
-	public static final double F_TRAVEL_TIME_PENALTY = 0.1;
-	public static final double F_STATIONS_PENALTY = 12666;
-	public static final double F_BUSSES_PENALTY = 7273;
-	public static final double F_SAME_PATH_PENALTY = 160;
+	//ARE SET IN FRAMELAUNCHER
+	public static double DIVIDEND = 1000000.0;
+	public static double F_TRAVEL_TIME_PENALTY = 1;
+	public static double F_STATIONS_PENALTY = 1000;
+	public static double F_BUSSES_PENALTY = 300;
+	public static double F_SAME_PATH_PENALTY = 160;
 	// public static final double F_PERSON_STILL_TRAVELLING_PENALTY = 3;
 
 	public static double evaluate(Town town) {
