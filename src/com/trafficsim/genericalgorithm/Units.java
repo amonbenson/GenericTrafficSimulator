@@ -2,7 +2,7 @@ package com.trafficsim.genericalgorithm;
 
 public class Units {
 
-	public static final float SECONDS_PER_TICK = 1;
+	public static final float SECONDS_PER_TICK = 3;
 	public static final float METERS_PER_TILE = 300;
 
 	public static float kmhToTilesPerTick(float kmh) {

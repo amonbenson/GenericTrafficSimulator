@@ -32,7 +32,7 @@ public class InfoConsolePane extends ConsolePane {
 
 		// Write the global time
 		append("%A0A0A0Info");
-		append("Time:\t" + Units.getSSMMHH(town.getTime()) + " h");
+		append("Time:\t" + Units.getSSMMHH((long) Units.ticksToSeconds(town.getTime())) + " h");
 		append("Speed Scale:\t" + (int) Units.tickdelayToSimseconds(frameLauncherContext.updater.getTickSpeed()) + "x Realtime");
 		append("");
 
@@ -69,7 +69,7 @@ public class InfoConsolePane extends ConsolePane {
 					getLines().set(getLines().size() - 1, getLines().get(getLines().size() - 1) + "  x" + (duplicateEventCount + 1));
 				duplicateEventCount = 0;
 
-				line += Units.getSSMMHH(eventTime) + " h\t" + eventName;
+				line += Units.getSSMMHH((long) Units.ticksToSeconds(eventTime)) + " h\t" + eventName;
 				append(line);
 			}
 

@@ -45,9 +45,8 @@ public class BlueprintConverter {
 		// Schedules erzeugen:
 		for (int scheduleIndex = 0; scheduleIndex < FrameLauncher.chromoScheduleCount; scheduleIndex++) {
 
-			final Chromosome usedStationsChromo = chromosomes.get(1 + scheduleIndex * 3);
-			final Chromosome startTimeChromo = chromosomes.get(2 + scheduleIndex * 3);
-			final Chromosome shouldAlternateChromo = chromosomes.get(3 + scheduleIndex * 3);
+			final Chromosome usedStationsChromo = chromosomes.get(1 + scheduleIndex * 2);
+			final Chromosome startTimeChromo = chromosomes.get(2 + scheduleIndex * 2);
 
 			Schedule s = null;
 			ArrayList<Waypoint> usedStations = new ArrayList<Waypoint>();
@@ -116,7 +115,7 @@ public class BlueprintConverter {
 			}
 			
 			//Alternieren, wenn das erlaubt ist
-			if (FrameLauncher.shouldAllowAlternate) {
+			/*if (FrameLauncher.shouldAllowAlternate) {
 				int shouldAlternate = shouldAlternateChromo.getGene(0);
 				if (shouldAlternate % 2 == 0) { //Bei gerader Zahl soll der Fahrplan hin und her switchen
 					//Dafür werden die usedStations "gespiegelt", letzte und erste Station wird aber ignoriert
@@ -124,7 +123,7 @@ public class BlueprintConverter {
 						usedStations.add(usedStations.get(i));
 					}
 				}
-			}
+			}*/
 
 			
 			// Schedule nur erzeugen, wenn zwei Stationen angefahren werden und es

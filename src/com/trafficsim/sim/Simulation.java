@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 
+import com.trafficsim.genericalgorithm.Units;
 import com.trafficsim.town.NameGenerator;
 import com.trafficsim.town.TimeHelper;
 import com.trafficsim.town.Town;
@@ -64,7 +65,7 @@ public class Simulation {
 			for (int y = 0; y < height; y++) {
 				if ( x == 0 || x == 1 || x == 3 || x == 5 || x == 6 || y == 0 || y==1||y==2||y==3||y==4) { //Stra�e
 					townList[x][y][0] = 0;
-					townList[x][y][1] = 0.3f;
+					townList[x][y][1] = Units.kmhToTilesPerTick(10);
 				} else { //Haus
 					townList[x][y][0] = 1;
 					townList[x][y][1] = 2;
@@ -89,33 +90,33 @@ public class Simulation {
 		//Hauptstra�e:
 		for (int x = 0; x < 9; x++) {
 			townList[1+x][4][0] = 0;
-			townList[1+x][4][1] = 1f/3f;
+			townList[1+x][4][1] = Units.kmhToTilesPerTick(50);
 		}
 		//Drei kleinere Stra�en:
 		for (int y = 0; y < 3; y++) {
 			townList[3][1+y][0] = 0;
-			townList[3][1+y][1] = 0.5f/3f;			
+			townList[3][1+y][1] = Units.kmhToTilesPerTick(30);
 		}
 		for (int y = 0; y < 3; y++) {
 			townList[7][1+y][0] = 0;
-			townList[7][1+y][1] = 0.5f/3f;			
+			townList[7][1+y][1] = Units.kmhToTilesPerTick(30);
 		}
 		for (int y = 0; y < 4; y++) {
 			townList[5][5+y][0] = 0;
-			townList[5][5+y][1] = 0.5f/3f;			
+			townList[5][5+y][1] = Units.kmhToTilesPerTick(30);
 		}
 		//Nebenstra�en:
 		for (int x = 0; x < 2; x++) {
 			townList[1+x][1][0] = 0;
-			townList[1+x][1][1] = 0.25f/3f;
+			townList[1+x][1][1] = Units.kmhToTilesPerTick(10);
 		}
 		for (int x = 0; x < 3; x++) {
 			townList[2+x][7][0] = 0;
-			townList[2+x][7][1] = 0.25f;
+			townList[2+x][7][1] = Units.kmhToTilesPerTick(10);
 		}
 		for (int x = 0; x < 2; x++) {
 			townList[6+x][7][0] = 0;
-			townList[6+x][7][1] = 0.25f;
+			townList[6+x][7][1] = Units.kmhToTilesPerTick(10);
 		}
 		return townList;
 	}
@@ -135,15 +136,15 @@ public class Simulation {
 		}
 		
 		townList[1][0][0] = 0;
-		townList[1][0][1] = 0.5f;
+		townList[1][0][1] = Units.kmhToTilesPerTick(20);
 		townList[1][1][0] = 0;
-		townList[1][1][1] = 0.5f;
+		townList[1][1][1] = Units.kmhToTilesPerTick(20);
 		townList[2][1][0] = 0;
-		townList[2][1][1] = 0.5f;
+		townList[2][1][1] = Units.kmhToTilesPerTick(20);
 		townList[0][1][0] = 0;
-		townList[0][1][1] = 0.5f;
+		townList[0][1][1] = Units.kmhToTilesPerTick(20);
 		townList[1][2][0] = 0;
-		townList[1][2][1] = 0.5f;
+		townList[1][2][1] = Units.kmhToTilesPerTick(20);
 		
 		return townList;
 	}
