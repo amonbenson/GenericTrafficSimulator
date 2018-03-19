@@ -32,19 +32,7 @@ public class Statistics {
 	}
 	
 	public void print(Town t) {
-		System.out.println("Route found: "+countRouteFound);
-		System.out.println("No Station found: "+countNoStationFound + " ("+countNoStationFound/((float)errorNoRoute+countRouteFound)*100f+"%)");
-		System.out.println("No Route found: "+countNoRouteFound + " ("+countNoRouteFound/((float)errorNoRoute)*100f+"%)");
-		System.out.println("Route same targets (counts as error): "+countRouteSameTargets + " ("+countRouteSameTargets/((float)errorNoRoute)*100f+"%)");
-		System.out.println("Cryple-Error: "+getCounterCrypleError());
-		System.out.println("All Errors: "+errorNoRoute+"("+(errorNoRoute/(float)(errorNoRoute+countRouteFound))*100f+"%)");
-		System.out.println("Koordinaten welche nicht abgedeckt sind: (insgesamt "+noStationNearby.size()+")");
-		for (Iterator<Tile> i = noStationNearby.iterator(); i.hasNext();) {
-			Tile w = i.next();
-			System.out.print(w.getX()+":"+w.getY()+"\n");
-		}
-		System.out.println("Insgesamte Zeit f�r den Transport:");
-		System.out.println(getAverageTravelTime(t));
+
 	}
 	
 	

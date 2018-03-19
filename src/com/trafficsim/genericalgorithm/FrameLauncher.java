@@ -129,7 +129,9 @@ public class FrameLauncher implements Simulator {
 	public static float[][][] map;
 	
 	public FrameLauncher() throws InterruptedException {
-		this(0.1d, 12666d, 8333d, 166d, 15, 5, 15, (int) Units.hoursToTicks(12), 2, 10, "heatmadp.png", 1000000d, new Random());
+		this(10d, 12666d, 833d, 166d, 
+				5, 5, 5, (int) Units.hoursToTicks(1), 
+				2, 10, "heatmap23.png", 1000000d, new Random(2));
 	}
 	
 	public FrameLauncher(double p_travel_time, double p_stations, double p_busses, double p_same_path,
@@ -145,7 +147,11 @@ public class FrameLauncher implements Simulator {
 	int s_number_elite, int s_pop_size, String map_name, double dividend, Random r) throws InterruptedException {
 		// Init random
 		random = r;
-
+		
+		// Logger stuff
+		Simulation.logger.setLevel(Level.OFF);
+		GAFrameLauncher.logger.setLevel(Level.OFF);
+		
 		// Heatmap:	blue:	0=house, 255=street
 		//			green:	ifhouse: numpersons, ifstreet: speed
 		//			red:	interest (how many persons want to go there)
@@ -168,9 +174,7 @@ public class FrameLauncher implements Simulator {
 		gaPopSize = s_pop_size;
 		gaEliteNumber = s_number_elite;
 		
-		// Logger stuff
-		Simulation.logger.setLevel(Level.ALL);
-		GAFrameLauncher.logger.setLevel(Level.ALL);
+
 
 		// Set laf
 		try {
@@ -269,14 +273,14 @@ public class FrameLauncher implements Simulator {
 		gaFrameLauncher.getFrame().setSize(screen.width, gaFrameHeight - GraphicsFX.highDPI(50));
 		fitGraph.setLocation(screen.width - fitGraph.getWidth() - GraphicsFX.highDPI(20), screen.height - fitGraph.getHeight() - gaFrameLauncher.getFrame().getHeight() - GraphicsFX.highDPI(50));
 
-		gaRuntime = 5000; // Terminate after n generations
+		gaRuntime = 500; // Terminate after n generations
 		gaPopSize = s_pop_size; // Individuals per population
 		townRuntime = s_ticks; // Calc fitness after n ticks of simulation
 		simulationTickSpeed = -1; // DEBUGGING ONLY! Time for one simulation
 									// tick
 
 		//Anzahl an Verkehrsaufkommen, welches vorhanden sein soll
-		townNumberPersons = 10000;
+		townNumberPersons = 1000;
 		//"Pufferzone" in Prozent, in diesem Bereich sollen zum Ende der Simulation keine Personen mehr erzeugt werden
 		townPersonStopPuffer = 0.2f; //Puffer liegt also bei den letzten 20%
 
@@ -466,8 +470,8 @@ public class FrameLauncher implements Simulator {
 			JOptionPane.showMessageDialog(null, "GA läuft noch!", "Save State", JOptionPane.INFORMATION_MESSAGE);
 			return;
 		}
-		
-		File path = new File(FrameLauncher.class.getClassLoader().getResource("res/saves/").getFile());
+		System.out.println(FrameLauncher.class.getClassLoader().getResource("res/saves").getFile());
+		File path = new File(FrameLauncher.class.getClassLoader().getResource("res/saves").getFile());
 		File[] files = path.listFiles();
 		
 		JList list = new JList(files);
@@ -496,7 +500,7 @@ public class FrameLauncher implements Simulator {
 			
 			in.close();
 			
-			// Readd GA to gaFrameLauncher
+			// Read GA to gaFrameLauncher
 			ga.removeGenericAlgorithmWatcher(gaFrameLauncher);
 			gaFrameLauncher.setGenericAlgorithm(ga);
 			
@@ -504,7 +508,7 @@ public class FrameLauncher implements Simulator {
 			simFrameLauncher.getFrame().repaint();
 			gaFrameLauncher.getFrame().repaint();
 			
-			gaFrameLauncher.unblockGA();
+			//gaFrameLauncher.unblockGA();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			JOptionPane.showMessageDialog(null, "State konnte nicht geladen werden.", "Load State", JOptionPane.ERROR_MESSAGE);
