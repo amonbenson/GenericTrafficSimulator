@@ -178,7 +178,6 @@ public class Simulation {
 			
 		} catch (Exception ex) {
 			logger.severe("Couldn't load heatmap. Using default map instead.");
-			ex.printStackTrace();
 		}
 
 		return testTown();

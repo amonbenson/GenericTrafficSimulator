@@ -291,10 +291,13 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 			if (focusPerson != null) {
 				g.setColor(new Color(255, 0, 0, DEFAULT_TRANSPARENCY));
 			
+				g.fillOval((int) (focusPerson.getRoute().getStations().get(0).getStation().getX() * tileSize) + tileX-(int)(tileSize/3/2), 
+						(int) (focusPerson.getRoute().getStations().get(0).getStation().getY() * tileSize) + tileY-(int)(tileSize/3/2), (int)(tileSize/3), (int)(tileSize/3));
+				
 				for (int i = 0; i < focusPerson.getRoute().getStations().size() - 1; i++) {
 					Waypoint w1 = focusPerson.getRoute().getStations().get(i).getStation();
 					Waypoint w2 = focusPerson.getRoute().getStations().get(i + 1).getStation();
-					
+
 					g.drawLine(
 							(int) (w1.getX() * tileSize) + tileX,
 							(int) (w1.getY() * tileSize) + tileY,
