@@ -221,11 +221,18 @@ public class FrameLauncher implements Simulator {
 					// Draw it!
 					g.setColor(Color.white);
 					//g.drawLine(x * getWidth() / (avgFitnesses.size() - 1), yAvg,
-				//			x2 * getWidth() / (avgFitnesses.size() - 1), yAvg2);
+					//		x2 * getWidth() / (avgFitnesses.size() - 1), yAvg2);
 
 					g.setColor(Color.red);
 					g.drawLine(x * getWidth() / (maxFitnesses.size() - 1), yMax,
 							x2 * getWidth() / (maxFitnesses.size() - 1), yMax2);
+
+					// Draw a mark every 5 or 10 exponent
+					g.setColor(new Color(255, 255, 255, 128));
+					if (Math.log10(x) % 1 == 0 || Math.log10(x * 2) % 1 == 0) {
+						g.drawLine(x * getWidth() / (maxFitnesses.size() - 1), 0, x * getWidth() / (maxFitnesses.size() - 1), getHeight());
+						g.drawString("" + x, x * getWidth() / (maxFitnesses.size() - 1) + GraphicsFX.highDPI(3), getHeight() - GraphicsFX.highDPI(3));
+					}
 				}
 			}
 		});
@@ -405,8 +412,7 @@ public class FrameLauncher implements Simulator {
 				}
 			}
 		} catch (Exception ex) {
-			Simulation.logger.severe("Town simulation failed! returning 0 for fitness");
-			ex.printStackTrace();
+			Simulation.logger.info("Town simulation failed - returning 0 for fitness");
 			return 0;
 		}
 
