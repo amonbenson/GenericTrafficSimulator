@@ -238,7 +238,7 @@ public class FrameLauncher implements Simulator {
 
 		// Create the simulation frame launcher and create an automatic update
 		// thread
-		simFrameLauncher = new SimulationFrameLauncher();
+		simFrameLauncher = new SimulationFrameLauncher(random);
 		new Thread(new Runnable() {
 			public void run() {
 				while (true) {

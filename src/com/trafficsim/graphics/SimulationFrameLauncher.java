@@ -41,11 +41,9 @@ public class SimulationFrameLauncher {
 	
 	private Town town;
 	
-	public SimulationFrameLauncher() {
+	public SimulationFrameLauncher(Random random) {
 		// TOWN ERSTELLEN
-		
-		Random random = new Random(); //Seed ist optional
-		
+	
 		
 		float[][][] townLandscape = Simulation.testTown();
 		town = new Town(townLandscape.length, townLandscape[0].length, random);
@@ -254,7 +252,7 @@ public class SimulationFrameLauncher {
 			e.printStackTrace();
 		}
 		
-		new SimulationFrameLauncher();
+		new SimulationFrameLauncher(new Random());
 	}
 	
 }

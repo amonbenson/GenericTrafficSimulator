@@ -3,10 +3,9 @@ package com.trafficsim.graphics.consolepane;
 import java.awt.Graphics;
 
 import com.trafficsim.genericalgorithm.Units;
-import com.trafficsim.graphics.GraphicsFX;
 import com.trafficsim.graphics.SimulationFrameLauncher;
+import com.trafficsim.town.BusCreationEvent;
 import com.trafficsim.town.Event;
-import com.trafficsim.town.Statistics;
 import com.trafficsim.town.Town;
 
 public class InfoConsolePane extends ConsolePane {
@@ -68,6 +67,7 @@ public class InfoConsolePane extends ConsolePane {
 				if (duplicateEventCount > 0)
 					getLines().set(getLines().size() - 1, getLines().get(getLines().size() - 1) + "  x" + (duplicateEventCount + 1));
 				duplicateEventCount = 0;
+				
 
 				line += Units.getSSMMHH(eventTime) + " h\t" + eventName;
 				append(line);
