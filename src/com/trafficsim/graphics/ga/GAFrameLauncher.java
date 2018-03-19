@@ -5,8 +5,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.logging.Logger;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
@@ -41,6 +41,7 @@ public class GAFrameLauncher implements GenericAlgorithmWatcher {
 	private JToolBar toolBar;
 	public JToggleButton playGA;
 	public JToggleButton playSim;
+	public JButton openFitnessGraph;
 	
 	private volatile boolean blockGA; // If this is true, the execution of the generic
 								// algorithm will be blocked.
@@ -53,7 +54,7 @@ public class GAFrameLauncher implements GenericAlgorithmWatcher {
 		toolBar = new JToolBar();
 		toolBar.setFloatable(false);
 		
-		playGA = new JToggleButton("gen. Algo.");
+		playGA = new JToggleButton(" gen. Algo. ");
 		playGA.setSelected(true);
 		playGA.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -68,7 +69,7 @@ public class GAFrameLauncher implements GenericAlgorithmWatcher {
 		});
 		toolBar.add(playGA);
 		
-		playSim = new JToggleButton("Simulation");
+		playSim = new JToggleButton(" Simulation ");
 		playSim.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (playSim.isSelected()) frameLauncherContext.simFrameLauncher.updater.start();
@@ -82,6 +83,16 @@ public class GAFrameLauncher implements GenericAlgorithmWatcher {
 			}
 		});
 		toolBar.add(playSim);
+		
+		toolBar.addSeparator();
+		
+		openFitnessGraph = new JButton(" Fitness Graph ");
+		openFitnessGraph.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				frameLauncherContext.fitGraph.setVisible(true);
+			}
+		});
+		toolBar.add(openFitnessGraph);
 		
 		frame.add(BorderLayout.NORTH, toolBar);
 		

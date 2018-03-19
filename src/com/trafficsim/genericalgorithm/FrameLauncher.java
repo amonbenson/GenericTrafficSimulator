@@ -413,9 +413,9 @@ public class FrameLauncher implements Simulator {
 				}
 			}
 		} catch (Exception ex) {
-			Simulation.logger.severe("Town simulation failed! returning -1 for fitness");
+			Simulation.logger.severe("Town simulation failed! returning 0 for fitness");
 			ex.printStackTrace();
-			return -1;
+			return 0;
 		}
 
 		// Get the fitness
