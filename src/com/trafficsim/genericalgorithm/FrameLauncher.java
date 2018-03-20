@@ -128,9 +128,9 @@ public class FrameLauncher implements Simulator {
 	public static float[][][] map;
 	
 	public FrameLauncher() throws InterruptedException {
-		this(10d, 12666d, 833d, 166d, 
+		this(10d, 126666d, 833d, 166d, 
 				5, 5, 5, (int) Units.hoursToTicks(1), 
-				2, 10, "heatmap23.png", 1000000d, new Random(2));
+				2, 20, "heatmap2.png", 1000000d, new Random(2));
 	}
 	
 	public FrameLauncher(double p_travel_time, double p_stations, double p_busses, double p_same_path,
