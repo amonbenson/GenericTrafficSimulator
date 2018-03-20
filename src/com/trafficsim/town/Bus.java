@@ -60,14 +60,9 @@ public class Bus extends Entity {
 		setY(getY()+speedY);
 		
 		// Rotation neu berechnen
-		double deltaRotation = Math.atan2(speedY, speedX) - rotation;
-		while (deltaRotation < -Math.PI) deltaRotation += 2 * Math.PI;
-		while (deltaRotation > Math.PI * 0.9) deltaRotation -= 2 * Math.PI;
-		
-		// neue Position interpolieren
-		double maxRotation = 0.6;
-		if (deltaRotation > 0) rotation += Math.min(deltaRotation, maxRotation);
-		if (deltaRotation < 0) rotation -= Math.min(-deltaRotation, maxRotation);
+		double rotationF = 0.1;
+		double newRotation = Math.atan2(speedY, speedX);
+		rotation = rotation * rotationF + newRotation * (1 - rotationF);
 		
 		checkIfWaypointIsReached();
 	}
