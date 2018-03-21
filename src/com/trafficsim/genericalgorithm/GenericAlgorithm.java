@@ -161,6 +161,7 @@ public class GenericAlgorithm {
 				Individual offspring = parent1.getStencil();
 
 				// Find second parent
+				//parent1 = selectParent(population);
 				Individual parent2 = selectParent(population);
 
 

@@ -334,7 +334,7 @@ public class FrameLauncher implements Simulator {
 		}
 
 		// Create our genetic algorithm (from 2nd argument on: mutationRate, crossoverRate, crossoverSwapProbability, elitismCount)
-		ga = new GenericAlgorithm(this, gaPopSize, 0.1, 0.85, 0.2, gaEliteNumber, random);
+		ga = new GenericAlgorithm(this, gaPopSize, 0.05, 0.85, 0.1, gaEliteNumber, random);
 
 		// Initialize population
 		currentPopulation = ga.initPopulation(chromosomeLengths, minGenes, maxGenes);

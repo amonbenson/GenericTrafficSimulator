@@ -29,6 +29,7 @@ import javax.swing.JComponent;
 import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
+import javax.swing.JScrollPane;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
@@ -69,14 +70,14 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 	private Town town;
 	
 	private int tileX, tileY;
-	private double tileSize;
+	private double tileSize, tileZ;
 
 	private Bus focusBus;
 	private Person focusPerson;
 	private Tile focusTile;
 	
 	private JToolBar toolBar;
-	private JToggleButton showRoutesButton, showRelationLinesButton, showNonCoveredTiles;
+	private JToggleButton showRoutesButton, showRelationLinesButton, showNonCoveredTiles, showConsolePanes;
 	private JButton saveState, loadState;
 	
 	private JLabel splashText;
@@ -92,6 +93,7 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 		// Tile position and size (updated when screen resizing)
 		tileX = 10;
 		tileY = 100;
+		tileZ = 1;
 		tileSize = 1.0;
 		
 		addComponentListener(this);
@@ -151,6 +153,11 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 		showNonCoveredTiles.setFocusable(false);
 		showNonCoveredTiles.addActionListener(this);
 		toolBar.add(showNonCoveredTiles);
+		
+		showConsolePanes = new JToggleButton(" show info ", true);
+		showConsolePanes.setFocusable(false);
+		showConsolePanes.addActionListener(this);
+		toolBar.add(showConsolePanes);
 
 		toolBar.addSeparator();
 
@@ -521,6 +528,8 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 			tileY = (int) ((getHeight() - town.getSizeY() * tileSize) / 2);
 		}
 		
+		tileSize *= tileZ;
+		
 		repaint();
 	}
 
@@ -615,13 +624,12 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 	}
 
 	public void mouseWheelMoved(MouseWheelEvent e) {
-		/*if (town == null) return;
+		if (town == null) return;
 		
 		double zoomD = Math.pow(ZOOM_SPEED, -e.getWheelRotation());
-		transZ *= zoomD;
-		transX -= Math.log(zoomD) * 30;
+		tileZ *= zoomD;
 		
-		updateTileTransform();*/
+		updateTileTransform();
 	}
 
 	public void valueChanged(ListSelectionEvent e) {
@@ -670,6 +678,27 @@ public class TownDesktopPane extends JDesktopPane implements MouseListener, Mous
 		if (e.getSource() == showRoutesButton) repaint();
 		else if (e.getSource() == showRelationLinesButton) repaint();
 		else if (e.getSource() == showNonCoveredTiles) repaint();
+		else if (e.getSource() == showConsolePanes) {
+			if (showConsolePanes.isSelected()) {
+				JScrollPane icScroll = new JScrollPane(frameLauncherContext.getInfoConsolePane());
+				icScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+				icScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+				frameLauncherContext.getFrame().add(BorderLayout.WEST, icScroll);
+
+				JScrollPane pcScroll = new JScrollPane(frameLauncherContext.getPersonConsolePane());
+				pcScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+				pcScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+				frameLauncherContext.getFrame().add(BorderLayout.EAST, pcScroll);
+			} else {
+				frameLauncherContext.getFrame().remove(frameLauncherContext.getInfoConsolePane().getParent().getParent());
+				frameLauncherContext.getFrame().remove(frameLauncherContext.getPersonConsolePane().getParent().getParent());
+			}
+			System.out.println(showConsolePanes.isSelected());
+
+			frameLauncherContext.getFrame().revalidate();
+			frameLauncherContext.getFrame().repaint();
+			repaint();
+		}
 		
 		// TOOLBAR: Save and load features
 		else if (e.getSource() == saveState) FrameLauncher.saveState();
